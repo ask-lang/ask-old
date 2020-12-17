@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "npx asc --importMemory --initialMemory 2 --maximumMemory 16 --noExportMemory --runtime none --use abort= flipper.ts -O3z -b flipper.wasm -t flipper.wast"
+    "build": "npx asc ./index.ts --importMemory --initialMemory 2 --maximumMemory 16 --noExportMemory --runtime none --use abort= -O3z -b main.wasm -t main.wast"
   },
   "author": "",
   "license": "ISC",

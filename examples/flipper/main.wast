@@ -24,8 +24,8 @@
  (table $0 2 funcref)
  (elem (i32.const 1) $../../src/env/seal0/seal_hash_sha2_256)
  (global $~lib/rt/stub/offset (mut i32) (i32.const 0))
- (export "deploy" (func $flipper/deploy))
- (export "call" (func $flipper/call))
+ (export "deploy" (func $index/deploy))
+ (export "call" (func $index/call))
  (start $~start)
  (func $~lib/rt/stub/computeSize (param $0 i32) (result i32)
   (i32.sub
@@ -1120,7 +1120,7 @@
    (i32.const 4)
   )
  )
- (func $flipper/Flipper#constructor
+ (func $index/Flipper#constructor
   (local $0 i32)
   (i32.store8
    (local.tee $0
@@ -1155,7 +1155,7 @@
    )
   )
  )
- (func $flipper/isSelectorEqual (param $0 i32) (param $1 i32) (result i32)
+ (func $index/isSelectorEqual (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (block $folding-inner0
    (br_if $folding-inner0
@@ -1885,7 +1885,7 @@
    )
   )
  )
- (func $flipper/Flipper#onDeploy (param $0 i32)
+ (func $index/Flipper#onDeploy (param $0 i32)
   (call $../../src/storage/storage/Storage<~lib/as-scale-codec/Bool/Bool>#store
    (call $../../src/storage/storage/Storage<~lib/as-scale-codec/Bool/Bool>#constructor)
    (call $~lib/as-scale-codec/Bool/Bool#constructor
@@ -1893,7 +1893,7 @@
    )
   )
  )
- (func $flipper/deploy (result i32)
+ (func $index/deploy (result i32)
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
@@ -1917,9 +1917,9 @@
     (i32.const 1088)
    )
   )
-  (call $flipper/Flipper#constructor)
+  (call $index/Flipper#constructor)
   (if
-   (call $flipper/isSelectorEqual
+   (call $index/isSelectorEqual
     (local.get $1)
     (local.get $2)
    )
@@ -1984,7 +1984,7 @@
      )
      (unreachable)
     )
-    (call $flipper/Flipper#onDeploy
+    (call $index/Flipper#onDeploy
      (i32.load8_u
       (call $~lib/as-scale-codec/Bool/Bool#constructor
        (i32.eq
@@ -1999,11 +1999,11 @@
     )
    )
    (if
-    (call $flipper/isSelectorEqual
+    (call $index/isSelectorEqual
      (local.get $1)
      (local.get $3)
     )
-    (call $flipper/Flipper#onDeploy
+    (call $index/Flipper#onDeploy
      (i32.const 0)
     )
    )
@@ -2094,7 +2094,7 @@
   )
   (local.get $2)
  )
- (func $flipper/call (result i32)
+ (func $index/call (result i32)
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
@@ -2103,7 +2103,7 @@
     (call $../../src/messages/inputdata/MessageInputReader#constructor)
    )
   )
-  (call $flipper/Flipper#constructor)
+  (call $index/Flipper#constructor)
   (local.set $2
    (call $~lib/rt/__newArray
     (i32.const 4)
@@ -2117,7 +2117,7 @@
    )
   )
   (if
-   (call $flipper/isSelectorEqual
+   (call $index/isSelectorEqual
     (local.get $0)
     (local.get $2)
    )
@@ -2141,7 +2141,7 @@
     )
    )
    (if
-    (call $flipper/isSelectorEqual
+    (call $index/isSelectorEqual
      (local.get $0)
      (local.get $1)
     )
