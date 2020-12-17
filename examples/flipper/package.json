@@ -1,0 +1,14 @@
+{
+  "name": "flipper",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "npx asc --importMemory --initialMemory 2 --maximumMemory 16 --noExportMemory --runtime none --use abort= flipper.ts -O2 -b flipper.wasm -t flipper.wast"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@assemblyscript/loader": "^0.17",
+    "assemblyscript": "^0.17"
+  }
+}
