@@ -4,7 +4,7 @@
  */
 
 import { Hash } from "as-scale-codec";
-import { seal_hash_blake2_128, seal_hash_blake2_256, seal_hash_keccak_256, seal_hash_sha2_256 } from "../env/seal0";
+import { seal_hash_blake2_128, seal_hash_blake2_256, seal_hash_keccak_256, seal_hash_sha2_256 } from "../seal/seal0";
 import { typedToArray } from "../utils/ArrayUtils";
 import { WriteBuffer } from "./writebuffer";
 

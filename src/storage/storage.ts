@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { seal_clear_storage, seal_get_storage, seal_set_storage } from "../env/seal0";
+import { seal_clear_storage, seal_get_storage, seal_set_storage } from "../seal/seal0";
 import { ReturnCode } from "../primitives/alias";
 
 import { Codec } from 'as-scale-codec';

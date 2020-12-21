@@ -4,7 +4,7 @@
  */
 
 import { Codec } from "as-scale-codec";
-import { seal_return } from "../env/seal0";
+import { seal_return } from "../seal/seal0";
 import { WriteBuffer } from "../primitives/writebuffer";
 
 export class ReturnData {

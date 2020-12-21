@@ -10,31 +10,33 @@ import { Storage } from "../../src/storage";
 import { Log } from "../../src/utils/Log";
 import { ReturnData } from "../../src/messages/returndata";
 
+// storage class should be implemented by preprocessor automatilly like auto load and save.
+// Besides these primitives types, any composite type like classes embeded,
+// should be instances which implements interface 'Codec'.
 
-class Flipper {
-  // @storage
-  flag: boolean;
+// ********************* Auto Implemented start ******************
+class Stored {
+  private _flag: Bool | null;
 
-  constructor() { this.flag = false; }
-
-  // @deploy
-  onDeploy(initFlag: boolean): void {
-    const stora = new Storage<Bool>("flipper.flag");
-    stora.store(new Bool(initFlag));
+  constructor() {
+    this._flag = null;
   }
-  // @message
-  flip(): void {
-    const stora = new Storage<Bool>("flipper.flag");
-    const v = stora.load().unwrap();
-    stora.store(new Bool(!v));
+
+  get flag(): boolean {
+    if (this._flag === null) {
+      const stora = new Storage<Bool>("flipper.flag");
+      this._flag = stora.load();
+    }
+    return this._flag!.unwrap();
   }
-  // @message
-  get(): boolean {
-    let stora = new Storage<Bool>("flipper.flag");
-    let v = stora.load();
-    return v.unwrap();
+
+  set flag(v: boolean) {
+    this._flag = new Bool(v);
+    const stora = new Storage<Bool>("flipper.flag");
+    stora.store(this._flag!);
   }
 }
+
 
 export function deploy(): i32 {
   const reader = MessageInputReader.readInput();
@@ -91,4 +93,34 @@ export function call(): i32 {
   }
   // Step3: store modified storage
   return 0;
+}
+// ********************* Auto Implemented end ******************
+
+// code written by developer
+/*
+@storage
+class Stored {
+  private flag: boolean;
+}
+*/
+// @contract
+class Flipper {
+  // @storage
+  private stored: Stored;
+
+  constructor() { this.stored = new Stored(); }
+
+  // @deployer
+  onDeploy(initFlag: boolean): void {
+    this.stored.flag = initFlag;
+  }
+  // @message
+  flip(): void {
+    const v = this.stored.flag;
+    this.stored.flag = !v;
+  }
+  // @message
+  get(): boolean {
+    return this.stored.flag;
+  }
 }

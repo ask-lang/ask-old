@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { seal_input } from "../env/seal0";
+import { seal_input } from "../seal/seal0";
 import { ReadBuffer } from "../primitives/readbuffer";
 
 export class MessageInputReader {
