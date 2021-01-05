@@ -16,9 +16,10 @@ export function arrayToTyped(arr: u8[]): Uint8Array {
 export function typedToArray(u8a: Uint8Array, length: i32 = -1): u8[] {
   const size = length == -1 ? u8a.length : length;
   const arr = new Array<u8>(size);
-  for (let i = 0; i < size; i++) {
-    arr[i] = u8a[i];
-  }
+  // for (let i = 0; i < size; i++) {
+  //   arr[i] = u8a[i];
+  // }
+  memory.copy(changetype<usize>(arr.buffer), changetype<usize>(u8a.buffer), size);
   return arr;
 }
 

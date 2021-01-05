@@ -38,10 +38,12 @@ export class Storage<T extends Codec> {
       readBuf.valueBuffer,
       readBuf.sizeBuffer
     );
+    // if read storage from native successfully, then populate it.
+    // otherwise let it alon with default constructed value.
+    if (status == ReturnCode.Success && readBuf.readSize == len) {
+      value.populateFromBytes(readBuf.valueBytes, 0);
+    }
 
-    assert(status == ReturnCode.Success && readBuf.readSize == len, "get storage failed.");
-
-    value.populateFromBytes(readBuf.valueBytes, 0);
     return value;
   }
 

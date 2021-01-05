@@ -11,11 +11,11 @@ export class MessageInputReader {
 
   static readInput(): MessageInputReader {
     // TODO(liangqin.fan): the suitable size of read buffer??
-    return new MessageInputReader(16);
+    return new MessageInputReader(1024);
   }
 
   private constructor(bufSize: u32) {
-    this.readbuf = new ReadBuffer(bufSize); // try 16k memory
+    this.readbuf = new ReadBuffer(bufSize); // try 1k memory
     seal_input(this.readbuf.valueBuffer, this.readbuf.sizeBuffer);
   }
 

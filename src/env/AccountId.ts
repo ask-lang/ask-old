@@ -3,27 +3,50 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { Codec, UInt8 } from "as-scale-codec";
+import { Balance } from "./Balance";
 
 /**
  * @class AccountId
  * Class AccountId stands for an address, which should be a storagable type.
  */
+
+ const BytesCount = 32;
 export class AccountId implements Codec {
-  toU8a(): any[] {
-    throw new Error("Method not implemented.");
+
+  private _rawBytes: Array<u8>;
+
+  constructor(bytes: u8[]) {
+    this._rawBytes = new Array<u8>(BytesCount);
+    memory.copy(changetype<usize>(this._rawBytes.buffer), changetype<usize>(bytes.buffer), BytesCount);
   }
-  encodedLength() {
-    throw new Error("Method not implemented.");
+
+  static from(uarr: u8[]): AccountId {
+    return new AccountId(uarr);
   }
+
+  transfer(amount: u64): void {}
+
+  call(): void {}
+
+  // get balance(): Balance {}
+
+  toU8a(): u8[] {
+    return [];
+  }
+
+  encodedLength(): i32 {
+    return 0;
+  }
+
   populateFromBytes(bytes: any[], index: any): void {
     throw new Error("Method not implemented.");
   }
-  eq(other: Codec) {
-    throw new Error("Method not implemented.");
-  }
-  notEq(other: Codec) {
-    throw new Error("Method not implemented.");
-  }
 
+  eq(other: Codec): bool {
+    return false;
+  }
+  notEq(other: Codec): bool {
+    return false;
+  }
 }

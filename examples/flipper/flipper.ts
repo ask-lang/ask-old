@@ -9,6 +9,8 @@ import { arryToHexString } from "../../src/utils/ArrayUtils";
 import { Storage } from "../../src/storage";
 import { Log } from "../../src/utils/Log";
 import { ReturnData } from "../../src/messages/returndata";
+import { Msg } from "../../src/messages/Msg";
+import { FnParameters } from "../../src/messages/fnparameters";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,
@@ -39,8 +41,6 @@ class Stored {
 
 
 export function deploy(): i32 {
-  const reader = MessageInputReader.readInput();
-  const fnSelector = reader.fnSelector;
   // const selector = arryToHexString(fnSelector);
   // Log.println("deploy.fnSelctor: " + selector);
 
@@ -48,11 +48,16 @@ export function deploy(): i32 {
   const ctorWithoutParams: u8[] = [0x6a, 0x37, 0x12, 0xe2]; // 0x6a3712e2
 
   let flipper = new Flipper();
-  if (isSelectorEqual(fnSelector, ctorWithParams)) {
-    const p = reader.fnParameters;
-    const v = Bool.fromU8a(p).unwrap();
-    flipper.onDeploy(v);
-  } else if (isSelectorEqual(fnSelector, ctorWithoutParams)) {
+  const msg = new Msg();
+
+  if (isSelectorEqual(msg.sig, ctorWithParams)) {
+    const fnParameters = new FnParameters(msg.data);
+    let v = new Bool();
+    let bytes = fnParameters.slice(v.encodedLength());
+    v.populateFromBytes(bytes);
+    // const v = Bool.fromU8a(p.slice(1)).unwrap();
+    flipper.onDeploy(v.unwrap());
+  } else if (isSelectorEqual(msg.sig, ctorWithoutParams)) {
     flipper.onDeploy(false);
   } else {
     // nop
@@ -72,8 +77,7 @@ function isSelectorEqual(l: u8[], r: u8[]): boolean {
 
 export function call(): i32 {
   // Step1: read input calling params;
-  const reader = MessageInputReader.readInput();
-  const fnSelector = reader.fnSelector;
+  const msg = new Msg();
   // const selector = arryToHexString(fnSelector);
   // Log.println("call.fnSelctor: " + selector);
 
@@ -82,9 +86,9 @@ export function call(): i32 {
   const getselector: u8[] = [0x1e, 0x5c, 0xa4, 0x56]; // "1e5ca456";
 
   // Step2: exec command
-  if (isSelectorEqual(fnSelector, flipselector)) { // flip operation
+  if (isSelectorEqual(msg.sig, flipselector)) { // flip operation
     flp.flip();
-  } else if (isSelectorEqual(fnSelector, getselector)) { // get operation
+  } else if (isSelectorEqual(msg.sig, getselector)) { // get operation
     const flag = flp.get();
     ReturnData.set<Bool>(new Bool(flag));
   } else {
