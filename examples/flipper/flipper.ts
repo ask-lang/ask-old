@@ -4,13 +4,11 @@
  */
 
 import { Bool } from "as-scale-codec";
-import { MessageInputReader } from "../../src/messages/inputdata";
-import { arryToHexString } from "../../src/utils/ArrayUtils";
 import { Storage } from "../../src/storage";
 import { Log } from "../../src/utils/Log";
-import { ReturnData } from "../../src/messages/returndata";
+import { ReturnData } from "../../src/primitives/returndata";
 import { Msg } from "../../src/messages/Msg";
-import { FnParameters } from "../../src/messages/fnparameters";
+import { FnParameters } from "../../src/messages/FnParameters";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,
@@ -24,7 +22,7 @@ class Stored {
     this._flag = null;
   }
 
-  get flag(): boolean {
+  get flag(): bool {
     if (this._flag === null) {
       const stora = new Storage<Bool>("flipper.flag");
       this._flag = stora.load();
@@ -32,7 +30,7 @@ class Stored {
     return this._flag!.unwrap();
   }
 
-  set flag(v: boolean) {
+  set flag(v: bool) {
     this._flag = new Bool(v);
     const stora = new Storage<Bool>("flipper.flag");
     stora.store(this._flag!);
@@ -52,9 +50,7 @@ export function deploy(): i32 {
 
   if (isSelectorEqual(msg.sig, ctorWithParams)) {
     const fnParameters = new FnParameters(msg.data);
-    let v = new Bool();
-    let bytes = fnParameters.slice(v.encodedLength());
-    v.populateFromBytes(bytes);
+    let v = fnParameters.get<Bool>();
     // const v = Bool.fromU8a(p.slice(1)).unwrap();
     flipper.onDeploy(v.unwrap());
   } else if (isSelectorEqual(msg.sig, ctorWithoutParams)) {
@@ -69,10 +65,7 @@ export function deploy(): i32 {
 
 function isSelectorEqual(l: u8[], r: u8[]): boolean {
   if (l.length != r.length) return false;
-  for (let i = 0; i < l.length; i++) {
-    if (l[i] != r[i]) return false;
-  }
-  return true;
+  return memory.compare(changetype<usize>(l.buffer), changetype<usize>(r.buffer), 4) == 0;
 }
 
 export function call(): i32 {
@@ -82,7 +75,7 @@ export function call(): i32 {
   // Log.println("call.fnSelctor: " + selector);
 
   const flp = new Flipper();
-  const flipselector: u8[] = [0xc0, 0x96, 0xa5, 0xf3]; // "c096a5f3";
+  const flipselector: u8[] = [0xc0, 0x96, 0xa5, 0xf8]; // "c096a5f3";
   const getselector: u8[] = [0x1e, 0x5c, 0xa4, 0x56]; // "1e5ca456";
 
   // Step2: exec command
@@ -115,7 +108,7 @@ class Flipper {
   constructor() { this.stored = new Stored(); }
 
   // @deployer
-  onDeploy(initFlag: boolean): void {
+  onDeploy(initFlag: bool): void {
     this.stored.flag = initFlag;
   }
   // @message
@@ -124,7 +117,7 @@ class Flipper {
     this.stored.flag = !v;
   }
   // @message
-  get(): boolean {
+  get(): bool {
     return this.stored.flag;
   }
 }

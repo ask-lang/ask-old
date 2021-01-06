@@ -3,22 +3,22 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { typedToArray } from "../utils/ArrayUtils";
-
+import { Codec } from "as-scale-codec";
 
 export class FnParameters {
   private pos: i32;
-  private datas: Uint8Array;
+  private datas: Array<u8>;
 
   constructor(u: u8[]) {
-    this.datas = Uint8Array.wrap(u.buffer);
+    this.datas = u;
     this.pos = 0;
   }
 
-  slice(len: i32): u8[] {
-    let arr = this.datas.subarray(this.pos, this.pos + len);
-    this.pos += len;
-    assert(this.pos < this.datas.length);
-    return typedToArray(arr);
+  get<T extends Codec>(): T {
+    let ins = instantiate<T>();
+    ins.populateFromBytes(this.datas, this.pos);
+    this.pos += ins.encodedLength();
+    return ins;
+
   }
 }

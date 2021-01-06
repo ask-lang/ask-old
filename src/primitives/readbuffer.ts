@@ -1,3 +1,4 @@
+import { Codec } from "as-scale-codec";
 import { typedToArray } from "../utils/ArrayUtils";
 import { SizeBuffer } from "./sizebuffer";
 
@@ -9,6 +10,15 @@ import { SizeBuffer } from "./sizebuffer";
 export class ReadBuffer {
   private valueBuf: Uint8Array;
   private sizeBuf: SizeBuffer;
+
+  static readInstance<T extends Codec>(fn: (valueBuf: ArrayBuffer, sizeBuf: ArrayBuffer) => void ): T {
+    let v = instantiate<T>();
+    let readbuf = new ReadBuffer(v.encodedLength());
+    fn(readbuf.valueBuf, readbuf.sizeBuffer);
+    v.populateFromBytes(readbuf.valueBytes, 0);
+
+    return v;
+  }
 
   constructor(bufSize: u32) {
     this.valueBuf = new Uint8Array(bufSize);

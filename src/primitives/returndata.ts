@@ -5,7 +5,7 @@
 
 import { Codec } from "as-scale-codec";
 import { seal_return } from "../seal/seal0";
-import { WriteBuffer } from "../primitives/writebuffer";
+import { WriteBuffer } from "./writebuffer";
 
 export class ReturnData {
   static set<T extends Codec>(v: T): void {

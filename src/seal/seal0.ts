@@ -315,7 +315,7 @@
   // space at `outPtr` is less than the size of the value a trap is triggered.
   export declare function seal_block_number(
     outPtr: Ptr,
-    outLenPtr: SizeT): void;
+    outLenPtr: Ptr): void;
 
   // Computes the SHA2 256-bit hash on the given input buffer.
   //

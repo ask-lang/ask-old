@@ -4,7 +4,7 @@
  */
 
 import { seal_input } from "../seal/seal0";
-import { ReadBuffer } from "../primitives/readbuffer";
+import { ReadBuffer } from "./readbuffer";
 
 export class MessageInputReader {
   private readbuf: ReadBuffer;
