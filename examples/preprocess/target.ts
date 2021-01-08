@@ -14,6 +14,7 @@ import { FnParameters } from "../../src/buildins/FnParameters";
 // Besides these primitives types, any composite type like classes embeded,
 // should be instances which implements interface 'Codec'.
 
+// FIXME(liaignqin.fan): inject variable `msg` to global, so can be retrieved anywhere.
 var msg: Msg = new Msg();
 
 class Stored {
@@ -48,13 +49,13 @@ class Flipper {
   }
 
   flip(): void {
-    // assert(msg.notPayable(), "Can not accept value");
+    assert(msg.notPayable(), "Can not accept value");
     const v = this.stored.flag;
     this.stored.flag = !v;
   }
 
   get(): bool {
-    // assert(msg.notPayable(), "Can not accept value");
+    assert(msg.notPayable(), "Can not accept value");
     return this.stored.flag;
   }
 

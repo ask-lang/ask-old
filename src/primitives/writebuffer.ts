@@ -1,9 +1,8 @@
-import { Bytes } from "as-scale-codec";
-
 /**
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
+
 export class WriteBuffer {
   private valueBuf: Uint8Array;
 

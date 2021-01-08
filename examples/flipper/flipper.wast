@@ -2,11 +2,13 @@
  (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $i32_i32_i32_=>_none (func (param i32 i32 i32)))
  (type $i32_i32_=>_none (func (param i32 i32)))
- (type $none_=>_i32 (func (result i32)))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
+ (type $none_=>_i32 (func (result i32)))
  (type $i32_=>_none (func (param i32)))
  (type $i32_i32_i32_=>_i32 (func (param i32 i32 i32) (result i32)))
  (type $none_=>_none (func))
+ (type $i64_i32_=>_i32 (func (param i64 i32) (result i32)))
+ (type $i64_i64_=>_i32 (func (param i64 i64) (result i32)))
  (import "env" "memory" (memory $0 2 16))
  (data (i32.const 1036) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\d1\83Q+")
  (data (i32.const 1068) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00j7\12\e2")
@@ -18,14 +20,19 @@
  (data (i32.const 1308) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data (i32.const 1340) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\c0\96\a5\f8")
  (data (i32.const 1372) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\1e\\\a4V")
+ (data (i32.const 1404) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\fe\dc\03\f6")
+ (data (i32.const 1436) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\fc<M\f7")
+ (data (i32.const 1468) "\08\00\00\00\01\00\00\00\00\00\00\00\19\00\00\00\08\00\00\00\02\00\00\00\00\00\00\00")
  (import "seal0" "seal_input" (func $../../src/seal/seal0/seal_input (param i32 i32)))
  (import "seal0" "seal_hash_sha2_256" (func $../../src/seal/seal0/seal_hash_sha2_256 (param i32 i32 i32)))
  (import "seal0" "seal_set_storage" (func $../../src/seal/seal0/seal_set_storage (param i32 i32 i32)))
+ (import "seal0" "seal_value_transferred" (func $../../src/seal/seal0/seal_value_transferred (param i32 i32)))
  (import "seal0" "seal_get_storage" (func $../../src/seal/seal0/seal_get_storage (param i32 i32 i32) (result i32)))
  (import "seal0" "seal_return" (func $../../src/seal/seal0/seal_return (param i32 i32 i32)))
- (table $0 2 funcref)
- (elem (i32.const 1) $../../src/seal/seal0/seal_hash_sha2_256)
+ (table $0 3 funcref)
+ (elem (i32.const 1) $../../src/seal/seal0/seal_hash_sha2_256 $../../src/seal/seal0/seal_value_transferred)
  (global $~lib/rt/stub/offset (mut i32) (i32.const 0))
+ (global $flipper/msg (mut i32) (i32.const 0))
  (export "deploy" (func $flipper/deploy))
  (export "call" (func $flipper/call))
  (start $~start)
@@ -272,7 +279,7 @@
    (local.tee $2
     (call $~lib/rt/stub/__new
      (i32.const 16)
-     (i32.const 4)
+     (i32.const 5)
     )
    )
   )
@@ -315,7 +322,7 @@
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 6)
+     (i32.const 11)
     )
    )
    (i32.const 0)
@@ -324,7 +331,7 @@
    (local.tee $1
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 7)
+     (i32.const 12)
     )
    )
    (i32.const 0)
@@ -346,31 +353,6 @@
   (i32.store
    (local.get $0)
    (local.get $1)
-  )
-  (local.get $0)
- )
- (func $../../src/messages/Msg/Msg#constructor (result i32)
-  (local $0 i32)
-  (i32.store
-   (local.tee $0
-    (call $~lib/rt/stub/__new
-     (i32.const 16)
-     (i32.const 11)
-    )
-   )
-   (i32.const 0)
-  )
-  (i32.store offset=4
-   (local.get $0)
-   (i32.const 0)
-  )
-  (i32.store offset=8
-   (local.get $0)
-   (i32.const 0)
-  )
-  (i32.store offset=12
-   (local.get $0)
-   (i32.const 0)
   )
   (local.get $0)
  )
@@ -613,7 +595,7 @@
    (local.tee $2
     (call $~lib/rt/stub/__new
      (i32.const 16)
-     (i32.const 4)
+     (i32.const 5)
     )
    )
    (i32.const 0)
@@ -898,7 +880,7 @@
    (i32.const 2147483647)
   )
  )
- (func $../../src/messages/Msg/Msg#init_sig_and_data (param $0 i32)
+ (func $../../src/buildins/Msg/Msg#init_sig_and_data (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -1077,14 +1059,14 @@
    )
   )
  )
- (func $../../src/messages/Msg/Msg#get:sig (param $0 i32) (result i32)
+ (func $../../src/buildins/Msg/Msg#get:sig (param $0 i32) (result i32)
   (if
    (i32.eqz
     (i32.load offset=8
      (local.get $0)
     )
    )
-   (call $../../src/messages/Msg/Msg#init_sig_and_data
+   (call $../../src/buildins/Msg/Msg#init_sig_and_data
     (local.get $0)
    )
   )
@@ -1100,7 +1082,7 @@
   )
   (local.get $0)
  )
- (func $flipper/isSelectorEqual (param $0 i32) (param $1 i32) (result i32)
+ (func $../../src/buildins/Msg/Msg#isSelector (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -1108,12 +1090,12 @@
   (if
    (i32.ne
     (i32.load offset=12
-     (local.tee $2
+     (call $../../src/buildins/Msg/Msg#get:sig
       (local.get $0)
      )
     )
     (i32.load offset=12
-     (local.tee $3
+     (local.tee $2
       (local.get $1)
      )
     )
@@ -1122,63 +1104,56 @@
     (i32.const 0)
    )
   )
-  (local.set $0
-   (i32.const 4)
-  )
   (local.set $1
-   (i32.const 0)
+   (i32.const 4)
   )
   (block $~lib/util/memory/memcmp|inlined.0
    (br_if $~lib/util/memory/memcmp|inlined.0
     (i32.eq
+     (local.tee $3
+      (i32.load
+       (call $../../src/buildins/Msg/Msg#get:sig
+        (local.get $0)
+       )
+      )
+     )
      (local.tee $2
       (i32.load
        (local.get $2)
       )
      )
-     (local.tee $3
-      (i32.load
-       (local.get $3)
-      )
-     )
     )
    )
    (loop $while-continue|0
-    (local.set $0
+    (local.set $1
      (i32.sub
-      (local.tee $1
-       (local.get $0)
+      (local.tee $0
+       (local.get $1)
       )
       (i32.const 1)
      )
     )
     (if
-     (local.get $1)
+     (local.get $0)
      (block
-      (local.set $1
+      (local.set $4
        (i32.sub
-        (local.tee $4
+        (local.tee $0
          (i32.load8_u
-          (local.get $2)
+          (local.get $3)
          )
         )
         (local.tee $5
          (i32.load8_u
-          (local.get $3)
+          (local.get $2)
          )
         )
        )
       )
       (br_if $~lib/util/memory/memcmp|inlined.0
        (i32.ne
-        (local.get $4)
+        (local.get $0)
         (local.get $5)
-       )
-      )
-      (local.set $2
-       (i32.add
-        (local.get $2)
-        (i32.const 1)
        )
       )
       (local.set $3
@@ -1187,16 +1162,22 @@
         (i32.const 1)
        )
       )
+      (local.set $2
+       (i32.add
+        (local.get $2)
+        (i32.const 1)
+       )
+      )
       (br $while-continue|0)
      )
     )
    )
-   (local.set $1
+   (local.set $4
     (i32.const 0)
    )
   )
   (i32.eqz
-   (local.get $1)
+   (local.get $4)
   )
  )
  (func $~lib/as-scale-codec/Bool/Bool#constructor (param $0 i32) (result i32)
@@ -1205,7 +1186,7 @@
    (local.tee $1
     (call $~lib/rt/stub/__new
      (i32.const 1)
-     (i32.const 8)
+     (i32.const 13)
     )
    )
    (i32.const 0)
@@ -2226,14 +2207,13 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
-  (local.set $1
+  (local.set $0
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 1056)
    )
   )
-  (local.set $3
+  (local.set $1
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 1088)
@@ -2243,22 +2223,20 @@
    (call $flipper/Flipper#constructor)
   )
   (if
-   (call $flipper/isSelectorEqual
-    (call $../../src/messages/Msg/Msg#get:sig
-     (local.tee $0
-      (call $../../src/messages/Msg/Msg#constructor)
-     )
-    )
-    (local.get $1)
+   (call $../../src/buildins/Msg/Msg#isSelector
+    (global.get $flipper/msg)
+    (local.get $0)
    )
    (block
     (if
      (i32.eqz
       (i32.load offset=12
-       (local.get $0)
+       (local.tee $0
+        (global.get $flipper/msg)
+       )
       )
      )
-     (call $../../src/messages/Msg/Msg#init_sig_and_data
+     (call $../../src/buildins/Msg/Msg#init_sig_and_data
       (local.get $0)
      )
     )
@@ -2328,11 +2306,9 @@
     )
    )
    (if
-    (call $flipper/isSelectorEqual
-     (call $../../src/messages/Msg/Msg#get:sig
-      (local.get $0)
-     )
-     (local.get $3)
+    (call $../../src/buildins/Msg/Msg#isSelector
+     (global.get $flipper/msg)
+     (local.get $1)
     )
     (call $flipper/Flipper#onDeploy
      (local.get $2)
@@ -2341,6 +2317,799 @@
    )
   )
   (i32.const 0)
+ )
+ (func $~lib/as-bignum/integer/u128/u128#constructor (param $0 i64) (param $1 i64) (result i32)
+  (local $2 i32)
+  (i64.store
+   (local.tee $2
+    (call $~lib/rt/stub/__new
+     (i32.const 16)
+     (i32.const 7)
+    )
+   )
+   (local.get $0)
+  )
+  (i64.store offset=8
+   (local.get $2)
+   (local.get $1)
+  )
+  (local.get $2)
+ )
+ (func $~lib/as-scale-codec/UInt/UInt128/UInt128._computeBitLength (param $0 i32) (result i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i64)
+  (local $4 i64)
+  (local.set $1
+   (local.get $0)
+  )
+  (local.set $0
+   (call $~lib/as-bignum/integer/u128/u128#constructor
+    (i64.const 64)
+    (i64.const 0)
+   )
+  )
+  (if (result i32)
+   (if (result i32)
+    (i64.eq
+     (local.tee $3
+      (i64.load offset=8
+       (local.get $1)
+      )
+     )
+     (local.tee $4
+      (i64.load offset=8
+       (local.get $0)
+      )
+     )
+    )
+    (i64.lt_u
+     (i64.load
+      (local.get $1)
+     )
+     (i64.load
+      (local.get $0)
+     )
+    )
+    (i64.lt_u
+     (local.get $3)
+     (local.get $4)
+    )
+   )
+   (i32.const 1)
+   (block (result i32)
+    (local.set $2
+     (local.tee $0
+      (call $~lib/as-bignum/integer/u128/u128#constructor
+       (i64.const 16384)
+       (i64.const 0)
+      )
+     )
+    )
+    (if (result i32)
+     (if (result i32)
+      (i64.eq
+       (local.tee $3
+        (i64.load offset=8
+         (local.get $1)
+        )
+       )
+       (local.tee $4
+        (i64.load offset=8
+         (local.get $0)
+        )
+       )
+      )
+      (i64.lt_u
+       (i64.load
+        (local.get $1)
+       )
+       (i64.load
+        (local.get $2)
+       )
+      )
+      (i64.lt_u
+       (local.get $3)
+       (local.get $4)
+      )
+     )
+     (i32.const 2)
+     (block (result i32)
+      (local.set $2
+       (local.tee $0
+        (call $~lib/as-bignum/integer/u128/u128#constructor
+         (i64.const 1073741824)
+         (i64.const 0)
+        )
+       )
+      )
+      (if (result i32)
+       (if (result i32)
+        (i64.eq
+         (local.tee $3
+          (i64.load offset=8
+           (local.get $1)
+          )
+         )
+         (local.tee $4
+          (i64.load offset=8
+           (local.get $0)
+          )
+         )
+        )
+        (i64.lt_u
+         (i64.load
+          (local.get $1)
+         )
+         (i64.load
+          (local.get $2)
+         )
+        )
+        (i64.lt_u
+         (local.get $3)
+         (local.get $4)
+        )
+       )
+       (i32.const 4)
+       (block (result i32)
+        (i64.store
+         (local.tee $2
+          (i32.load offset=4
+           (local.tee $0
+            (call $~lib/array/Array<u8>#constructor
+             (i32.const 16)
+            )
+           )
+          )
+         )
+         (i64.load
+          (local.get $1)
+         )
+        )
+        (i64.store offset=8
+         (local.get $2)
+         (i64.load offset=8
+          (local.get $1)
+         )
+        )
+        (local.set $1
+         (i32.sub
+          (i32.load offset=12
+           (local.get $0)
+          )
+          (i32.const 1)
+         )
+        )
+        (loop $for-loop|0
+         (if
+          (i32.gt_s
+           (local.get $1)
+           (i32.const 0)
+          )
+          (if
+           (i32.eqz
+            (call $~lib/array/Array<u8>#__get
+             (local.get $0)
+             (local.get $1)
+            )
+           )
+           (block
+            (if
+             (i32.lt_s
+              (local.tee $2
+               (i32.load offset=12
+                (local.get $0)
+               )
+              )
+              (i32.const 1)
+             )
+             (unreachable)
+            )
+            (drop
+             (i32.load8_u
+              (i32.add
+               (local.tee $2
+                (i32.sub
+                 (local.get $2)
+                 (i32.const 1)
+                )
+               )
+               (i32.load offset=4
+                (local.get $0)
+               )
+              )
+             )
+            )
+            (i32.store offset=12
+             (local.get $0)
+             (local.get $2)
+            )
+            (local.set $1
+             (i32.sub
+              (local.get $1)
+              (i32.const 1)
+             )
+            )
+            (br $for-loop|0)
+           )
+          )
+         )
+        )
+        (i32.add
+         (i32.load offset=12
+          (local.get $0)
+         )
+         (i32.const 1)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/as-scale-codec/interfaces/DecodedData/DecodedData<u64>#constructor (param $0 i64) (param $1 i32) (result i32)
+  (local $2 i32)
+  (i64.store
+   (local.tee $2
+    (call $~lib/rt/stub/__new
+     (i32.const 12)
+     (i32.const 26)
+    )
+   )
+   (local.get $0)
+  )
+  (i32.store offset=8
+   (local.get $2)
+   (local.get $1)
+  )
+  (local.get $2)
+ )
+ (func $~lib/as-scale-codec/utils/Bytes/Bytes.decodeSmallInt (param $0 i32) (param $1 i32) (result i32)
+  (local $2 i32)
+  (if
+   (i32.eqz
+    (select
+     (i32.const 1)
+     (i32.eq
+      (local.tee $2
+       (i32.and
+        (local.get $1)
+        (i32.const 255)
+       )
+      )
+      (i32.const 2)
+     )
+     (select
+      (i32.eq
+       (local.get $2)
+       (i32.const 1)
+      )
+      (i32.const 1)
+      (local.get $2)
+     )
+    )
+   )
+   (unreachable)
+  )
+  (if (result i32)
+   (i32.and
+    (local.get $1)
+    (i32.const 255)
+   )
+   (if (result i32)
+    (i32.eq
+     (i32.and
+      (local.get $1)
+      (i32.const 255)
+     )
+     (i32.const 1)
+    )
+    (block (result i32)
+     (if
+      (i32.lt_s
+       (i32.load offset=12
+        (local.get $0)
+       )
+       (i32.const 2)
+      )
+      (unreachable)
+     )
+     (i32.store8
+      (local.tee $2
+       (i32.load offset=4
+        (local.tee $1
+         (call $~lib/rt/__newArray
+          (i32.const 2)
+          (i32.const 0)
+         )
+        )
+       )
+      )
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 0)
+      )
+     )
+     (i32.store8 offset=1
+      (local.get $2)
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 1)
+      )
+     )
+     (call $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8>
+      (local.get $1)
+      (local.tee $2
+       (call $~lib/array/Array<u8>#constructor
+        (i32.const 2)
+       )
+      )
+      (i32.const 0)
+     )
+     (local.set $1
+      (call $~lib/array/Array<u8>#__get
+       (local.get $2)
+       (i32.const 0)
+      )
+     )
+     (local.set $0
+      (i32.const 1)
+     )
+     (loop $for-loop|1
+      (if
+       (i32.lt_s
+        (local.get $0)
+        (i32.const 2)
+       )
+       (block
+        (local.set $1
+         (i32.or
+          (local.get $1)
+          (i32.shl
+           (call $~lib/array/Array<u8>#__get
+            (local.get $2)
+            (local.get $0)
+           )
+           (i32.and
+            (i32.shl
+             (i32.and
+              (local.get $0)
+              (i32.const 255)
+             )
+             (i32.const 3)
+            )
+            (i32.const 15)
+           )
+          )
+         )
+        )
+        (local.set $0
+         (i32.add
+          (local.get $0)
+          (i32.const 1)
+         )
+        )
+        (br $for-loop|1)
+       )
+      )
+     )
+     (call $~lib/as-scale-codec/interfaces/DecodedData/DecodedData<u64>#constructor
+      (i64.extend_i32_u
+       (i32.shr_u
+        (i32.and
+         (local.get $1)
+         (i32.const 65535)
+        )
+        (i32.const 2)
+       )
+      )
+      (i32.const 2)
+     )
+    )
+    (block (result i32)
+     (if
+      (i32.lt_s
+       (i32.load offset=12
+        (local.get $0)
+       )
+       (i32.const 4)
+      )
+      (unreachable)
+     )
+     (i32.store8
+      (local.tee $1
+       (i32.load offset=4
+        (local.tee $2
+         (call $~lib/rt/__newArray
+          (i32.const 4)
+          (i32.const 0)
+         )
+        )
+       )
+      )
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 0)
+      )
+     )
+     (i32.store8 offset=1
+      (local.get $1)
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 1)
+      )
+     )
+     (i32.store8 offset=2
+      (local.get $1)
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 2)
+      )
+     )
+     (i32.store8 offset=3
+      (local.get $1)
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 3)
+      )
+     )
+     (call $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8>
+      (local.get $2)
+      (local.tee $2
+       (call $~lib/array/Array<u8>#constructor
+        (i32.const 4)
+       )
+      )
+      (i32.const 0)
+     )
+     (local.set $1
+      (call $~lib/array/Array<u8>#__get
+       (local.get $2)
+       (i32.const 0)
+      )
+     )
+     (local.set $0
+      (i32.const 1)
+     )
+     (loop $for-loop|0
+      (if
+       (i32.lt_s
+        (local.get $0)
+        (i32.const 4)
+       )
+       (block
+        (local.set $1
+         (i32.or
+          (local.get $1)
+          (i32.shl
+           (call $~lib/array/Array<u8>#__get
+            (local.get $2)
+            (local.get $0)
+           )
+           (i32.shl
+            (i32.and
+             (local.get $0)
+             (i32.const 255)
+            )
+            (i32.const 3)
+           )
+          )
+         )
+        )
+        (local.set $0
+         (i32.add
+          (local.get $0)
+          (i32.const 1)
+         )
+        )
+        (br $for-loop|0)
+       )
+      )
+     )
+     (call $~lib/as-scale-codec/interfaces/DecodedData/DecodedData<u64>#constructor
+      (i64.extend_i32_u
+       (i32.shr_u
+        (local.get $1)
+        (i32.const 2)
+       )
+      )
+      (i32.const 4)
+     )
+    )
+   )
+   (call $~lib/as-scale-codec/interfaces/DecodedData/DecodedData<u64>#constructor
+    (i64.extend_i32_u
+     (i32.shr_u
+      (i32.and
+       (call $~lib/array/Array<u8>#__get
+        (local.get $0)
+        (i32.const 0)
+       )
+       (i32.const 255)
+      )
+      (i32.const 2)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+ )
+ (func $~lib/as-scale-codec/UInt/UInt128/UInt128._computeValue (param $0 i32) (result i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (local $5 i32)
+  (if
+   (i32.le_u
+    (local.tee $1
+     (i32.and
+      (call $~lib/array/Array<u8>#__get
+       (local.get $0)
+       (i32.const 0)
+      )
+      (i32.const 3)
+     )
+    )
+    (i32.const 2)
+   )
+   (return
+    (call $~lib/as-bignum/integer/u128/u128#constructor
+     (i64.load
+      (call $~lib/as-scale-codec/utils/Bytes/Bytes.decodeSmallInt
+       (local.get $0)
+       (local.get $1)
+      )
+     )
+     (i64.const 0)
+    )
+   )
+  )
+  (local.set $1
+   (i32.const 0)
+  )
+  (if
+   (i32.gt_s
+    (i32.load offset=12
+     (local.tee $0
+      (local.tee $2
+       (call $~lib/array/Array<u8>#slice
+        (local.get $0)
+        (i32.const 1)
+        (i32.add
+         (i32.and
+          (i32.add
+           (i32.shr_u
+            (call $~lib/array/Array<u8>#__get
+             (local.get $0)
+             (i32.const 0)
+            )
+            (i32.const 2)
+           )
+           (i32.const 4)
+          )
+          (i32.const 255)
+         )
+         (i32.const 1)
+        )
+       )
+      )
+     )
+    )
+    (i32.const 16)
+   )
+   (unreachable)
+  )
+  (local.set $3
+   (i32.sub
+    (i32.const 16)
+    (i32.load offset=12
+     (local.get $0)
+    )
+   )
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_s
+     (local.get $1)
+     (local.get $3)
+    )
+    (block
+     (call $~lib/array/ensureSize
+      (local.get $0)
+      (local.tee $5
+       (i32.add
+        (local.tee $4
+         (i32.load offset=12
+          (local.get $0)
+         )
+        )
+        (i32.const 1)
+       )
+      )
+     )
+     (i32.store8
+      (i32.add
+       (local.get $4)
+       (i32.load offset=4
+        (local.get $0)
+       )
+      )
+      (i32.const 0)
+     )
+     (i32.store offset=12
+      (local.get $0)
+      (local.get $5)
+     )
+     (local.set $1
+      (i32.add
+       (local.get $1)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.load offset=12
+      (local.get $2)
+     )
+     (i32.eqz
+      (i32.and
+       (i32.load offset=12
+        (local.get $2)
+       )
+       (i32.const 15)
+      )
+     )
+     (i32.const 0)
+    )
+   )
+   (unreachable)
+  )
+  (call $~lib/as-bignum/integer/u128/u128#constructor
+   (i64.load
+    (local.tee $0
+     (i32.load offset=4
+      (local.get $2)
+     )
+    )
+   )
+   (i64.load offset=8
+    (local.get $0)
+   )
+  )
+ )
+ (func $../../src/buildins/Msg/Msg#notPayable (param $0 i32) (result i32)
+  (local $1 i32)
+  (local $2 i32)
+  (if
+   (i32.eqz
+    (i32.load offset=4
+     (local.get $0)
+    )
+   )
+   (block
+    (local.set $2
+     (call $~lib/as-bignum/integer/u128/u128#constructor
+      (i64.const 0)
+      (i64.const 0)
+     )
+    )
+    (i32.store
+     (local.tee $1
+      (call $~lib/rt/stub/__new
+       (i32.const 8)
+       (i32.const 6)
+      )
+     )
+     (i32.const 0)
+    )
+    (i32.store offset=4
+     (local.get $1)
+     (i32.const 0)
+    )
+    (drop
+     (i32.load
+      (local.get $1)
+     )
+    )
+    (i32.store
+     (local.get $1)
+     (local.get $2)
+    )
+    (i32.store offset=4
+     (local.get $1)
+     (call $~lib/as-scale-codec/UInt/UInt128/UInt128._computeBitLength
+      (local.get $2)
+     )
+    )
+    (call_indirect (type $i32_i32_=>_none)
+     (call $../../src/primitives/readbuffer/ReadBuffer#get:valueBuffer
+      (local.tee $2
+       (call $../../src/primitives/readbuffer/ReadBuffer#constructor
+        (i32.load offset=4
+         (local.get $1)
+        )
+       )
+      )
+     )
+     (call $../../src/primitives/readbuffer/ReadBuffer#get:sizeBuffer
+      (local.get $2)
+     )
+     (i32.load
+      (i32.const 1488)
+     )
+    )
+    (if
+     (i32.le_s
+      (i32.load offset=12
+       (local.tee $2
+        (call $../../src/primitives/readbuffer/ReadBuffer#get:valueBytes
+         (local.get $2)
+        )
+       )
+      )
+      (i32.const 0)
+     )
+     (unreachable)
+    )
+    (drop
+     (i32.ne
+      (local.tee $2
+       (call $~lib/as-scale-codec/UInt/UInt128/UInt128._computeValue
+        (local.get $2)
+       )
+      )
+      (i32.load
+       (local.get $1)
+      )
+     )
+    )
+    (i32.store
+     (local.get $1)
+     (local.get $2)
+    )
+    (i32.store offset=4
+     (local.get $1)
+     (call $~lib/as-scale-codec/UInt/UInt128/UInt128._computeBitLength
+      (i32.load
+       (local.get $1)
+      )
+     )
+    )
+    (drop
+     (i32.load offset=4
+      (local.get $0)
+     )
+    )
+    (i32.store offset=4
+     (local.get $0)
+     (local.get $1)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (local.tee $0
+     (i32.load offset=4
+      (local.get $0)
+     )
+    )
+   )
+   (unreachable)
+  )
+  (i64.eqz
+   (i64.load
+    (i32.load
+     (local.get $0)
+    )
+   )
+  )
  )
  (func $flipper/Stored#get:flag (param $0 i32) (result i32)
   (local $1 i32)
@@ -2425,32 +3194,48 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  (local.set $1
-   (call $../../src/messages/Msg/Msg#constructor)
-  )
+  (local $4 i32)
   (local.set $0
    (call $flipper/Flipper#constructor)
   )
-  (local.set $2
+  (local.set $1
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 1360)
    )
   )
-  (local.set $3
+  (local.set $2
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 1392)
    )
   )
+  (local.set $3
+   (call $~lib/rt/__newArray
+    (i32.const 4)
+    (i32.const 1424)
+   )
+  )
+  (local.set $4
+   (call $~lib/rt/__newArray
+    (i32.const 4)
+    (i32.const 1456)
+   )
+  )
   (if
-   (call $flipper/isSelectorEqual
-    (call $../../src/messages/Msg/Msg#get:sig
-     (local.get $1)
-    )
-    (local.get $2)
+   (call $../../src/buildins/Msg/Msg#isSelector
+    (global.get $flipper/msg)
+    (local.get $1)
    )
    (block
+    (if
+     (i32.eqz
+      (call $../../src/buildins/Msg/Msg#notPayable
+       (global.get $flipper/msg)
+      )
+     )
+     (unreachable)
+    )
     (local.set $1
      (call $flipper/Stored#get:flag
       (i32.load
@@ -2468,11 +3253,9 @@
     )
    )
    (if
-    (call $flipper/isSelectorEqual
-     (call $../../src/messages/Msg/Msg#get:sig
-      (local.get $1)
-     )
-     (local.get $3)
+    (call $../../src/buildins/Msg/Msg#isSelector
+     (global.get $flipper/msg)
+     (local.get $2)
     )
     (call $../../src/seal/seal0/seal_return
      (i32.const 0)
@@ -2497,19 +3280,71 @@
       (local.get $0)
      )
     )
+    (if
+     (i32.eqz
+      (call $../../src/buildins/Msg/Msg#isSelector
+       (global.get $flipper/msg)
+       (local.get $4)
+      )
+     )
+     (if
+      (call $../../src/buildins/Msg/Msg#isSelector
+       (global.get $flipper/msg)
+       (local.get $3)
+      )
+      (if
+       (i32.eqz
+        (call $../../src/buildins/Msg/Msg#notPayable
+         (global.get $flipper/msg)
+        )
+       )
+       (unreachable)
+      )
+      (drop
+       (call $../../src/buildins/Msg/Msg#notPayable
+        (global.get $flipper/msg)
+       )
+      )
+     )
+    )
    )
   )
   (i32.const 0)
  )
  (func $~start
+  (local $0 i32)
   (global.set $~lib/rt/stub/offset
-   (i32.const 1404)
+   (i32.const 1500)
   )
   (drop
    (call $~lib/rt/stub/__new
     (i32.const 0)
     (i32.const 3)
    )
+  )
+  (i32.store
+   (local.tee $0
+    (call $~lib/rt/stub/__new
+     (i32.const 16)
+     (i32.const 4)
+    )
+   )
+   (i32.const 0)
+  )
+  (i32.store offset=4
+   (local.get $0)
+   (i32.const 0)
+  )
+  (i32.store offset=8
+   (local.get $0)
+   (i32.const 0)
+  )
+  (i32.store offset=12
+   (local.get $0)
+   (i32.const 0)
+  )
+  (global.set $flipper/msg
+   (local.get $0)
   )
  )
 )
