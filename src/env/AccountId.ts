@@ -3,7 +3,9 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec, UInt8 } from "as-scale-codec";
+import { Codec, UInt128, UInt8 } from "as-scale-codec";
+import { ReadBuffer } from "../primitives/readbuffer";
+import { seal_balance } from "../seal/seal0";
 import { Balance } from "./Balance";
 
 /**
@@ -23,6 +25,16 @@ export class AccountId implements Codec {
 
   static from(uarr: u8[]): AccountId {
     return new AccountId(uarr);
+  }
+
+  static fromHexString(hexStr: string): AccountId {
+    // TODO(liangqin.fan): convert a SS58 formated string to an account
+    return new AccountId([]);
+  }
+
+  get balance(): UInt128 {
+    let v = ReadBuffer.readInstance<UInt128>(seal_balance);
+    return v;
   }
 
   transfer(amount: u64): void {}

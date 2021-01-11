@@ -100,10 +100,10 @@ export function call(): i32 {
   // Log.println("call.fnSelctor: " + selector);
 
   const flp = new Flipper();
-  const flipselector: u8[] = [0xc0, 0x96, 0xa5, 0xf8]; // "c096a5f3";
-  const getselector: u8[] = [0x1e, 0x5c, 0xa4, 0x56]; // "1e5ca456";
+  const flipselector:     u8[] = [0xc0, 0x96, 0xa5, 0xf8]; // "c096a5f3";
+  const getselector:      u8[] = [0x1e, 0x5c, 0xa4, 0x56]; // "1e5ca456";
   const specificSelector: u8[] = [0xfe, 0xdc, 0x03, 0xf6];
-  const paysselector: u8[] = [0xfc, 0x3c, 0x4d, 0xf7];
+  const paysselector:     u8[] = [0xfc, 0x3c, 0x4d, 0xf7];
 
   // Step2: exec command
   if (msg.isSelector(flipselector)) { // flip operation
