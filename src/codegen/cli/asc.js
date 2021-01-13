@@ -80,15 +80,14 @@ var assemblyscript;
   try {
     // note that this case will always trigger in recent node.js versions for typical installs
     // see: https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
-    // assemblyscript = require("assemblyscript");
     assemblyscript = dynrequire("../dist/assemblyscript.js");
   } catch (e) {
+    console.log("no dist file?")
     try { // `asc` on the command line (unnecessary in recent node)
-      assemblyscript = dynrequire("../dist/assemblyscript.js");
+      // assemblyscript = require("assemblyscript");
+      throw new Error();
     } catch (e) {
       try { // `asc` on the command line without dist files (unnecessary in recent node)
-        console.log('loadAssemblyScript', e);
-
         dynrequire("ts-node").register({
           project: path.join(__dirname, "..", "src", "tsconfig.json"),
           skipIgnore: true,
@@ -96,6 +95,7 @@ var assemblyscript;
         });
         dynrequire("../src/glue/js");
         assemblyscript = dynrequire("../src");
+        console.log('load assemblyscript');
       } catch (e_ts) {
         try { // `require("dist/asc.js")` in explicit browser tests
           assemblyscript = dynrequire("./assemblyscript");
