@@ -3,6 +3,11 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { UInt128 } from "as-scale-codec";
 
-export class Balance implements Codec {}
+// export class Balance implements Codec {}
+
+// now T::Balance is just a UInt128,
+// so we just re-export it.
+
+export type Balance = UInt128;

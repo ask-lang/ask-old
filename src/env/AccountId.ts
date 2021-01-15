@@ -32,16 +32,14 @@ export class AccountId implements Codec {
     return new AccountId([]);
   }
 
-  get balance(): UInt128 {
-    let v = ReadBuffer.readInstance<UInt128>(seal_balance);
+  get balance(): Balance {
+    let v = ReadBuffer.readInstance<Balance>(seal_balance);
     return v;
   }
 
   transfer(amount: u64): void {}
 
   call(): void {}
-
-  // get balance(): Balance {}
 
   toU8a(): u8[] {
     return [];
