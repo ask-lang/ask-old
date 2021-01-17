@@ -19,8 +19,6 @@ export abstract class Event {
     Event._data.length = 0;
   }
 
-
-
   static appendTopic<T extends Codec>(t: T): void {
     Event._topics.push(t);
   }
@@ -53,6 +51,13 @@ export abstract class Event {
     seal_deposit_event(topicBuf.buffer, topicBuf.size, dataBuf.buffer, dataBuf.size);
     // to release allocated memory
     Event.reset();
+  }
+  // add another way to send an event,
+  // besides `Event.emit(e)`,
+  // you can also use `e.send()` while `e` is initialized.
+  public send(): void {
+    this.prepare();
+    Event.emit(this);
   }
 
   abstract prepare(): void;

@@ -14,6 +14,11 @@ export class Msg {
   private _sig: u8[] | null = null;
   private _data: u8[] | null = null;
 
+  private _isMutates: bool = true;
+
+  set mutates(mu: bool) {
+    this._isMutates = mu;
+  }
   // FIXME(liangqin.fan): u128 is not native supported.
   // native层默认u128的字节数为16, as的UInt28使用变长模式,
   // 所以从native读u128时, 会导致内存不足错误.
