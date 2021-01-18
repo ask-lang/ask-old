@@ -3,6 +3,6 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { UInt64 } from "as-scale-codec";
 
-export class TimeStamp implements Codec {}
+export type TimeStamp = UInt64;
