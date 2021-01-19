@@ -50,39 +50,26 @@
     "docs": [],
     "events": [],
     "messages": [
+      {{#each exportDef.messages}}
       {
         "args": [],
-        "docs": [
-          " A message that can be called on instantiated contracts.",
-          " This one flips the value of the stored `bool` from `true`",
-          " to `false` and vice versa."
-        ],
-        "mutates": true,
-        "name": [
-          "flip"
-        ],
-        "payable": false,
-        "returnType": null,
-        "selector": "0xc096a5f8"
-      },
-      {
-        "args": [],
-        "docs": [
-          " Simply returns the current value of our `bool`."
-        ],
+        "docs": [],
         "mutates": false,
         "name": [
-          "get"
+          "{{methodName}}"
         ],
         "payable": false,
         "returnType": {
+          {{#if hasReturnVal}}
           "displayName": [
-            "bool"
+            "{{returnType.originalType}}"
           ],
           "type": 1
+          {{/if}}
         },
         "selector": "0x1e5ca456"
-      }
+      }{{#if isMid}},{{/if}}
+      {{/each}}
     ]
   },
   "storage": {
