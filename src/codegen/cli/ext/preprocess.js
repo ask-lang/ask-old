@@ -1,26 +1,49 @@
-// Write text (also fallback)
+const Handlebars = require("handlebars");
+const fs = require("fs");
+// var blake2 = require('blake2');
 
-function outputCodeFile(abiInfo, hasOutput, opts, stats, baseDir, writeFile) {
-  if (opts.sourceFile != null || !hasOutput) {
-    let out;
-    if (opts.sourceFile != null && opts.sourceFile.length) {
-      // use superset text format when extension is `.wast`.
-      // Otherwise use official stack IR format (wat).
-      // let watFormat = !opts.textFile.endsWith('.ts');
-      // stats.emitCount++;
-      // stats.emitTime += measure(() => {
-        out = abiInfo.exportIndent.toString();
-        // out = module.toText(watFormat);
-      // });
-      writeFile(opts.sourceFile, out, baseDir);
-    } else if (!hasStdout) {
-      stats.emitCount++;
-      stats.emitTime += measure(() => {
-        out = module.toText();
-      });
-      writeStdout(out);
-    }
+/**
+ * Register the tag of each.
+ */
+Handlebars.registerHelper("each", function (context, options) {
+  var ret = "";
+  for (var i = 0, j = context.length; i < j; i++) {
+    let data = context[i];
+    data.index = i;
+    ret = ret + options.fn(data);
   }
+  return ret;
+});
+
+
+/**
+ * Register the tag of each.
+ */
+Handlebars.registerHelper("selector", function (context, options) {
+  // let keyHash = blake2.createKeyedHash('blake2b', Buffer.from('key - up to 64 bytes for blake2b, 32 for blake2s'));
+  // keyHash.update(Buffer.from(context));
+  // let digestBuffer = keyHash.digest();
+  //console.log(`${digestBuffer.join(",")}`);
+  return `[TODO]`;
+});
+
+// Write text (also fallback)
+function outputCode(abiInfo, baseDir) {
+  let mainTpl = fs.readFileSync(baseDir + "/cli/ext/tpl/main.tpl", { encoding: "utf8" });
+  const render = Handlebars.compile(mainTpl);
+  const output = render(abiInfo);
+  console.log("output", output)
+  return output;
 }
 
-exports.outputCodeFile = outputCodeFile;
+
+function outputAbi(abiInfo, baseDir) {
+  let abiTpl = fs.readFileSync(baseDir + "/cli/ext/tpl/abi.tpl", { encoding: "utf8" });
+  const render = Handlebars.compile(abiTpl);
+  const output = render(abiInfo);
+  return output;
+}
+
+exports.outputCode = outputCode;
+
+exports.outputAbi = outputAbi;

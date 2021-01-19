@@ -81,11 +81,12 @@ var assemblyscript;
     // note that this case will always trigger in recent node.js versions for typical installs
     // see: https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
     assemblyscript = dynrequire("../dist/assemblyscript.js");
+    // throw new Error();
+    // assemblyscript = require("assemblyscript");
   } catch (e) {
-    console.log("no dist file?")
     try { // `asc` on the command line (unnecessary in recent node)
-      // assemblyscript = require("assemblyscript");
       throw new Error();
+      assemblyscript = dynrequire("../dist/assemblyscript.js");
     } catch (e) {
       try { // `asc` on the command line without dist files (unnecessary in recent node)
         dynrequire("ts-node").register({
@@ -818,6 +819,7 @@ exports.main = function main(argv, options, callback) {
                  || opts.jsFile != null
                  || opts.tsdFile != null
                  || opts.idlFile != null
+                 || opts.abiFile != null
                  || opts.sourceFile != null;
 
     // Write binary
@@ -866,10 +868,15 @@ exports.main = function main(argv, options, callback) {
 
     // Extension add START
     if (opts.sourceFile != null || !hasOutput) {
-      out = abiInfo.exportIndent.toString();
+      out = preprocess.outputCode(abiInfo, path.resolve(baseDir));
       writeFile(opts.sourceFile, process.sourceText + out, baseDir);
-      // preprocess.outputCodeFile(abiInfo, hasOutput, opts, stats, baseDir, writeFile);
     }
+
+    if (opts.sourceFile != null || !hasOutput) {
+      out = preprocess.outputAbi(abiInfo, path.resolve(baseDir));
+      writeFile(opts.abiFile, out, baseDir);
+    }
+
     // Extension add END
 
     // Write text (also fallback)

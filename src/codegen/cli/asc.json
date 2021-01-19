@@ -106,6 +106,12 @@
     "type": "s",
     "alias": "p"
   },
+  "abiFile": {
+    "category": "Output",
+    "description": "Specfies the source code output file of the preprocess (.ts).",
+    "type": "s",
+    "alias": "a"
+  },
   "jsFile": {
     "category": "Output",
     "description": "Specifies the JavaScript (via wasm2js) output file (.js).",
