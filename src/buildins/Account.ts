@@ -3,22 +3,22 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec, UInt128, UInt8 } from "as-scale-codec";
-import { AccountId, Balance } from "../env";
-import { ReadBuffer } from "../primitives/readbuffer";
-import { seal_balance } from "../seal/seal0";
-
+import { Codec } from "as-scale-codec";
+import { AccountId, Balance, TransferBalance } from "../env";
+import { ReturnCode } from "../primitives/alias";
+import { Callable } from "./Callable";
+import { u128 } from "as-bignum";
 /**
  * @class Account
  * Class Account stands for an address, which should be a storagable type.
  */
 
- const BytesCount = 32;
+const BytesCount = 32;
 export class Account implements Codec {
 
   private _id: AccountId;
 
-  constructor(bytes: u8[]) {
+  constructor(bytes: u8[] = []) {
     this._id = new Array<u8>(BytesCount);
     memory.copy(changetype<usize>(this._id.buffer), changetype<usize>(bytes.buffer), BytesCount);
   }
@@ -27,31 +27,42 @@ export class Account implements Codec {
     return new Account(uarr);
   }
 
-  static fromHexString(hexStr: string): Account {
-    // TODO(liangqin.fan): convert a SS58 formated string to an account
-    return new Account([]);
+  // transfer from `contract.address` to this.account
+  transfer(value: Balance): void {
+    TransferBalance(this._id, value);
   }
 
-  transfer(amount: Balance): void {}
-
-  call(): void {}
+  call(gas: u64, value: u128, data: u8[]): u8[] {
+    let callable = new Callable(this._id);
+    let ret = callable.gas(gas).value(value).data(data).call();
+    assert(ret == ReturnCode.Success, "call external message failed.");
+    return callable.callResult();
+  }
 
   toU8a(): u8[] {
-    return [];
+    return this._id;
   }
 
   encodedLength(): i32 {
-    return 0;
+    return BytesCount;
   }
 
-  populateFromBytes(bytes: any[], index: any): void {
-    throw new Error("Method not implemented.");
+  populateFromBytes(bytes: u8[], index: i32 = 0): void {
+    assert(bytes.length >= BytesCount, "Can not populate AccountId from bytes.");
+    this._id = bytes.slice(index, index + BytesCount);
   }
 
-  eq(other: Codec): bool {
-    return false;
+  eq(other: Account): bool {
+    return memory.compare(
+      changetype<usize>(this._id.buffer),
+      changetype<usize>(other.buffer),
+      BytesCount) === 0;
   }
-  notEq(other: Codec): bool {
-    return false;
+
+  notEq(other: Account): bool {
+    return memory.compare(
+      changetype<usize>(this._id.buffer),
+      changetype<usize>(other.buffer),
+      BytesCount) !== 0;
   }
 }

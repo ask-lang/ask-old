@@ -20,3 +20,9 @@ To List working agend.
 * Defined the generated style of @message.  
 * Basic classes of `Msg` and `AccountId`
 * Seal read and write logic.
+
+## Inject to global variables
+* buildins/Msg.ts  
+* buildins/UIn128.ts  
+* u128 from module `as-bignum`  
+
