@@ -3,14 +3,14 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { AccountId } from "../env";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_address } from "../seal/seal0";
+import { Account } from "./Account";
 import { Msg } from "./Msg";
 
 export class BaseContract {
   protected _msg: Msg | null = null;
-  protected _address: AccountId | null = null;
+  protected _address: Account | null = null;
 
   constructor() {
 
@@ -37,11 +37,11 @@ export class BaseContract {
    * @type {AccountId}
    * @memberof BaseContract
    */
-  get address(): AccountId {
+  get address(): Account {
     if (this._address === null) {
       let readbuf = new ReadBuffer(32);
       seal_address(readbuf.valueBuffer, readbuf.sizeBuffer);
-      this._address = AccountId.from(readbuf.valueBytes);
+      this._address = Account.from(readbuf.valueBytes);
     }
 
     return this._address;

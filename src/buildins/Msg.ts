@@ -3,10 +3,11 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt128 } from "as-scale-codec";
+import {u128} from 'as-bignum';
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_caller, seal_value_transferred } from "../seal/seal0";
 import { MessageInputReader } from "../primitives/inputdata";
+import { UInt128 } from "./UInt128";
 
 export class Msg {
   private _sender: u8[] | null = null;
@@ -14,15 +15,17 @@ export class Msg {
   private _sig: u8[] | null = null;
   private _data: u8[] | null = null;
 
-  // FIXME(liangqin.fan): u128 is not native supported.
-  // native层默认u128的字节数为16, as的UInt28使用变长模式,
-  // 所以从native读u128时, 会导致内存不足错误.
-  // 待处理.
-  get value(): u64 {
+  private _isMutates: bool = true;
+
+  set mutates(mu: bool) {
+    this._isMutates = mu;
+  }
+
+  get value(): u128 {
     if (this._value === null) {
       this._value = ReadBuffer.readInstance<UInt128>(seal_value_transferred);
     }
-    return this._value!.unwrap().toU64();
+    return this._value!.unwrap();
   }
 
   get sender(): u8[] {
@@ -50,7 +53,7 @@ export class Msg {
   }
 
   notPayable(): bool {
-    return this.value == 0;
+    return this.value == u128.Zero;
   }
 
   isSelector(selector: u8[]): bool {
@@ -84,7 +87,6 @@ export class Msg {
           this._data = [];
         }
       }
-
     }
   }
 }

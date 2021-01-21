@@ -3,6 +3,6 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { UInt64 } from "as-scale-codec";
 
-export class BlockNumber implements Codec {}
+export type BlockNumber = UInt64;

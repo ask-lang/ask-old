@@ -9,7 +9,7 @@ import { ReturnCode } from "../primitives/alias";
 import { Codec } from 'as-scale-codec';
 import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
-import { sha256 } from "../primitives/hash";
+import { Crypto } from "../primitives/crypto";
 
 export class Storage<T extends Codec> {
   private key: string;
@@ -52,7 +52,7 @@ export class Storage<T extends Codec> {
   }
 
   private hashKey(): ArrayBuffer {
-    const hash = sha256(this.key);
+    const hash = Crypto.sha256s(this.key);
     return hash.toU8a().buffer;
   }
 }

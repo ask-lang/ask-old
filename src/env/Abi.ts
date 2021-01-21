@@ -4,7 +4,7 @@
  */
 
 import { Codec } from "as-scale-codec";
-import { blake256 } from "../primitives/hash";
+import { Crypto } from "../primitives/crypto";
 
 export class Abi {
   private data: Array<u8> = new Array<u8>();
@@ -18,8 +18,7 @@ export class Abi {
   }
 
   private fnSelctor(sig: string): void {
-    let selector: u8[] = blake256(sig).toU8a().slice(4);
+    let selector: u8[] = Crypto.blake256s(sig).toU8a().slice(4);
     this.data.concat(selector);
-
   }
 }
