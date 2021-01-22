@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /**
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
@@ -20,8 +21,6 @@ import { ReturnCode } from "../../assembly/primitives/alias";
 var msg: Msg = new Msg();
 
 class CallExt {
-
-  constructor() { }
 
   onDeploy(): void {
 
