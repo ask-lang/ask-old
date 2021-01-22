@@ -30,7 +30,7 @@ class CallExt {
   callOutside(): void {
     let outcontract: u8[] = [];
     // call a function:  msg(bool, u8);
-    let data = new Abi().encode("msg", [new Bool(true), new UInt8(12)]);
+    let data = Abi.encode("msg", [new Bool(true), new UInt8(12)]);
     let callable = new Callable(outcontract);
     let ret = callable.gas(88888).value(0).data(data).call();
     if (ret == ReturnCode.Success) {

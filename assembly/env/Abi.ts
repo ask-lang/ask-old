@@ -7,18 +7,16 @@ import { Codec } from "as-scale-codec";
 import { Crypto } from "../primitives/crypto";
 
 export class Abi {
-  private data: Array<u8> = new Array<u8>();
-
-  encode(sig: string, args: Codec[]): u8[] {
-    this.fnSelctor(sig);
+  static encode(sig: string, args: Codec[]): u8[] {
+    let data = Abi.fnSelctor(sig);
     for (let i = 0; i < args.length; i++) {
-      this.data.concat(args[i].toU8a());
+      data = data.concat(args[i].toU8a());
     }
-    return this.data;
+    return data;
   }
 
-  private fnSelctor(sig: string): void {
-    let selector: u8[] = Crypto.blake256s(sig).toU8a().slice(4);
-    this.data.concat(selector);
+  static fnSelctor(sig: string): u8[] {
+    return Crypto.blake256s(sig).toU8a().slice(4);
   }
 }
+
