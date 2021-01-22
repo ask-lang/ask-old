@@ -11,10 +11,7 @@ import { Msg } from "./Msg";
 export class BaseContract {
   protected _msg: Msg | null = null;
   protected _address: Account | null = null;
-
-  constructor() {
-
-  }
+  
   /**
    * get informations of this message invoked by external users.
    *
