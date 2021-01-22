@@ -4,11 +4,11 @@
  */
 
 import { Bool } from "as-scale-codec";
-import { Storage } from "../../src/storage";
-import { Log } from "../../src/utils/Log";
-import { ReturnData } from "../../src/primitives/returndata";
-import { Msg } from "../../src/buildins/Msg";
-import { FnParameters } from "../../src/buildins/FnParameters";
+import { Storage } from "../../assembly/storage";
+import { Log } from "../../assembly/utils/Log";
+import { ReturnData } from "../../assembly/primitives/returndata";
+import { Msg } from "../../assembly/buildins/Msg";
+import { FnParameters } from "../../assembly/buildins/FnParameters";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,

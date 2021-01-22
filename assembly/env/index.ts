@@ -21,9 +21,9 @@ export namespace env {
 
   function caller(): AccountId {}
 
-  function clear_contract_storage(key: String): void {}
+  function clear_contract_storage(key: string): void {}
 
-  function debug_println(message: String): void {}
+  function debug_println(message: string): void {}
 
 
   function emit_event(evt: EmitableEvent): void {}
@@ -62,8 +62,8 @@ export namespace env {
   function eval_contract(): void {}
   function decode_input<T extends Codec>(): T {}
 
-  function get_contract_storage<T extends Codec>(key: String): T {}
-  function set_contract_storage<T extends Codec>(key: String, value: T): void {}
+  function get_contract_storage<T extends Codec>(key: string): T {}
+  function set_contract_storage<T extends Codec>(key: string, value: T): void {}
   function instantiate_contract(): void {}
 
   function return_value<T extends Codec>(value: T): void {}

@@ -1,33 +1,35 @@
 {
-  "name": "tsp",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "start": "tsc && node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
+  "name": "@patract/ask",
+  "version": "0.1.0",
+  "description": "compile assemblyscript to substrate conctract",
+  "keywords": [
+    "assemblyscript",
+    "ask",
+    "smart-contract",
+    "substrate"
+  ],
+  "main": "./assembly/index.ts",
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "asp --verbose",
+    "test:summary": "asp --summary"
+  },
   "devDependencies": {
-    "tslint": "^6.1.2",
-    "typescript": "^4.1.2",
-    "assemblyscript": "^0.17.11",
+    "@as-pect/assembly": "^4.0.0",
+    "@as-pect/cli": "^4.0.0",
+    "@as-pect/core": "^4.0.0",
+    "@assemblyscript/loader": "^0.16.1",
     "@types/node": "^14.14.12",
-    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
     "@typescript-eslint/parser": "^4.9.1",
-    "diff": "^5.0.0",
     "eslint": "^7.15.0",
-    "glob": "^7.1.6",
-    "physical-cpu-count": "^2.0.0",
     "source-map-support": "^0.5.19",
-    "ts-loader": "^8.0.12",
-    "ts-node": "^6.2.0",
-    "webpack": "^5.10.0",
-    "webpack-cli": "^4.2.0"
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.2"
   },
   "dependencies": {
-    "as-scale-codec": "^0.2.1"
+    "as-scale-codec": "^0.2.2"
   }
 }

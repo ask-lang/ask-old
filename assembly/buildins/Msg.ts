@@ -59,9 +59,9 @@ export class Msg {
   isSelector(selector: u8[]): bool {
     if (this.sig.length != selector.length) return false;
     return memory.compare(
-        changetype<usize>(this.sig.buffer),
-        changetype<usize>(selector.buffer),
-        4) == 0;
+      changetype<usize>(this.sig.buffer),
+      changetype<usize>(selector.buffer),
+      4) == 0;
   }
 
   private init_sig_and_data(): void {
