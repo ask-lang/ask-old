@@ -4,7 +4,7 @@
  */
 
 import { Bool, UInt8 } from "as-scale-codec";
-import { Event } from "../../src/buildins/Event";
+import { Event } from "../../assembly/buildins/Event";
 
 @event
 class Approved {

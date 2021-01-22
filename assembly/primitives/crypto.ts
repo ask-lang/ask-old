@@ -10,11 +10,11 @@ import { ReadBuffer } from "./readbuffer";
 import { WriteBuffer } from "./writebuffer";
 
 function invoke_hash_algo(message: ArrayBuffer, outLen: u32,
-      fn: (i: ArrayBuffer, is: u32, o: ArrayBuffer) => void): Hash {
+  fn: (i: ArrayBuffer, is: u32, o: ArrayBuffer) => void): Hash {
   const wbuf = new WriteBuffer(message);
   const outbuf = new Uint8Array(outLen);
   fn(wbuf.buffer, wbuf.size, outbuf.buffer);
-  return Hash.bytesToHash(typedToArray(outbuf))
+  return Hash.bytesToHash(typedToArray(outbuf));
 }
 
 // Wrapped crypto algorithms as a class for readable.

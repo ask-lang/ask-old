@@ -4,14 +4,14 @@
  */
 
 import { Bool, UInt8 } from "as-scale-codec";
-import { Storage } from "../../src/storage";
-import { Log } from "../../src/utils/Log";
-import { ReturnData } from "../../src/primitives/returndata";
-import { Msg } from "../../src/buildins/Msg";
-import { FnParameters } from "../../src/buildins/FnParameters";
-import { Abi } from "../../src/env/Abi";
-import { Callable } from "../../src/buildins/Callable";
-import { ReturnCode } from "../../src/primitives/alias";
+import { Storage } from "../../assembly/storage";
+import { Log } from "../../assembly/utils/Log";
+import { ReturnData } from "../../assembly/primitives/returndata";
+import { Msg } from "../../assembly/buildins/Msg";
+import { FnParameters } from "../../assembly/buildins/FnParameters";
+import { Abi } from "../../assembly/env/Abi";
+import { Callable } from "../../assembly/buildins/Callable";
+import { ReturnCode } from "../../assembly/primitives/alias";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,

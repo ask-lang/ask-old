@@ -25,7 +25,7 @@ export function typedToArray(u8a: Uint8Array, length: i32 = -1): u8[] {
 
 function toHexCharCode(v: u8): i32 {
   if (v >= 0 && v <= 9) return (v + 0x30) as i32;
-  else /*if (v >= 10 && v <= 15)*/ return (v + 0x61 - 10) as i32; // to lowcase a ~ f
+  else /* if (v >= 10 && v <= 15)*/ return (v + 0x61 - 10) as i32; // to lowcase a ~ f
 
 }
 export function arryToHexString(arr: u8[]): string {

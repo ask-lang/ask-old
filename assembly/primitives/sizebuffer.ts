@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
- /**
+/**
   * @class SizeBuffer used to receive out buffer size while retrieve data from host.
   */
 export class SizeBuffer {

@@ -4,8 +4,8 @@
  */
 
 import { Bool, UInt8 } from "as-scale-codec";
-import { Msg } from "../../src/buildins/Msg";
-import { Event } from "../../src/buildins/Event";
+import { Msg } from "../../assembly/buildins/Msg";
+import { Event } from "../../assembly/buildins/Event";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,
