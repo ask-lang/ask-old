@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt32 } from "as-scale-codec";
+import { UInt32 } from "../../../assembly/deps/as-scale-codec";
 import { FnParameters } from "../../../assembly/buildins/FnParameters";
 import { Msg } from "../../../assembly/buildins/Msg";
 import { ReturnData } from "../../../assembly/primitives/returndata";
