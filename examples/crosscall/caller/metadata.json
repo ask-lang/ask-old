@@ -59,10 +59,15 @@
           ],
           "mutates": true,
           "name": [
-            "flip"
+            "callext"
           ],
           "payable": false,
-          "returnType": null,
+          "returnType":  {
+              "displayName": [
+                    "Result"
+              ],
+              "type": 4
+           },
           "selector": "0xc096a5f8"
         }
       ]
@@ -83,10 +88,37 @@
       }
     },
     "types": [
-      {
-        "def": {
-          "primitive": "AccountId"
-        }
-      }
+        {
+            "def": {
+              "composite": {
+                "fields": [
+                  {
+                    "type": 2
+                  }
+                ]
+              }
+            },
+            "path": [
+              "AccountId"
+            ]
+          },
+          {
+            "def": {
+              "array": {
+                "len": 32,
+                "type": 3
+              }
+            }
+          },
+          {
+            "def": {
+              "primitive": "u8"
+            }
+          },
+          {
+            "def": {
+              "primitive": "u32"
+            }
+          }
     ]
   }

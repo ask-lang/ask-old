@@ -11,6 +11,8 @@ import { Msg } from "../../../assembly/buildins/Msg";
 import { FnParameters } from "../../../assembly/buildins/FnParameters";
 import { Storage } from "../../../assembly";
 import { UInt32 } from "../../../assembly/deps/as-scale-codec";
+import { ReturnData } from "../../../assembly/primitives/returndata";
+import { Log } from "../../../assembly/utils/Log";
 /*
  * This is the contract template,
  * which will be processed by Preprocessor,
@@ -53,11 +55,25 @@ class CrossCall {
   }
 
   // @message
-  callext(): void {
-    let data = Abi.encode("addFunc", [new UInt32(12345), new UInt32(54321)]);
-    let val = this.stored.extLib.call(2000000, u128.Zero, data);
+  callext(): u32 {
+    let data = Abi.encode("addFunc", [new UInt32(1), new UInt32(2)]);
+    Log.println("data: ");
+    Log.printhex(data);
+
+    Log.println("account: ");
+    Log.printhex(this.stored.extLib.toU8a());
+
+    let val = this.stored.extLib.call(200000, u128.Zero, data);
+    Log.println("step2");
     let result = UInt32.fromU8a(val);
-    assert(result.unwrap() === 66666, "calculate result error")
+    Log.println("step3");
+    // assert(result.unwrap() === 3, "calculate result error")
+    if (result.unwrap() === 3) {
+      Log.println("result is 3.");
+    } else {
+      Log.println("result is " + String.fromCharCode(result.unwrap() + 0x30));
+    }
+    return result.unwrap();
   }
 }
 
@@ -84,11 +100,15 @@ export function deploy(): i32 {
 
 export function call(): i32 {
   const flp = new CrossCall();
-  const flipselector: u8[] = [0xc0, 0x96, 0xa5, 0xf3]; // "c096a5f3";
+  const flipselector: u8[] = [0xc0, 0x96, 0xa5, 0xf8]; // "c096a5f8";
 
   // Step2: exec command
   if (msg.isSelector(flipselector)) { // flip operation
-    flp.callext();
+    let v = flp.callext();
+    ReturnData.set<UInt32>(new UInt32(v));
+  } else {
+    Log.println("no function called.")
   }
+
   return 0;
 }
