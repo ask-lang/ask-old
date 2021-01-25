@@ -3,7 +3,8 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { Codec } from "../deps/as-scale-codec";
+
 
 export class FnParameters {
   private pos: i32;

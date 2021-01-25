@@ -6,7 +6,7 @@
 import { seal_clear_storage, seal_get_storage, seal_set_storage } from "../seal/seal0";
 import { ReturnCode } from "../primitives/alias";
 
-import { Codec } from 'as-scale-codec';
+import { Codec } from '../deps/as-scale-codec';
 import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { Crypto } from "../primitives/crypto";

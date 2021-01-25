@@ -1,4 +1,4 @@
-import { Codec } from "as-scale-codec";
+import { Codec } from "../deps/as-scale-codec";
 import { typedToArray } from "../utils/ArrayUtils";
 import { SizeBuffer } from "./sizebuffer";
 

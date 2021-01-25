@@ -3,12 +3,11 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt64 } from "as-scale-codec";
 import { ReturnCode } from "../primitives/alias";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_call } from "../seal/seal0";
-import { UInt128 } from "./UInt128";
+import { UInt128, UInt64 } from "../deps/as-scale-codec/";
 import { u128 } from "as-bignum";
 
 export class Callable {

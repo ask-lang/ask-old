@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt128 } from "../buildins/UInt128";
+import { UInt128 } from "../deps/as-scale-codec/";
 import { ReturnCode } from "../primitives/alias";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_transfer } from "../seal/seal0";
