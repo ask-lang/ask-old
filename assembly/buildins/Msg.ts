@@ -7,7 +7,7 @@ import {u128} from 'as-bignum';
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_caller, seal_value_transferred } from "../seal/seal0";
 import { MessageInputReader } from "../primitives/inputdata";
-import { UInt128 } from "./UInt128";
+import { UInt128 } from "../deps/as-scale-codec/";
 
 export class Msg {
   private _sender: u8[] | null = null;

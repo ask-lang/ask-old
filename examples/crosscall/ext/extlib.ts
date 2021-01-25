@@ -3,10 +3,11 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt32 } from "as-scale-codec";
 import { FnParameters } from "../../../assembly/buildins/FnParameters";
 import { Msg } from "../../../assembly/buildins/Msg";
+import { UInt32 } from "../../../assembly/deps/as-scale-codec";
 import { ReturnData } from "../../../assembly/primitives/returndata";
+import { Log } from "../../../assembly/utils/Log";
 
  var msg = new Msg();
 // @contract
@@ -42,9 +43,10 @@ export function deploy(): i32 {
 }
 
 export function call(): i32 {
+  Log.println("extlib called.");
   const flp = new ExtLib();
-  const flipselector: u8[] = [0x38, 0xdf, 0x64, 0xef]; // "c096a5f3";
-
+  // const flipselector: u8[] = [0x38, 0xdf, 0x64, 0xef]; // "c096a5f3";
+  const flipselector: u8[] = [0x1f, 0xf7, 0xcb, 0xb8]; // "1f, f7, cb, b8";
   // Step2: exec command
   if (msg.isSelector(flipselector)) { // flip operation
     let fnParameters = new FnParameters(msg.data);

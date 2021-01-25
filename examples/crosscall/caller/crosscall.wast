@@ -1,35 +1,68 @@
 (module
  (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $i32_i32_i32_=>_none (func (param i32 i32 i32)))
- (type $none_=>_i32 (func (result i32)))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
  (type $i32_i32_=>_none (func (param i32 i32)))
+ (type $none_=>_i32 (func (result i32)))
  (type $i32_=>_none (func (param i32)))
  (type $i32_i32_i32_=>_i32 (func (param i32 i32 i32) (result i32)))
  (type $none_=>_none (func))
  (type $i32_i32_i32_i32_=>_i32 (func (param i32 i32 i32 i32) (result i32)))
  (type $i32_i32_i64_i32_i32_i32_i32_i32_i32_=>_i32 (func (param i32 i32 i64 i32 i32 i32 i32 i32 i32) (result i32)))
  (import "env" "memory" (memory $0 2 16))
- (data (i32.const 1036) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\d1\83Q+")
- (data (i32.const 1068) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00j7\12\e2")
- (data (i32.const 1100) "\1e\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\1e\00\00\00u\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00n\00u\00l\00l\00")
- (data (i32.const 1164) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data (i32.const 1196) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data (i32.const 1228) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data (i32.const 1260) "\18\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\18\00\00\00f\00l\00i\00p\00p\00e\00r\00.\00f\00l\00a\00g\00")
- (data (i32.const 1308) "\08\00\00\00\01\00\00\00\00\00\00\00\16\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00")
- (data (i32.const 1340) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data (i32.const 1372) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\c0\96\a5\f3")
- (data (i32.const 1404) "\0e\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\0e\00\00\00a\00d\00d\00F\00u\00n\00c\00")
- (data (i32.const 1452) "\08\00\00\00\01\00\00\00\00\00\00\00\16\00\00\00\08\00\00\00\02\00\00\00\00\00\00\00")
- (data (i32.const 1484) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\00\00\00\00")
- (data (i32.const 1516) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 1036) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\000\00")
+ (data (i32.const 1068) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\001\00")
+ (data (i32.const 1100) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\002\00")
+ (data (i32.const 1132) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\003\00")
+ (data (i32.const 1164) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\004\00")
+ (data (i32.const 1196) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\005\00")
+ (data (i32.const 1228) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\006\00")
+ (data (i32.const 1260) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\007\00")
+ (data (i32.const 1292) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\008\00")
+ (data (i32.const 1324) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\009\00")
+ (data (i32.const 1356) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00a\00")
+ (data (i32.const 1388) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00b\00")
+ (data (i32.const 1420) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00c\00")
+ (data (i32.const 1452) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00d\00")
+ (data (i32.const 1484) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00e\00")
+ (data (i32.const 1516) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00f\00")
+ (data (i32.const 1548) "@\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00@\00\00\00 \04\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04\00\00\e0\04\00\00\00\05\00\00 \05\00\00@\05\00\00`\05\00\00\80\05\00\00\a0\05\00\00\c0\05\00\00\e0\05\00\00\00\06\00\00")
+ (data (i32.const 1644) "\10\00\00\00\01\00\00\00\00\00\00\00\03\00\00\00\10\00\00\00 \06\00\00 \06\00\00@\00\00\00\10\00\00\00")
+ (data (i32.const 1692) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\d1\83Q+")
+ (data (i32.const 1724) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00j7\12\e2")
+ (data (i32.const 1756) "\1e\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\1e\00\00\00u\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00n\00u\00l\00l\00")
+ (data (i32.const 1820) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 1852) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 1884) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 1916) "\18\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\18\00\00\00f\00l\00i\00p\00p\00e\00r\00.\00f\00l\00a\00g\00")
+ (data (i32.const 1964) "\08\00\00\00\01\00\00\00\00\00\00\00\19\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00")
+ (data (i32.const 1996) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 2028) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\c0\96\a5\f8")
+ (data (i32.const 2060) "\0e\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\0e\00\00\00a\00d\00d\00F\00u\00n\00c\00")
+ (data (i32.const 2108) "\08\00\00\00\01\00\00\00\00\00\00\00\19\00\00\00\08\00\00\00\02\00\00\00\00\00\00\00")
+ (data (i32.const 2140) "\14\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\14\00\00\00s\00e\00l\00e\00c\00t\00o\00r\00:\00 \00")
+ (data (i32.const 2188) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00[\00")
+ (data (i32.const 2220) "\08\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00n\00u\00l\00l\00")
+ (data (i32.const 2252) "\00\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\00\00\00\00")
+ (data (i32.const 2284) "\04\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\04\00\00\00,\00 \00")
+ (data (i32.const 2316) "\02\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00]\00")
+ (data (i32.const 2348) "\0c\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00d\00a\00t\00a\00:\00 \00")
+ (data (i32.const 2380) "\12\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\12\00\00\00a\00c\00c\00o\00u\00n\00t\00:\00 \00")
+ (data (i32.const 2428) "\04\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\00\00\00\00")
+ (data (i32.const 2460) "\00\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data (i32.const 2492) "\n\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\n\00\00\00s\00t\00e\00p\002\00")
+ (data (i32.const 2524) "\n\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\n\00\00\00s\00t\00e\00p\003\00")
+ (data (i32.const 2556) "\18\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\18\00\00\00r\00e\00s\00u\00l\00t\00 \00i\00s\00 \003\00.\00")
+ (data (i32.const 2604) "\14\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00\14\00\00\00r\00e\00s\00u\00l\00t\00 \00i\00s\00 \00")
+ (data (i32.const 2652) "&\00\00\00\01\00\00\00\00\00\00\00\01\00\00\00&\00\00\00n\00o\00 \00f\00u\00n\00c\00t\00i\00o\00n\00 \00c\00a\00l\00l\00e\00d\00.\00")
  (import "seal0" "seal_input" (func $../../../assembly/seal/seal0/seal_input (param i32 i32)))
  (import "seal0" "seal_hash_sha2_256" (func $../../../assembly/seal/seal0/seal_hash_sha2_256 (param i32 i32 i32)))
  (import "seal0" "seal_set_storage" (func $../../../assembly/seal/seal0/seal_set_storage (param i32 i32 i32)))
  (import "seal0" "seal_hash_blake2_256" (func $../../../assembly/seal/seal0/seal_hash_blake2_256 (param i32 i32 i32)))
+ (import "seal0" "seal_println" (func $../../../assembly/seal/seal0/seal_println (param i32 i32)))
  (import "seal0" "seal_get_storage" (func $../../../assembly/seal/seal0/seal_get_storage (param i32 i32 i32) (result i32)))
  (import "seal0" "seal_call" (func $../../../assembly/seal/seal0/seal_call (param i32 i32 i64 i32 i32 i32 i32 i32 i32) (result i32)))
+ (import "seal0" "seal_return" (func $../../../assembly/seal/seal0/seal_return (param i32 i32 i32)))
  (table $0 3 funcref)
  (elem (i32.const 1) $../../../assembly/seal/seal0/seal_hash_sha2_256 $../../../assembly/seal/seal0/seal_hash_blake2_256)
  (global $~lib/rt/stub/offset (mut i32) (i32.const 0))
@@ -332,7 +365,7 @@
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 10)
+     (i32.const 12)
     )
    )
    (i32.const 0)
@@ -341,7 +374,7 @@
    (local.tee $1
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 11)
+     (i32.const 13)
     )
    )
    (i32.const 0)
@@ -405,7 +438,7 @@
       (local.tee $1
        (call $~lib/rt/stub/__new
         (i32.const 12)
-        (i32.const 15)
+        (i32.const 18)
        )
       )
      )
@@ -473,7 +506,7 @@
    (local.tee $2
     (call $~lib/rt/stub/__new
      (i32.const 8)
-     (i32.const 14)
+     (i32.const 17)
     )
    )
    (i32.const 0)
@@ -503,7 +536,7 @@
    (local.tee $3
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 16)
+     (i32.const 19)
     )
    )
    (i32.const 0)
@@ -605,7 +638,7 @@
    (local.tee $2
     (call $~lib/rt/stub/__new
      (i32.const 16)
-     (i32.const 4)
+     (i32.const 6)
     )
    )
    (i32.const 0)
@@ -848,7 +881,7 @@
        )
       )
       (i32.const 0)
-      (i32.const 4)
+      (i32.const 6)
       (i32.const 0)
      )
     )
@@ -879,8 +912,8 @@
     (call $~lib/rt/__newArray
      (i32.const 0)
      (i32.const 0)
-     (i32.const 4)
-     (i32.const 1184)
+     (i32.const 6)
+     (i32.const 1840)
     )
    )
   )
@@ -915,7 +948,7 @@
      (local.tee $1
       (call $~lib/rt/stub/__new
        (i32.const 4)
-       (i32.const 13)
+       (i32.const 16)
       )
      )
      (i32.const 0)
@@ -1056,8 +1089,8 @@
         (call $~lib/rt/__newArray
          (i32.const 0)
          (i32.const 0)
-         (i32.const 4)
-         (i32.const 1216)
+         (i32.const 6)
+         (i32.const 1872)
         )
        )
        (drop
@@ -1213,8 +1246,8 @@
     (call $~lib/rt/__newArray
      (i32.const 0)
      (i32.const 0)
-     (i32.const 4)
-     (i32.const 1248)
+     (i32.const 6)
+     (i32.const 1904)
     )
    )
   )
@@ -1222,7 +1255,7 @@
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 12)
+     (i32.const 14)
     )
    )
    (i32.const 0)
@@ -1290,7 +1323,7 @@
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 18)
+     (i32.const 21)
     )
    )
    (i32.const 0)
@@ -1302,7 +1335,7 @@
   )
   (i32.store
    (local.get $0)
-   (i32.const 1280)
+   (i32.const 1936)
   )
   (local.get $0)
  )
@@ -1314,7 +1347,7 @@
    (local.tee $1
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 19)
+     (i32.const 22)
     )
    )
    (i32.const 0)
@@ -1334,7 +1367,7 @@
    (local.tee $2
     (call $~lib/rt/stub/__new
      (i32.const 12)
-     (i32.const 15)
+     (i32.const 18)
     )
    )
    (local.get $0)
@@ -1357,6 +1390,17 @@
    (local.get $2)
   )
   (local.get $1)
+ )
+ (func $~lib/string/String#get:length (param $0 i32) (result i32)
+  (i32.shr_u
+   (i32.load offset=16
+    (i32.sub
+     (local.get $0)
+     (i32.const 20)
+    )
+   )
+   (i32.const 1)
+  )
  )
  (func $~lib/string/String.UTF8.encodeUnsafe (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -1724,14 +1768,8 @@
   )
   (call $~lib/string/String.UTF8.encodeUnsafe
    (local.get $0)
-   (i32.shr_u
-    (i32.load offset=16
-     (i32.sub
-      (local.get $0)
-      (i32.const 20)
-     )
-    )
-    (i32.const 1)
+   (call $~lib/string/String#get:length
+    (local.get $0)
    )
    (local.get $2)
   )
@@ -2010,7 +2048,7 @@
    (local.get $2)
   )
  )
- (func $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8> (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $../../../assembly/deps/as-scale-codec/utils/Bytes/Bytes.copy<u8> (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (loop $for-loop|0
    (if
@@ -2104,15 +2142,15 @@
    (call $~lib/rt/__newArray
     (i32.const 0)
     (i32.const 0)
-    (i32.const 4)
-    (i32.const 1360)
+    (i32.const 6)
+    (i32.const 2016)
    )
   )
   (i32.store
    (local.tee $1
     (call $~lib/rt/stub/__new
      (i32.const 4)
-     (i32.const 20)
+     (i32.const 23)
     )
    )
    (i32.const 0)
@@ -2131,14 +2169,14 @@
    (local.get $1)
    (local.get $3)
   )
-  (call $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8>
+  (call $../../../assembly/deps/as-scale-codec/utils/Bytes/Bytes.copy<u8>
    (local.get $2)
    (i32.load
     (local.get $1)
    )
    (i32.const 0)
   )
-  (call $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8>
+  (call $../../../assembly/deps/as-scale-codec/utils/Bytes/Bytes.copy<u8>
    (block (result i32)
     (if
      (i32.gt_s
@@ -2174,14 +2212,14 @@
   )
   (local.get $1)
  )
- (func $~lib/as-scale-codec/Hash/Hash#toU8a (param $0 i32) (result i32)
+ (func $../../../assembly/deps/as-scale-codec/Hash/Hash#toU8a (param $0 i32) (result i32)
   (local $1 i32)
   (local.set $1
    (call $~lib/array/Array<u8>#constructor
     (i32.const 32)
    )
   )
-  (call $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8>
+  (call $../../../assembly/deps/as-scale-codec/utils/Bytes/Bytes.copy<u8>
    (i32.load
     (local.get $0)
    )
@@ -2192,14 +2230,14 @@
  )
  (func $../../../assembly/storage/storage/Storage<../../../assembly/buildins/Account/Account>#hashKey (param $0 i32) (result i32)
   (i32.load
-   (call $~lib/as-scale-codec/Hash/Hash#toU8a
+   (call $../../../assembly/deps/as-scale-codec/Hash/Hash#toU8a
     (call $../../../assembly/primitives/crypto/invoke_hash_algo
      (call $~lib/string/String.UTF8.encode
       (i32.load
        (local.get $0)
       )
      )
-     (i32.const 1328)
+     (i32.const 1984)
     )
    )
   )
@@ -2260,16 +2298,16 @@
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 0)
-    (i32.const 4)
-    (i32.const 1056)
+    (i32.const 6)
+    (i32.const 1712)
    )
   )
   (local.set $1
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 0)
-    (i32.const 4)
-    (i32.const 1088)
+    (i32.const 6)
+    (i32.const 1744)
    )
   )
   (local.set $2
@@ -2307,7 +2345,7 @@
      (local.tee $0
       (call $~lib/rt/stub/__new
        (i32.const 8)
-       (i32.const 17)
+       (i32.const 20)
       )
      )
      (i32.const 0)
@@ -2375,7 +2413,7 @@
   )
   (i32.const 0)
  )
- (func $~lib/as-scale-codec/UInt/UInt32/UInt32#constructor (param $0 i32) (result i32)
+ (func $../../../assembly/deps/as-scale-codec/UInt/UInt32/UInt32#constructor (param $0 i32) (result i32)
   (local $1 i32)
   (i32.store
    (block (result i32)
@@ -2384,14 +2422,14 @@
       (local.tee $1
        (call $~lib/rt/stub/__new
         (i32.const 8)
-        (i32.const 24)
+        (i32.const 27)
        )
       )
      )
      (local.set $1
       (call $~lib/rt/stub/__new
        (i32.const 8)
-       (i32.const 25)
+       (i32.const 28)
       )
      )
     )
@@ -2413,6 +2451,194 @@
   )
   (local.get $1)
  )
+ (func $~lib/array/Array<~lib/string/String>#__get (param $0 i32) (param $1 i32) (result i32)
+  (if
+   (i32.ge_u
+    (local.get $1)
+    (i32.load offset=12
+     (local.get $0)
+    )
+   )
+   (unreachable)
+  )
+  (if
+   (i32.eqz
+    (local.tee $0
+     (i32.load
+      (i32.add
+       (i32.load offset=4
+        (local.get $0)
+       )
+       (i32.shl
+        (local.get $1)
+        (i32.const 2)
+       )
+      )
+     )
+    )
+   )
+   (unreachable)
+  )
+  (local.get $0)
+ )
+ (func $~lib/string/String.__concat (param $0 i32) (param $1 i32) (result i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (block $__inlined_func$~lib/string/String#concat
+   (if
+    (i32.eqz
+     (local.tee $0
+      (i32.add
+       (local.tee $2
+        (i32.shl
+         (call $~lib/string/String#get:length
+          (local.tee $3
+           (select
+            (local.get $0)
+            (i32.const 2240)
+            (local.get $0)
+           )
+          )
+         )
+         (i32.const 1)
+        )
+       )
+       (local.tee $4
+        (i32.shl
+         (call $~lib/string/String#get:length
+          (local.tee $1
+           (select
+            (local.get $1)
+            (i32.const 2240)
+            (local.get $1)
+           )
+          )
+         )
+         (i32.const 1)
+        )
+       )
+      )
+     )
+    )
+    (block
+     (local.set $0
+      (i32.const 2272)
+     )
+     (br $__inlined_func$~lib/string/String#concat)
+    )
+   )
+   (call $~lib/memory/memory.copy
+    (local.tee $0
+     (call $~lib/rt/stub/__new
+      (local.get $0)
+      (i32.const 1)
+     )
+    )
+    (local.get $3)
+    (local.get $2)
+   )
+   (call $~lib/memory/memory.copy
+    (i32.add
+     (local.get $0)
+     (local.get $2)
+    )
+    (local.get $1)
+    (local.get $4)
+   )
+  )
+  (local.get $0)
+ )
+ (func $../../../assembly/utils/Log/Logger#encodehex (param $0 i32) (result i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (local.set $1
+   (local.get $0)
+  )
+  (local.set $0
+   (i32.const 2208)
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_s
+     (local.get $2)
+     (i32.load offset=12
+      (local.get $1)
+     )
+    )
+    (block
+     (local.set $3
+      (i32.shr_u
+       (i32.and
+        (call $~lib/array/Array<u8>#__get
+         (local.get $1)
+         (local.get $2)
+        )
+        (i32.const 240)
+       )
+       (i32.const 4)
+      )
+     )
+     (local.set $4
+      (i32.and
+       (call $~lib/array/Array<u8>#__get
+        (local.get $1)
+        (local.get $2)
+       )
+       (i32.const 15)
+      )
+     )
+     (local.set $0
+      (call $~lib/string/String.__concat
+       (call $~lib/string/String.__concat
+        (call $~lib/string/String.__concat
+         (local.get $0)
+         (call $~lib/array/Array<~lib/string/String>#__get
+          (i32.const 1664)
+          (local.get $3)
+         )
+        )
+        (call $~lib/array/Array<~lib/string/String>#__get
+         (i32.const 1664)
+         (local.get $4)
+        )
+       )
+       (i32.const 2304)
+      )
+     )
+     (local.set $2
+      (i32.add
+       (local.get $2)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
+    )
+   )
+  )
+  (call $~lib/string/String.__concat
+   (local.get $0)
+   (i32.const 2336)
+  )
+ )
+ (func $../../../assembly/utils/Log/Logger#println (param $0 i32)
+  (call $../../../assembly/seal/seal0/seal_println
+   (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBuffer
+    (local.tee $0
+     (call $../../../assembly/primitives/writebuffer/WriteBuffer#constructor
+      (call $~lib/string/String.UTF8.encode
+       (local.get $0)
+      )
+     )
+    )
+   )
+   (call $../../../assembly/primitives/writebuffer/WriteBuffer#get:size
+    (local.get $0)
+   )
+  )
+ )
  (func $../../../assembly/env/Abi/Abi.encode (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
@@ -2421,21 +2647,28 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  (local.set $1
+  (local.set $2
    (local.get $0)
   )
-  (local.set $0
-   (call $~lib/array/Array<u8>#slice
-    (call $~lib/as-scale-codec/Hash/Hash#toU8a
-     (call $../../../assembly/primitives/crypto/invoke_hash_algo
-      (call $~lib/string/String.UTF8.encode
-       (i32.const 1424)
+  (call $../../../assembly/utils/Log/Logger#println
+   (call $~lib/string/String.__concat
+    (i32.const 2160)
+    (call $../../../assembly/utils/Log/Logger#encodehex
+     (local.tee $0
+      (call $~lib/array/Array<u8>#slice
+       (call $../../../assembly/deps/as-scale-codec/Hash/Hash#toU8a
+        (call $../../../assembly/primitives/crypto/invoke_hash_algo
+         (call $~lib/string/String.UTF8.encode
+          (i32.const 2080)
+         )
+         (i32.const 2128)
+        )
+       )
+       (i32.const 0)
+       (i32.const 4)
       )
-      (i32.const 1472)
      )
     )
-    (i32.const 4)
-    (i32.const 2147483647)
    )
   )
   (loop $for-loop|0
@@ -2443,44 +2676,75 @@
     (i32.lt_s
      (local.get $4)
      (i32.load offset=12
-      (local.get $1)
+      (local.get $2)
      )
     )
     (block
-     (if
-      (i32.ge_u
-       (local.get $4)
-       (i32.load offset=12
-        (local.get $1)
-       )
-      )
-      (unreachable)
-     )
-     (local.set $3
-      (local.tee $2
-       (i32.load
-        (i32.add
-         (i32.load offset=4
+     (block $__inlined_func$../../../assembly/deps/as-scale-codec/interfaces/Codec/Codec#toU8a@virtual
+      (block $default
+       (block $case2
+        (block $case1
+         (if
+          (i32.ne
+           (local.tee $3
+            (i32.load
+             (i32.sub
+              (local.tee $1
+               (call $~lib/array/Array<~lib/string/String>#__get
+                (local.get $2)
+                (local.get $4)
+               )
+              )
+              (i32.const 8)
+             )
+            )
+           )
+           (i32.const 14)
+          )
+          (block
+           (br_if $case1
+            (i32.eq
+             (local.get $3)
+             (i32.const 23)
+            )
+           )
+           (br_if $case2
+            (i32.or
+             (i32.eq
+              (local.get $3)
+              (i32.const 28)
+             )
+             (i32.eq
+              (local.get $3)
+              (i32.const 27)
+             )
+            )
+           )
+           (br $default)
+          )
+         )
+         (local.set $3
+          (i32.load
+           (local.get $1)
+          )
+         )
+         (br $__inlined_func$../../../assembly/deps/as-scale-codec/interfaces/Codec/Codec#toU8a@virtual)
+        )
+        (local.set $3
+         (call $../../../assembly/deps/as-scale-codec/Hash/Hash#toU8a
           (local.get $1)
          )
-         (i32.shl
-          (local.get $4)
-          (i32.const 2)
-         )
+        )
+        (br $__inlined_func$../../../assembly/deps/as-scale-codec/interfaces/Codec/Codec#toU8a@virtual)
+       )
+       (local.set $3
+        (call $../../../assembly/deps/as-scale-codec/AbstractInt/AbstractInt<i32>#toU8a
+         (local.get $1)
         )
        )
-      )
-     )
-     (if
-      (i32.eqz
-       (local.get $2)
+       (br $__inlined_func$../../../assembly/deps/as-scale-codec/interfaces/Codec/Codec#toU8a@virtual)
       )
       (unreachable)
-     )
-     (local.set $3
-      (call $~lib/as-scale-codec/interfaces/Codec/Codec#toU8a@virtual
-       (local.get $3)
-      )
      )
      (if
       (i32.gt_u
@@ -2488,7 +2752,7 @@
         (i32.add
          (local.tee $5
           (i32.load offset=12
-           (local.tee $2
+           (local.tee $1
             (local.get $0)
            )
           )
@@ -2515,14 +2779,14 @@
          (call $~lib/rt/__newArray
           (local.get $0)
           (i32.const 0)
-          (i32.const 4)
+          (i32.const 6)
           (i32.const 0)
          )
         )
        )
       )
       (i32.load offset=4
-       (local.get $2)
+       (local.get $1)
       )
       (local.get $5)
      )
@@ -2548,35 +2812,89 @@
   )
   (local.get $0)
  )
- (func $../../../assembly/buildins/UInt128/UInt128#toU8a (param $0 i32) (result i32)
-  (local $1 i32)
-  (local $2 i32)
-  (local.set $0
-   (i32.load
+ (func $../../../assembly/utils/Log/Logger#printhex (param $0 i32)
+  (call $../../../assembly/utils/Log/Logger#println
+   (call $../../../assembly/utils/Log/Logger#encodehex
     (local.get $0)
    )
   )
-  (i64.store
-   (local.tee $2
-    (i32.load offset=4
-     (local.tee $1
-      (call $~lib/array/Array<u8>#constructor
-       (i32.const 16)
+ )
+ (func $crosscall/Stored#get:extLib (param $0 i32) (result i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i32)
+  (if
+   (i32.eqz
+    (i32.load
+     (local.get $0)
+    )
+   )
+   (block
+    (local.set $3
+     (call $../../../assembly/storage/storage/Storage<../../../assembly/buildins/Account/Account>#constructor)
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (local.set $2
+     (call $../../../assembly/buildins/Account/Account#constructor@varargs)
+    )
+    (local.set $1
+     (call $../../../assembly/primitives/readbuffer/ReadBuffer#constructor
+      (i32.const 32)
+     )
+    )
+    (if
+     (if (result i32)
+      (call $../../../assembly/seal/seal0/seal_get_storage
+       (call $../../../assembly/storage/storage/Storage<../../../assembly/buildins/Account/Account>#hashKey
+        (local.get $3)
+       )
+       (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBuffer
+        (local.get $1)
+       )
+       (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:sizeBuffer
+        (local.get $1)
+       )
       )
+      (i32.const 0)
+      (i32.eq
+       (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:readSize
+        (local.get $1)
+       )
+       (i32.const 32)
+      )
+     )
+     (call $../../../assembly/buildins/Account/Account#populateFromBytes
+      (local.get $2)
+      (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBytes
+       (local.get $1)
+      )
+      (i32.const 0)
+     )
+    )
+    (drop
+     (i32.load
+      (local.get $0)
+     )
+    )
+    (i32.store
+     (local.get $0)
+     (local.get $2)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (local.tee $0
+     (i32.load
+      (local.get $0)
      )
     )
    )
-   (i64.load
-    (local.get $0)
-   )
+   (unreachable)
   )
-  (i64.store offset=8
-   (local.get $2)
-   (i64.load offset=8
-    (local.get $0)
-   )
-  )
-  (local.get $1)
+  (local.get $0)
  )
  (func $../../../assembly/buildins/Callable/Callable#call (param $0 i32) (result i32)
   (local $1 i32)
@@ -2613,7 +2931,7 @@
    )
    (unreachable)
   )
-  (local.set $3
+  (local.set $4
    (call $../../../assembly/primitives/writebuffer/WriteBuffer#constructor
     (i32.load
      (local.get $1)
@@ -2636,11 +2954,34 @@
       )
       (unreachable)
      )
+     (local.set $1
+      (i32.load
+       (local.get $1)
+      )
+     )
+     (i64.store
+      (local.tee $3
+       (i32.load offset=4
+        (local.tee $2
+         (call $~lib/array/Array<u8>#constructor
+          (i32.const 16)
+         )
+        )
+       )
+      )
+      (i64.load
+       (local.get $1)
+      )
+     )
+     (i64.store offset=8
+      (local.get $3)
+      (i64.load offset=8
+       (local.get $1)
+      )
+     )
      (call $../../../assembly/primitives/writebuffer/WriteBuffer#constructor
       (i32.load
-       (call $../../../assembly/buildins/UInt128/UInt128#toU8a
-        (local.get $1)
-       )
+       (local.get $2)
       )
      )
     )
@@ -2649,8 +2990,8 @@
       (call $~lib/rt/__newArray
        (i32.const 1)
        (i32.const 2)
-       (i32.const 9)
-       (i32.const 1504)
+       (i32.const 11)
+       (i32.const 2448)
       )
      )
     )
@@ -2673,7 +3014,7 @@
     )
    )
   )
-  (local.set $4
+  (local.set $3
    (call $../../../assembly/primitives/readbuffer/ReadBuffer#constructor
     (i32.const 1024)
    )
@@ -2685,16 +3026,16 @@
   )
   (i32.store offset=16
    (local.get $0)
-   (local.get $4)
-  )
-  (local.set $4
-   (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBuffer
-    (local.get $3)
-   )
+   (local.get $3)
   )
   (local.set $3
+   (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBuffer
+    (local.get $4)
+   )
+  )
+  (local.set $4
    (call $../../../assembly/primitives/writebuffer/WriteBuffer#get:size
-    (local.get $3)
+    (local.get $4)
    )
   )
   (if
@@ -2758,8 +3099,8 @@
    (unreachable)
   )
   (call $../../../assembly/seal/seal0/seal_call
-   (local.get $4)
    (local.get $3)
+   (local.get $4)
    (local.get $7)
    (local.get $5)
    (local.get $1)
@@ -2782,7 +3123,7 @@
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 20)
-     (i32.const 27)
+     (i32.const 30)
     )
    )
    (i32.const 0)
@@ -2819,14 +3160,14 @@
       (local.tee $3
        (call $~lib/rt/stub/__new
         (i32.const 16)
-        (i32.const 28)
+        (i32.const 31)
        )
       )
      )
      (local.set $3
       (call $~lib/rt/stub/__new
        (i32.const 16)
-       (i32.const 29)
+       (i32.const 32)
       )
      )
     )
@@ -2859,7 +3200,7 @@
    (local.tee $3
     (call $~lib/rt/stub/__new
      (i32.const 8)
-     (i32.const 5)
+     (i32.const 7)
     )
    )
    (i32.const 0)
@@ -2916,8 +3257,8 @@
      (call $~lib/rt/__newArray
       (i32.const 0)
       (i32.const 0)
-      (i32.const 4)
-      (i32.const 1536)
+      (i32.const 6)
+      (i32.const 2480)
      )
     )
    )
@@ -2936,11 +3277,9 @@
    )
   )
  )
- (func $crosscall/CrossCall#callext (param $0 i32)
+ (func $crosscall/CrossCall#callext (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
-  (local $4 i32)
   (i32.store
    (local.tee $2
     (i32.load offset=4
@@ -2948,107 +3287,57 @@
       (call $~lib/rt/__newArray
        (i32.const 2)
        (i32.const 2)
-       (i32.const 23)
+       (i32.const 26)
        (i32.const 0)
       )
      )
     )
    )
-   (call $~lib/as-scale-codec/UInt/UInt32/UInt32#constructor
-    (i32.const 12345)
+   (call $../../../assembly/deps/as-scale-codec/UInt/UInt32/UInt32#constructor
+    (i32.const 1)
    )
   )
   (i32.store offset=4
    (local.get $2)
-   (call $~lib/as-scale-codec/UInt/UInt32/UInt32#constructor
-    (i32.const 54321)
+   (call $../../../assembly/deps/as-scale-codec/UInt/UInt32/UInt32#constructor
+    (i32.const 2)
    )
   )
-  (local.set $3
+  (local.set $1
    (call $../../../assembly/env/Abi/Abi.encode
     (local.get $1)
    )
   )
-  (if
-   (i32.eqz
-    (i32.load
-     (local.tee $1
-      (i32.load
-       (local.get $0)
-      )
-     )
-    )
-   )
-   (block
-    (local.set $4
-     (call $../../../assembly/storage/storage/Storage<../../../assembly/buildins/Account/Account>#constructor)
-    )
-    (global.set $~argumentsLength
-     (i32.const 0)
-    )
-    (local.set $2
-     (call $../../../assembly/buildins/Account/Account#constructor@varargs)
-    )
-    (local.set $0
-     (call $../../../assembly/primitives/readbuffer/ReadBuffer#constructor
-      (i32.const 32)
-     )
-    )
-    (if
-     (if (result i32)
-      (call $../../../assembly/seal/seal0/seal_get_storage
-       (call $../../../assembly/storage/storage/Storage<../../../assembly/buildins/Account/Account>#hashKey
-        (local.get $4)
-       )
-       (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBuffer
-        (local.get $0)
-       )
-       (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:sizeBuffer
-        (local.get $0)
-       )
-      )
-      (i32.const 0)
-      (i32.eq
-       (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:readSize
-        (local.get $0)
-       )
-       (i32.const 32)
-      )
-     )
-     (call $../../../assembly/buildins/Account/Account#populateFromBytes
-      (local.get $2)
-      (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBytes
-       (local.get $0)
-      )
-      (i32.const 0)
-     )
-    )
-    (drop
+  (call $../../../assembly/utils/Log/Logger#println
+   (i32.const 2368)
+  )
+  (call $../../../assembly/utils/Log/Logger#printhex
+   (local.get $1)
+  )
+  (call $../../../assembly/utils/Log/Logger#println
+   (i32.const 2400)
+  )
+  (call $../../../assembly/utils/Log/Logger#printhex
+   (i32.load
+    (call $crosscall/Stored#get:extLib
      (i32.load
-      (local.get $1)
+      (local.get $0)
      )
-    )
-    (i32.store
-     (local.get $1)
-     (local.get $2)
     )
    )
   )
-  (if
-   (i32.eqz
-    (local.tee $1
-     (i32.load
-      (local.get $1)
-     )
+  (local.set $2
+   (call $crosscall/Stored#get:extLib
+    (i32.load
+     (local.get $0)
     )
    )
-   (unreachable)
   )
   (i64.store
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 16)
-     (i32.const 6)
+     (i32.const 8)
     )
    )
    (i64.const 0)
@@ -3057,22 +3346,26 @@
    (local.get $0)
    (i64.const 0)
   )
+  (local.set $0
+   (call $../../../assembly/buildins/Account/Account#call
+    (local.get $2)
+    (local.get $0)
+    (local.get $1)
+   )
+  )
+  (call $../../../assembly/utils/Log/Logger#println
+   (i32.const 2512)
+  )
   (if
    (i32.le_s
     (i32.load offset=12
-     (local.tee $0
-      (call $../../../assembly/buildins/Account/Account#call
-       (local.get $1)
-       (local.get $0)
-       (local.get $3)
-      )
-     )
+     (local.get $0)
     )
     (i32.const 0)
    )
    (unreachable)
   )
-  (call $~lib/as-scale-codec/utils/Bytes/Bytes.copy<u8>
+  (call $../../../assembly/deps/as-scale-codec/utils/Bytes/Bytes.copy<u8>
    (local.get $0)
    (local.tee $2
     (call $~lib/array/Array<u8>#constructor
@@ -3125,17 +3418,117 @@
     )
    )
   )
+  (local.set $0
+   (call $../../../assembly/deps/as-scale-codec/UInt/UInt32/UInt32#constructor
+    (local.get $1)
+   )
+  )
+  (call $../../../assembly/utils/Log/Logger#println
+   (i32.const 2544)
+  )
   (if
-   (i32.ne
+   (i32.eq
     (i32.load offset=4
-     (call $~lib/as-scale-codec/UInt/UInt32/UInt32#constructor
-      (local.get $1)
+     (local.get $0)
+    )
+    (i32.const 3)
+   )
+   (call $../../../assembly/utils/Log/Logger#println
+    (i32.const 2576)
+   )
+   (block
+    (local.set $1
+     (i32.load offset=4
+      (local.get $0)
      )
     )
-    (i32.const 66666)
+    (global.set $~argumentsLength
+     (i32.const 1)
+    )
+    (i32.store16
+     (local.tee $2
+      (call $~lib/rt/stub/__new
+       (i32.const 2)
+       (i32.const 1)
+      )
+     )
+     (i32.add
+      (local.get $1)
+      (i32.const 48)
+     )
+    )
+    (call $../../../assembly/utils/Log/Logger#println
+     (call $~lib/string/String.__concat
+      (i32.const 2624)
+      (local.get $2)
+     )
+    )
    )
-   (unreachable)
   )
+  (i32.load offset=4
+   (local.get $0)
+  )
+ )
+ (func $../../../assembly/deps/as-scale-codec/AbstractInt/AbstractInt<i32>#toU8a (param $0 i32) (result i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local.set $1
+   (call $~lib/array/Array<u8>#constructor
+    (i32.load
+     (local.get $0)
+    )
+   )
+  )
+  (local.set $2
+   (i32.load
+    (local.get $0)
+   )
+  )
+  (local.set $3
+   (local.tee $0
+    (i32.load offset=4
+     (local.get $0)
+    )
+   )
+  )
+  (call $~lib/array/Array<u8>#__set
+   (local.get $1)
+   (i32.const 0)
+   (local.get $0)
+  )
+  (local.set $0
+   (i32.const 1)
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_s
+     (local.get $0)
+     (local.get $2)
+    )
+    (block
+     (call $~lib/array/Array<u8>#__set
+      (local.get $1)
+      (local.get $0)
+      (i32.shr_s
+       (local.get $3)
+       (i32.shl
+        (local.get $0)
+        (i32.const 3)
+       )
+      )
+     )
+     (local.set $0
+      (i32.add
+       (local.get $0)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
+    )
+   )
+  )
+  (local.get $1)
  )
  (func $crosscall/call (result i32)
   (local $0 i32)
@@ -3147,8 +3540,8 @@
    (call $~lib/rt/__newArray
     (i32.const 4)
     (i32.const 0)
-    (i32.const 4)
-    (i32.const 1392)
+    (i32.const 6)
+    (i32.const 2048)
    )
   )
   (if
@@ -3156,8 +3549,29 @@
     (global.get $crosscall/msg)
     (local.get $1)
    )
-   (call $crosscall/CrossCall#callext
-    (local.get $0)
+   (call $../../../assembly/seal/seal0/seal_return
+    (i32.const 0)
+    (call $../../../assembly/primitives/readbuffer/ReadBuffer#get:valueBuffer
+     (local.tee $0
+      (call $../../../assembly/primitives/writebuffer/WriteBuffer#constructor
+       (i32.load
+        (call $../../../assembly/deps/as-scale-codec/AbstractInt/AbstractInt<i32>#toU8a
+         (call $../../../assembly/deps/as-scale-codec/UInt/UInt32/UInt32#constructor
+          (call $crosscall/CrossCall#callext
+           (local.get $0)
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+    (call $../../../assembly/primitives/writebuffer/WriteBuffer#get:size
+     (local.get $0)
+    )
+   )
+   (call $../../../assembly/utils/Log/Logger#println
+    (i32.const 2672)
    )
   )
   (i32.const 0)
@@ -3165,13 +3579,19 @@
  (func $~start
   (local $0 i32)
   (global.set $~lib/rt/stub/offset
-   (i32.const 1548)
+   (i32.const 2716)
+  )
+  (drop
+   (call $~lib/rt/stub/__new
+    (i32.const 0)
+    (i32.const 4)
+   )
   )
   (i32.store
    (local.tee $0
     (call $~lib/rt/stub/__new
      (i32.const 17)
-     (i32.const 3)
+     (i32.const 5)
     )
    )
    (i32.const 0)
@@ -3195,222 +3615,5 @@
   (global.set $crosscall/msg
    (local.get $0)
   )
- )
- (func $~lib/as-scale-codec/interfaces/Codec/Codec#toU8a@virtual (param $0 i32) (result i32)
-  (local $1 i32)
-  (local $2 f64)
-  (local $3 i32)
-  (local $4 i64)
-  (block $default
-   (block $case4
-    (block $case3
-     (block $case2
-      (block $case1
-       (if
-        (i32.ne
-         (local.tee $1
-          (i32.load
-           (i32.sub
-            (local.get $0)
-            (i32.const 8)
-           )
-          )
-         )
-         (i32.const 12)
-        )
-        (block
-         (br_if $case1
-          (i32.eq
-           (local.get $1)
-           (i32.const 20)
-          )
-         )
-         (br_if $case2
-          (i32.eq
-           (local.get $1)
-           (i32.const 5)
-          )
-         )
-         (br_if $case3
-          (i32.or
-           (i32.eq
-            (local.get $1)
-            (i32.const 25)
-           )
-           (i32.eq
-            (local.get $1)
-            (i32.const 24)
-           )
-          )
-         )
-         (br_if $case4
-          (i32.or
-           (i32.eq
-            (local.get $1)
-            (i32.const 29)
-           )
-           (i32.eq
-            (local.get $1)
-            (i32.const 28)
-           )
-          )
-         )
-         (br $default)
-        )
-       )
-       (return
-        (i32.load
-         (local.get $0)
-        )
-       )
-      )
-      (return
-       (call $~lib/as-scale-codec/Hash/Hash#toU8a
-        (local.get $0)
-       )
-      )
-     )
-     (return
-      (call $../../../assembly/buildins/UInt128/UInt128#toU8a
-       (local.get $0)
-      )
-     )
-    )
-    (local.set $1
-     (call $~lib/array/Array<u8>#constructor
-      (i32.load
-       (local.get $0)
-      )
-     )
-    )
-    (local.set $2
-     (f64.convert_i32_s
-      (i32.load
-       (local.get $0)
-      )
-     )
-    )
-    (call $~lib/array/Array<u8>#__set
-     (local.get $1)
-     (i32.const 0)
-     (local.tee $3
-      (i32.load offset=4
-       (local.get $0)
-      )
-     )
-    )
-    (local.set $0
-     (i32.const 1)
-    )
-    (loop $for-loop|1
-     (if
-      (f64.gt
-       (local.get $2)
-       (f64.convert_i32_u
-        (local.get $0)
-       )
-      )
-      (block
-       (call $~lib/array/Array<u8>#__set
-        (local.get $1)
-        (i32.and
-         (local.get $0)
-         (i32.const 255)
-        )
-        (i32.shr_s
-         (local.get $3)
-         (i32.shl
-          (local.get $0)
-          (i32.const 3)
-         )
-        )
-       )
-       (local.set $0
-        (i32.add
-         (local.get $0)
-         (i32.const 1)
-        )
-       )
-       (br $for-loop|1)
-      )
-     )
-    )
-    (return
-     (local.get $1)
-    )
-   )
-   (local.set $1
-    (call $~lib/array/Array<u8>#constructor
-     (i32.load
-      (local.get $0)
-     )
-    )
-   )
-   (local.set $2
-    (f64.convert_i32_s
-     (i32.load
-      (local.get $0)
-     )
-    )
-   )
-   (call $~lib/array/Array<u8>#__set
-    (local.get $1)
-    (i32.const 0)
-    (i32.wrap_i64
-     (local.tee $4
-      (i64.load offset=8
-       (local.get $0)
-      )
-     )
-    )
-   )
-   (local.set $0
-    (i32.const 1)
-   )
-   (loop $for-loop|10
-    (if
-     (f64.gt
-      (local.get $2)
-      (f64.convert_i32_u
-       (local.get $0)
-      )
-     )
-     (block
-      (call $~lib/array/Array<u8>#__set
-       (local.get $1)
-       (i32.and
-        (local.get $0)
-        (i32.const 255)
-       )
-       (i32.wrap_i64
-        (i64.shr_u
-         (local.get $4)
-         (i64.extend_i32_u
-          (i32.and
-           (i32.shl
-            (local.get $0)
-            (i32.const 3)
-           )
-           (i32.const 255)
-          )
-         )
-        )
-       )
-      )
-      (local.set $0
-       (i32.add
-        (local.get $0)
-        (i32.const 1)
-       )
-      )
-      (br $for-loop|10)
-     )
-    )
-   )
-   (return
-    (local.get $1)
-   )
-  )
-  (unreachable)
  )
 )
