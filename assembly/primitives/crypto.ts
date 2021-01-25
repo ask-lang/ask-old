@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec, Hash } from "as-scale-codec";
+import { Codec, Hash } from "../deps/as-scale-codec";
 import { seal_hash_blake2_128, seal_hash_blake2_256, seal_hash_keccak_256, seal_hash_sha2_256, seal_random } from "../seal/seal0";
 import { typedToArray } from "../utils/ArrayUtils";
 import { ReadBuffer } from "./readbuffer";

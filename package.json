@@ -30,6 +30,5 @@
     "typescript": "^4.1.2"
   },
   "dependencies": {
-    "as-scale-codec": "^0.2.2"
   }
 }

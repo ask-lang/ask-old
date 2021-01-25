@@ -3,11 +3,11 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
 import { AccountId, Balance, TransferBalance } from "../env";
 import { ReturnCode } from "../primitives/alias";
 import { Callable } from "./Callable";
 import { u128 } from "as-bignum";
+import { Codec } from "../deps/as-scale-codec";
 /**
  * @class Account
  * Class Account stands for an address, which should be a storagable type.

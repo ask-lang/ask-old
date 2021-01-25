@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { Codec } from "../deps/as-scale-codec";
 import { Crypto } from "../primitives/crypto";
 
 export class Abi {

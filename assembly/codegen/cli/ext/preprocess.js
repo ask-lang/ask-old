@@ -30,7 +30,7 @@ Handlebars.registerHelper("selector", function (context, options) {
 function outputCode(abiInfo, baseDir) {
   // console.log("===========")
   // console.log(abiInfo.exportDef);
-  let mainTpl = fs.readFileSync(baseDir + "/cli/ext/tpl/main.tpl", { encoding: "utf8" });
+  let mainTpl = fs.readFileSync(__dirname+ "/tpl/main.tpl", { encoding: "utf8" });
   const render = Handlebars.compile(mainTpl);
   const output = render(abiInfo);
   console.log("output", output)
@@ -39,7 +39,7 @@ function outputCode(abiInfo, baseDir) {
 
 
 function outputAbi(abiInfo, baseDir) {
-  let abiTpl = fs.readFileSync(baseDir + "/cli/ext/tpl/abi.tpl", { encoding: "utf8" });
+  let abiTpl = fs.readFileSync(__dirname + "/tpl/abi.tpl", { encoding: "utf8" });
   const render = Handlebars.compile(abiTpl);
   const output = render(abiInfo);
   console.log("output", output)

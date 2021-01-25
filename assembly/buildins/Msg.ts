@@ -56,6 +56,10 @@ export class Msg {
     return this.value == u128.Zero;
   }
 
+  denyPayment(): void {
+    assert(this.value === u128.Zero, "It is a none payable function.")
+  }
+
   isSelector(selector: u8[]): bool {
     if (this.sig.length != selector.length) return false;
     return memory.compare(

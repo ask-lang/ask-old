@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Codec, Hash } from "as-scale-codec";
+import { Codec, Hash } from "../deps/as-scale-codec";
 import { AccountId } from "./AccountId";
 import { Balance } from "./Balance";
 import { BlockNumber } from "./BlockNumber";
