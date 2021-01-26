@@ -61,18 +61,17 @@ Handlebars.registerHelper("joinParams", function (context, options) {
 });
 
 // Write text (also fallback)
-function outputCode(abiInfo, baseDir) {
+function outputCode(abiInfo) {
   let mainTpl = fs.readFileSync(__dirname + "/tpl/main.tpl", { encoding: "utf8" });
   const render = Handlebars.compile(mainTpl);
   const output = render(abiInfo);
 
   let storeTpl = fs.readFileSync(__dirname + "/tpl/store.tpl", { encoding: "utf8" });
   const store = Handlebars.compile(storeTpl)(abiInfo);
-  console.log(store)
   return  store + output;
 }
 
-function outputAbi(abiInfo, baseDir) {
+function outputAbi(abiInfo) {
   let abiTpl = fs.readFileSync(__dirname + "/tpl/abi.tpl", { encoding: "utf8" });
   const render = Handlebars.compile(abiTpl);
   const output = render(abiInfo);

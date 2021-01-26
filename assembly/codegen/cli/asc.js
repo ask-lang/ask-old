@@ -864,12 +864,12 @@ exports.main = function main(argv, options, callback) {
 
     // Extension add START
     if (opts.sourceFile != null || !hasOutput) {
-      out = preprocess.outputCode(contractInfo, path.resolve(baseDir));
+      out = preprocess.outputCode(contractInfo);
       writeFile(opts.sourceFile, process.sourceText + out, baseDir);
     }
 
     if (opts.sourceFile != null || !hasOutput) {
-      out = preprocess.outputAbi(contractInfo, path.resolve(baseDir));
+      out = preprocess.outputAbi(contractInfo);
       writeFile(opts.abiFile, out, baseDir);
     }
 
