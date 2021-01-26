@@ -7,7 +7,7 @@
 使用方式:
 
 1. 在项目根目录下, 安装依赖: `npm install`
-2. 编译示例项目: `./src/codegen/bin/asc ./examples/preprocess/flipper.ts -p ./examples/preprocess/pre.ts -a ./examples/preprocess/abi.json` `
+2. 编译示例项目: `./assembly/codegen/bin/asc  ./examples/preprocess/origin.ts -p ./examples/preprocess/pre.ts -a ./examples/preprocess/abi.json` 
 
 状态:
 
