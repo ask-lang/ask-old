@@ -81,12 +81,9 @@ var assemblyscript;
     // note that this case will always trigger in recent node.js versions for typical installs
     // see: https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
     assemblyscript = dynrequire("../dist/assemblyscript.js");
-    // throw new Error();
-    // assemblyscript = require("assemblyscript");
   } catch (e) {
     try { // `asc` on the command line (unnecessary in recent node)
-      throw new Error();
-      assemblyscript = dynrequire("../dist/assemblyscript.js");
+      assemblyscript = require("assemblyscript");
     } catch (e) {
       try { // `asc` on the command line without dist files (unnecessary in recent node)
         dynrequire("ts-node").register({
@@ -96,7 +93,6 @@ var assemblyscript;
         });
         dynrequire("../src/glue/js");
         assemblyscript = dynrequire("../src");
-        console.log('load assemblyscript');
       } catch (e_ts) {
         try { // `require("dist/asc.js")` in explicit browser tests
           assemblyscript = dynrequire("./assemblyscript");
@@ -713,11 +709,11 @@ exports.main = function main(argv, options, callback) {
   }
 
   var module;
-  var abiInfo;
+  var contractInfo;
   stats.compileCount++;
   stats.compileTime += measure(() => {
     module = assemblyscript.compile(program);
-    abiInfo = assemblyscript.getAbiInfo(program);
+    contractInfo = assemblyscript.getContractInfo(program);
   });
   var numErrors = checkDiagnostics(program, stderr);
   if (numErrors) {
@@ -868,12 +864,12 @@ exports.main = function main(argv, options, callback) {
 
     // Extension add START
     if (opts.sourceFile != null || !hasOutput) {
-      out = preprocess.outputCode(abiInfo, path.resolve(baseDir));
+      out = preprocess.outputCode(contractInfo, path.resolve(baseDir));
       writeFile(opts.sourceFile, process.sourceText + out, baseDir);
     }
 
     if (opts.sourceFile != null || !hasOutput) {
-      out = preprocess.outputAbi(abiInfo, path.resolve(baseDir));
+      out = preprocess.outputAbi(contractInfo, path.resolve(baseDir));
       writeFile(opts.abiFile, out, baseDir);
     }
 
