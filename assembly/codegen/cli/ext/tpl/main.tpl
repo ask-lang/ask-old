@@ -10,7 +10,7 @@ export function deploy(): i32 {
     {{#each paramters}}
     let p{{_index}} = fnParameters.get<{{codecType}}>();
     {{/each}}
-    _{{../exportDef.contractName}}.{{methodName}}({{#joinParams paramters}}{{/joinParams}});
+    _{{../exportDef.contractName}}.{{methodName}}({{#joinParams paramters}}{{/joinParams}}{{ctrDefaultVals}});
   }
   {{/each}}
 }

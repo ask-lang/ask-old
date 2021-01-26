@@ -6425,6 +6425,8 @@ declare module "assemblyscript/src/ext/contract/base" {
         paramters: TypeNodeDesc[];
         hasReturnVal: boolean;
         returnType: TypeNodeDesc | undefined;
+        defaultVals: string[];
+        ctrDefaultVals: string;
     }
     export class TypeUtil {
         static typeWrapperMap: Map<string, string>;
