@@ -13,12 +13,14 @@ import { Storage } from "../../../assembly";
 import { UInt32 } from "../../../assembly/deps/as-scale-codec";
 import { ReturnData } from "../../../assembly/primitives/returndata";
 import { Log } from "../../../assembly/utils/Log";
+import { Gas } from "../../../assembly/buildins/Gas";
 /*
- * This is the contract template,
- * which will be processed by Preprocessor,
- * to generate metadata.json file and
- * the compilable target contract file.
- */
+* This is the contract template,
+* which will be processed by Preprocessor,
+* to generate metadata.json file and
+* the compilable target contract file.
+*/
+var msg = new Msg();
 
 // @storage
 class Stored {
@@ -57,27 +59,12 @@ class CrossCall {
   // @message
   callext(): u32 {
     let data = Abi.encode("addFunc", [new UInt32(1), new UInt32(2)]);
-    Log.println("data: ");
-    Log.printhex(data);
-
-    Log.println("account: ");
-    Log.printhex(this.stored.extLib.toU8a());
-
-    let val = this.stored.extLib.call(200000, u128.Zero, data);
-    Log.println("step2");
+    let val = this.stored.extLib.call(0, u128.Zero, data);
     let result = UInt32.fromU8a(val);
-    Log.println("step3");
-    // assert(result.unwrap() === 3, "calculate result error")
-    if (result.unwrap() === 3) {
-      Log.println("result is 3.");
-    } else {
-      Log.println("result is " + String.fromCharCode(result.unwrap() + 0x30));
-    }
     return result.unwrap();
   }
 }
 
-var msg = new Msg();
 
 export function deploy(): i32 {
 
