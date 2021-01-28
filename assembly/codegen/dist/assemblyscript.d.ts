@@ -1462,7 +1462,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a `constructor` expression. */
     export class ConstructorExpression extends IdentifierExpression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
@@ -1546,7 +1546,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a `null` expression. */
     export class NullExpression extends IdentifierExpression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
@@ -1566,7 +1566,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents an omitted expression, e.g. within an array literal. */
     export class OmittedExpression extends Expression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
@@ -1638,25 +1638,25 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a `super` expression. */
     export class SuperExpression extends IdentifierExpression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
     /** Represents a `this` expression. */
     export class ThisExpression extends IdentifierExpression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
     /** Represents a `true` expression. */
     export class TrueExpression extends IdentifierExpression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
     /** Represents a `false` expression. */
     export class FalseExpression extends IdentifierExpression {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
@@ -1678,7 +1678,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a unary postfix expression, e.g. a postfix increment. */
     export class UnaryPostfixExpression extends UnaryExpression {
-      constructor(
+        constructor(
         /** Operator token. */
         operator: Token, 
         /** Operand expression. */
@@ -1688,7 +1688,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a unary prefix expression, e.g. a negation. */
     export class UnaryPrefixExpression extends UnaryExpression {
-      constructor(
+        constructor(
         /** Operator token. */
         operator: Token, 
         /** Operand expression. */
@@ -1891,7 +1891,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents an empty statement, i.e., a semicolon terminating nothing. */
     export class EmptyStatement extends Statement {
-      constructor(
+        constructor(
         /** Source range. */
         range: Range);
     }
@@ -1913,7 +1913,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a value of an `enum` declaration. */
     export class EnumValueDeclaration extends VariableLikeDeclarationStatement {
-      constructor(
+        constructor(
         /** Simple name being declared. */
         name: IdentifierExpression, 
         /** Common flags indicating specific traits. */
@@ -2142,7 +2142,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents an `interfarce` declaration. */
     export class InterfaceDeclaration extends ClassDeclaration {
-      constructor(
+        constructor(
         /** Simple name being declared. */
         name: IdentifierExpression, 
         /** Array of decorators, if any. */
@@ -2162,7 +2162,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a method declaration within a `class`. */
     export class MethodDeclaration extends FunctionDeclaration {
-      constructor(
+        constructor(
         /** Simple name being declared. */
         name: IdentifierExpression, 
         /** Array of decorators, if any. */
@@ -2286,7 +2286,7 @@ declare module "assemblyscript/src/ast" {
     }
     /** Represents a variable declaration part of a {@link VariableStatement}. */
     export class VariableDeclaration extends VariableLikeDeclarationStatement {
-      constructor(
+        constructor(
         /** Simple name being declared. */
         name: IdentifierExpression, 
         /** Array of decorators, if any. */
@@ -4515,8 +4515,8 @@ declare module "assemblyscript/src/program" {
     }
     /** A type definition. */
     export class TypeDefinition extends TypedElement {
-      /** Constructs a new type definition. */
-      constructor(
+        /** Constructs a new type definition. */
+        constructor(
         /** Simple name. */
         name: string, 
         /** Parent element, usually a file or namespace. */
@@ -4526,15 +4526,15 @@ declare module "assemblyscript/src/program" {
         /** Pre-checked flags indicating built-in decorators. */
         decoratorFlags?: DecoratorFlags);
         /** Gets the associated type parameter nodes. */
-      get typeParameterNodes(): TypeParameterNode[] | null;
-      /** Gets the associated type node. */
-      get typeNode(): TypeNode;
-      lookup(name: string): Element | null;
+        get typeParameterNodes(): TypeParameterNode[] | null;
+        /** Gets the associated type node. */
+        get typeNode(): TypeNode;
+        lookup(name: string): Element | null;
     }
     /** A namespace that differs from a file in being user-declared with a name. */
     export class Namespace extends DeclaredElement {
-      /** Constructs a new namespace. */
-      constructor(
+        /** Constructs a new namespace. */
+        constructor(
         /** Simple name. */
         name: string, 
         /** Parent element, usually a file or another namespace. */
@@ -4543,12 +4543,12 @@ declare module "assemblyscript/src/program" {
         declaration: NamespaceDeclaration, 
         /** Pre-checked flags indicating built-in decorators. */
         decoratorFlags?: DecoratorFlags);
-      lookup(name: string): Element | null;
+        lookup(name: string): Element | null;
     }
     /** An enum. */
     export class Enum extends TypedElement {
-      /** Constructs a new enum. */
-      constructor(
+        /** Constructs a new enum. */
+        constructor(
         /** Simple name. */
         name: string, 
         /** Parent element, usually a file or namespace. */
@@ -4557,7 +4557,7 @@ declare module "assemblyscript/src/program" {
         declaration: EnumDeclaration, 
         /** Pre-checked flags indicating built-in decorators. */
         decoratorFlags?: DecoratorFlags);
-      lookup(name: string): Element | null;
+        lookup(name: string): Element | null;
     }
     /** Indicates the kind of an inlined constant value. */
     export const enum ConstantValueKind {
@@ -4599,8 +4599,8 @@ declare module "assemblyscript/src/program" {
     }
     /** An enum value. */
     export class EnumValue extends VariableLikeElement {
-      /** Constructs a new enum value. */
-      constructor(
+        /** Constructs a new enum value. */
+        constructor(
         /** Simple name. */
         name: string, 
         /** Parent enum. */
@@ -4617,8 +4617,8 @@ declare module "assemblyscript/src/program" {
     }
     /** A global variable. */
     export class Global extends VariableLikeElement {
-      /** Constructs a new global variable. */
-      constructor(
+        /** Constructs a new global variable. */
+        constructor(
         /** Simple name. */
         name: string, 
         /** Parent element, usually a file, namespace or static class. */
@@ -4778,8 +4778,8 @@ declare module "assemblyscript/src/program" {
     }
     /** A yet unresolved instance field prototype. */
     export class FieldPrototype extends DeclaredElement {
-      /** Constructs a new field prototype. */
-      constructor(
+        /** Constructs a new field prototype. */
+        constructor(
         /** Simple name. */
         name: string, 
         /** Parent class. */
@@ -4789,12 +4789,12 @@ declare module "assemblyscript/src/program" {
         /** Pre-checked flags indicating built-in decorators. */
         decoratorFlags?: DecoratorFlags);
         /** Gets the associated type node. */
-      get typeNode(): TypeNode | null;
-      /** Gets the associated initializer node. */
-      get initializerNode(): Expression | null;
-      /** Gets the associated parameter index. Set if declared as a constructor parameter, otherwise `-1`. */
-      get parameterIndex(): number;
-      lookup(name: string): Element | null;
+        get typeNode(): TypeNode | null;
+        /** Gets the associated initializer node. */
+        get initializerNode(): Expression | null;
+        /** Gets the associated parameter index. Set if declared as a constructor parameter, otherwise `-1`. */
+        get parameterIndex(): number;
+        lookup(name: string): Element | null;
     }
     /** A resolved instance field. */
     export class Field extends VariableLikeElement {
@@ -4861,15 +4861,15 @@ declare module "assemblyscript/src/program" {
     }
     /** A resolved index signature. */
     export class IndexSignature extends TypedElement {
-      /** Constructs a new index prototype. */
-      constructor(
+        /** Constructs a new index prototype. */
+        constructor(
         /** Parent class. */
         parent: Class);
         /** Obtains the getter instance. */
-      getGetterInstance(isUnchecked: boolean): Function | null;
-      /** Obtains the setter instance. */
-      getSetterInstance(isUnchecked: boolean): Function | null;
-      lookup(name: string): Element | null;
+        getGetterInstance(isUnchecked: boolean): Function | null;
+        /** Obtains the setter instance. */
+        getSetterInstance(isUnchecked: boolean): Function | null;
+        lookup(name: string): Element | null;
     }
     /** A yet unresolved class prototype. */
     export class ClassPrototype extends DeclaredElement {
@@ -4994,13 +4994,13 @@ declare module "assemblyscript/src/program" {
     }
     /** A yet unresolved interface. */
     export class InterfacePrototype extends ClassPrototype {
-      /** Constructs a new interface prototype. */
-      constructor(name: string, parent: Element, declaration: InterfaceDeclaration, decoratorFlags: DecoratorFlags);
+        /** Constructs a new interface prototype. */
+        constructor(name: string, parent: Element, declaration: InterfaceDeclaration, decoratorFlags: DecoratorFlags);
     }
     /** A resolved interface. */
     export class Interface extends Class {
-      /** Constructs a new interface. */
-      constructor(
+        /** Constructs a new interface. */
+        constructor(
         /** Name incl. type parameters, i.e. `Foo<i32>`. */
         nameInclTypeParameters: string, 
         /** The respective class prototype. */
@@ -6152,8 +6152,8 @@ declare module "assemblyscript/src/definitions" {
     }
     /** A WebIDL definitions builder. */
     export class IDLBuilder extends ExportsWalker {
-      /** Builds WebIDL definitions for the specified program. */
-      static build(program: Program): string;
+        /** Builds WebIDL definitions for the specified program. */
+        static build(program: Program): string;
         private sb;
         private indentLevel;
         /** Constructs a new WebIDL builder. */
@@ -6171,8 +6171,8 @@ declare module "assemblyscript/src/definitions" {
     }
     /** A TypeScript definitions builder. */
     export class TSDBuilder extends ExportsWalker {
-      /** Builds TypeScript definitions for the specified program. */
-      static build(program: Program): string;
+        /** Builds TypeScript definitions for the specified program. */
+        static build(program: Program): string;
         private sb;
         private indentLevel;
         /** Constructs a new WebIDL builder. */
@@ -6191,12 +6191,12 @@ declare module "assemblyscript/src/definitions" {
 }
 declare module "assemblyscript/src/ext/collectionutil" {
     export class Collections {
-      /**
+        /**
          * Check the array is empty
          * @param arr parameter array
          */
-      static isEmptyArray<T>(arr: T[]): boolean;
-      static newArray<T>(arg1: T): T[];
+        static isEmptyArray<T>(arr: T[]): boolean;
+        static newArray<T>(arg1: T): T[];
     }
 }
 declare module "assemblyscript/src/ext/astutil" {
@@ -6204,44 +6204,44 @@ declare module "assemblyscript/src/ext/astutil" {
     import { Range } from "assemblyscript/src/tokenizer";
     import { ClassPrototype, Element, ElementKind } from "assemblyscript/src/program";
     export class AstUtil {
-      /**
+        /**
          * Check the statment weather have the specify the decorator
          * @param statement Ast declaration statement
          * @param kind The specify decorators
          */
-      static haveSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean;
-      static getSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): DecoratorNode | null;
-      static isString(typeName: string): boolean;
-      /**
+        static haveSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean;
+        static getSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): DecoratorNode | null;
+        static isString(typeName: string): boolean;
+        /**
          * Get the node internal name
          * @param node The program node
          */
-      static getInternalName(node: Node): string;
-      /**
+        static getInternalName(node: Node): string;
+        /**
          * Get the basic type name
          * If the type name is string[], so the basic type name is string
          * @param declareType
          */
-      static getArrayTypeArgument(declareType: string): string;
-      /**
+        static getArrayTypeArgument(declareType: string): string;
+        /**
          * Test the declare type whether is array type or not.
          * @param declareType The declare type
          */
-      static isArrayType(declareType: string): boolean;
-      /**
+        static isArrayType(declareType: string): boolean;
+        /**
          * Whether the declare type is map
          * @param declareType the declare type
          */
-      static isMapType(declareType: string): boolean;
-      /**
+        static isMapType(declareType: string): boolean;
+        /**
          * Test the class whether to implement the Serializable interface or not.
          */
-      static impledSerializable(classPrototype: ClassPrototype | null): boolean;
-      /**
+        static impledSerializable(classPrototype: ClassPrototype | null): boolean;
+        /**
          * Test the class whetherto implement the Returnable interface or not.
          * @param classDeclaration The class declaration
          */
-      static impledReturnable(classDeclaration: ClassDeclaration): boolean;
+        static impledReturnable(classDeclaration: ClassDeclaration): boolean;
         private static impledInterface;
         /**
          * Check the classPrototype whther have the contract class.
@@ -6253,7 +6253,7 @@ declare module "assemblyscript/src/ext/astutil" {
          * Check the element whether is action function prototype.
          * @param element
          */
-        static isActionFnPrototype(element: Element): boolean;
+        static isMessageFuncPrototype(element: Element): boolean;
         /**
         * Check the element whether is action function prototype.
         * @param element
@@ -6277,11 +6277,13 @@ declare module "assemblyscript/src/ext/astutil" {
         CLASS = 4
     }
     export class TypeNodeDesc {
+        typeKind: AbiTypeEnum | undefined;
         abiType: AbiTypeEnum | undefined;
         typeName: string;
-        codecType: string | undefined;
+        codecType: string;
         originalType: string;
-        defaultVal: string | undefined;
+        defaultVal: string;
+        index: number;
     }
     export class TypeNodeAnalyzer extends TypeNodeDesc {
         parent: Element;
@@ -6289,7 +6291,7 @@ declare module "assemblyscript/src/ext/astutil" {
         subTypes: TypeNodeAnalyzer[];
         constructor(parent: Element, typeNode: NamedTypeNode);
         getDeclareType(): string;
-        isVoid(): boolean;
+        isReturnVoid(): boolean;
         get abiTypeEnum(): AbiTypeEnum;
         isArray(): boolean;
         getArrayArgAbiTypeEnum(): AbiTypeEnum;
@@ -6322,18 +6324,19 @@ declare module "assemblyscript/src/ext/astutil" {
 }
 declare module "assemblyscript/src/ext/primitiveutil" {
     export class Strings {
-      /**
+        /**
          * Judge the string whetehr aroud by qutation or not.
          * The charcode of '"' is 0x22
          * @param str The string to judge
          */
-      static isAroundQuotation(str: string): boolean;
+        static isAroundQuotation(str: string): boolean;
         static EMPTY: string;
         /**
          * If the string around quotation, remove the quotation.
          * @param str The source string
          */
         static removeQuotation(str: string): string;
+        static lowerFirstCase(str: string): string;
     }
     export class AbiUtils {
         private static DATABASE_CHARSETS;
@@ -6372,7 +6375,7 @@ declare module "assemblyscript/src/ext/primitiveutil" {
         getContent(): string[];
     }
     export class Verify {
-      static verify(expression: boolean, message: string): void;
+        static verify(expression: boolean, message: string): void;
     }
 }
 declare module "assemblyscript/src/ext/inserter" {
@@ -6415,57 +6418,85 @@ declare module "assemblyscript/src/ext/inserter" {
         getInsertPoints(): InsertPoint[];
     }
 }
-declare module "assemblyscript/src/ext/generator" {
-    import { NamedTypeNode } from "assemblyscript/src/ast";
+declare module "assemblyscript/src/ext/contract/base" {
+    import { TypeNodeDesc } from "assemblyscript/src/ext/astutil";
+    export class MethodDef {
+        methodName: string;
+        paramters: TypeNodeDesc[];
+        hasReturnVal: boolean;
+        returnType: TypeNodeDesc | undefined;
+        defaultVals: string[];
+        ctrDefaultVals: string;
+    }
+    export class TypeUtil {
+        static typeWrapperMap: Map<string, string>;
+        static defaultValMap: Map<string, string>;
+        static getWrapperType(asType: string): string;
+        static getDefaultVal(asType: string): string;
+    }
+}
+declare module "assemblyscript/src/ext/annotation" {
     import { FunctionPrototype, ClassPrototype, DeclaredElement, FieldPrototype } from "assemblyscript/src/program";
-    import { Indent } from "assemblyscript/src/ext/primitiveutil";
-    import { ExportDef, ExportMethod } from "assemblyscript/src/ext/abi";
-    export class ExportGenerator {
+    import { ContractExportDef, StorageDef } from "assemblyscript/src/ext/abi";
+    import { MethodDef } from "assemblyscript/src/ext/contract/base";
+    export class ContractInterperter {
         private classPrototype;
         private className;
         private instanceName;
+        private exportDef;
         constructor(clzPrototype: ClassPrototype);
-        static typeWrapperMap: Map<string, string>;
-        static defaultValMap: Map<string, string>;
-        static getWrapperType(asType: string): string | undefined;
-        generateExportDef(): ExportDef;
-        static generateMethod(instaceName: string, funcProto: FunctionPrototype): ExportMethod;
+        getExportMethods(): ContractExportDef;
+        private resolveDeployerFuncPrototype;
+        getMethodDesc(funcProto: FunctionPrototype): MethodDef;
     }
     export class StorageGenerator {
         private classPrototype;
-        private fieldIndents;
-        private methodIndents;
+        storageDef: StorageDef;
         constructor(clzPrototype: ClassPrototype);
-        getBody(): Indent;
         resolveInstanceMembers(instanceMembers: Map<string, DeclaredElement>): void;
         resolveFieldPrototype(fieldPrototype: FieldPrototype): void;
-        getField(fieldName: string, key: string, typeNode: NamedTypeNode): Indent;
-        setFiled(fieldName: string, key: string, typeNode: NamedTypeNode): Indent;
     }
 }
 declare module "assemblyscript/src/ext/abi" {
     import { InsertPoint } from "assemblyscript/src/ext/inserter";
+    import { MethodDef } from "assemblyscript/src/ext/contract/base";
     import { Element, ClassPrototype, Program } from "assemblyscript/src/program";
     import { Expression } from "assemblyscript/src/ast";
-    import { TypeNodeDesc } from "assemblyscript/src/ext/astutil";
-    import { Indent } from "assemblyscript/src/ext/primitiveutil";
     class StructDef {
         name: string;
         fields: Array<Object>;
         base: string;
         addField(name: string, type: string): void;
     }
-    export class ExportMethod {
-        methodName: string;
-        paramters: TypeNodeDesc[];
-        hasReturnVal: boolean;
-        returnType: TypeNodeDesc | undefined;
-    }
-    export class ExportDef {
+    export class ContractExportDef {
         className: string;
-        deployers: ExportMethod[];
-        messages: ExportMethod[];
+        contractName: string;
+        version: string;
+        deployers: MethodDef[];
+        messages: MethodDef[];
         constructor(clzName: string);
+    }
+    export class TypePair {
+        key: string;
+        ty: number;
+    }
+    export class LayoutDef {
+    }
+    export class CellLayoutDef extends LayoutDef {
+        cell: TypePair;
+    }
+    export class FieldDef {
+        layout: LayoutDef;
+        name: string;
+        fieldType: string;
+        fieldCodecType: string | undefined;
+        storeKey: string;
+        varName: string;
+        path: string;
+    }
+    export class StorageDef {
+        className: string;
+        fields: FieldDef[];
     }
     class AbiAliasDef {
         new_type_name: string;
@@ -6502,17 +6533,24 @@ declare module "assemblyscript/src/ext/abi" {
         actions: Array<ActionDef>;
         tables: Array<TableDef>;
     }
-    export class AbiInfo {
+    export class TypeDef {
+        type: string;
+        index: number;
+    }
+    export class ContractInfo {
         abiInfo: AbiDef;
-        dispatch: string;
         program: Program;
         abiTypeLookup: Map<string, string>;
         typeAliasSet: Set<string>;
         structsLookup: Map<string, StructDef>;
         elementLookup: Map<string, Element>;
-        exportIndent: Indent;
-        exportDef: ExportDef;
         insertPointsLookup: Map<string, Array<InsertPoint>>;
+        exportDef: ContractExportDef;
+        stores: StorageDef[];
+        typeMap: Map<string, TypeDef>;
+        types: TypeDef[];
+        typeIndex: number;
+        fields: FieldDef[];
         constructor(program: Program);
         private addAbiTypeAlias;
         resolveDatabaseDecorator(clsProto: ClassPrototype): void;
@@ -6547,9 +6585,11 @@ declare module "assemblyscript/src/ext/abi" {
         private resolveFunctionPrototype;
         private isContractClassPrototype;
         private isStoreClassPrototype;
+        private pickUpAbiTypes;
+        private getIndexOfAbiTypes;
         private resolve;
     }
-    export function getAbiInfo(program: Program): AbiInfo;
+    export function getContractInfo(program: Program): ContractInfo;
     export {};
 }
 declare module "assemblyscript/src/extra/ast" {
@@ -6563,8 +6603,8 @@ declare module "assemblyscript/src/extra/ast" {
     import { Node, Source, TypeNode, NamedTypeNode, FunctionTypeNode, TypeName, TypeParameterNode, IdentifierExpression, LiteralExpression, FloatLiteralExpression, IntegerLiteralExpression, StringLiteralExpression, RegexpLiteralExpression, ArrayLiteralExpression, AssertionExpression, BinaryExpression, CallExpression, CommaExpression, ElementAccessExpression, FunctionExpression, NewExpression, ParenthesizedExpression, PropertyAccessExpression, TernaryExpression, UnaryPostfixExpression, UnaryExpression, UnaryPrefixExpression, ClassExpression, ObjectLiteralExpression, BlockStatement, BreakStatement, ContinueStatement, DoStatement, EmptyStatement, ExportImportStatement, ExportStatement, ExportDefaultStatement, ExpressionStatement, ForStatement, ForOfStatement, IfStatement, ImportStatement, InstanceOfExpression, ReturnStatement, SwitchStatement, ThrowStatement, TryStatement, VariableStatement, WhileStatement, DeclarationStatement, ClassDeclaration, EnumDeclaration, EnumValueDeclaration, FieldDeclaration, FunctionDeclaration, ImportDeclaration, InterfaceDeclaration, MethodDeclaration, NamespaceDeclaration, TypeDeclaration, VariableDeclaration, DecoratorNode, ParameterNode, ExportMember, SwitchCase, IndexSignatureNode } from "assemblyscript/src/ast";
     /** An AST builder. */
     export class ASTBuilder {
-      /** Rebuilds the textual source from the specified AST, as far as possible. */
-      static build(node: Node): string;
+        /** Rebuilds the textual source from the specified AST, as far as possible. */
+        static build(node: Node): string;
         private sb;
         private indentLevel;
         visitNode(node: Node): void;
@@ -6800,8 +6840,42 @@ declare module "assemblyscript/src/index" {
     export { util };
     export * from "assemblyscript/src/util/index";
 }
+declare module "assemblyscript/src/ext/analyzer" {
+    export class ContractAnalyzar {
+    }
+}
 declare module "assemblyscript/src/ext/index" {
     export * from "assemblyscript/src/ext/abi";
+}
+declare module "assemblyscript/src/ext/contract/metadata" {
+    export class MetadataDef {
+    }
+}
+declare module "assemblyscript/src/ext/contract/storage" {
+    export class StructDef {
+    }
+    export class TypePair {
+        key: string;
+        ty: number;
+    }
+    export class StorageDef {
+        className: string;
+        fields: FieldDef[];
+    }
+    export class LayoutDef {
+    }
+    export class CellLayoutDef extends LayoutDef {
+        cell: TypePair;
+    }
+    export class FieldDef {
+        layout: LayoutDef;
+        name: string;
+        fieldType: string;
+        fieldCodecType: string | undefined;
+        storeKey: string;
+        varName: string;
+        path: string;
+    }
 }
 /**
  * @fileoverview Collections glue code for TypeScript.
