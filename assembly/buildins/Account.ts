@@ -32,7 +32,7 @@ export class Account implements Codec {
     TransferBalance(this._id, value);
   }
 
-  call(gas: u64, value: u128, data: u8[]): u8[] {
+  call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[] {
     let callable = new Callable(this._id);
     let ret = callable.gas(gas).value(value).data(data).call();
     assert(ret == ReturnCode.Success, "call external message failed.");

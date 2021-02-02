@@ -59,7 +59,7 @@ class CrossCall {
   // @message
   callext(): u32 {
     let data = Abi.encode("addFunc", [new UInt32(1), new UInt32(2)]);
-    let val = this.stored.extLib.call(0, u128.Zero, data);
+    let val = this.stored.extLib.call(data);
     let result = UInt32.fromU8a(val);
     return result.unwrap();
   }
