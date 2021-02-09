@@ -18,7 +18,6 @@ var msg: Msg = new Msg();
 
 class Stored {
   private _flag: Bool | null;
-  private _arrary: Array<T> = new Array();
 
   constructor() {
     this._flag = null;

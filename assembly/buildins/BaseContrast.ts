@@ -5,7 +5,7 @@
 
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_address } from "../seal/seal0";
-import { Account } from "./Account";
+import { Account } from "./AccountId";
 import { Msg } from "./Msg";
 
 export class BaseContract {

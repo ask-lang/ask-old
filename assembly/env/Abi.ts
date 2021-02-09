@@ -5,7 +5,6 @@
 
 import { Codec } from "../deps/as-scale-codec";
 import { Crypto } from "../primitives/crypto";
-import { Log } from "../utils/Log";
 
 export class Abi {
   static encode(sig: string, args: Codec[]): u8[] {
