@@ -4,16 +4,18 @@
  */
 
 
-import { Account } from "../../../assembly/buildins/Account";
-import { Abi } from "../../../assembly/env/Abi";
-import { u128 } from "as-bignum";
-import { Msg } from "../../../assembly/buildins/Msg";
-import { FnParameters } from "../../../assembly/buildins/FnParameters";
-import { Storage } from "../../../assembly";
-import { UInt32 } from "../../../assembly/deps/as-scale-codec";
-import { ReturnData } from "../../../assembly/primitives/returndata";
-import { Log } from "../../../assembly/utils/Log";
-import { Gas } from "../../../assembly/buildins/Gas";
+import {
+  AccountId,
+  Abi,
+  u128,
+  Msg,
+  FnParameters,
+  Storage,
+  UInt32,
+  ReturnData,
+  Log,
+  Gas
+} from "../../../assembly/";
 /*
 * This is the contract template,
 * which will be processed by Preprocessor,
@@ -24,23 +26,23 @@ var msg = new Msg();
 
 // @storage
 class Stored {
-  _extLib: Account | null;
+  _extLib: AccountId | null;
 
   constructor() {
     this._extLib = null;
   }
 
-  get extLib(): Account {
+  get extLib(): AccountId {
     if (this._extLib === null) {
-      const stora = new Storage<Account>("flipper.flag");
+      const stora = new Storage<AccountId>("flipper.flag");
       this._extLib = stora.load();
     }
     return this._extLib!;
   }
 
-  set extLib(v: Account) {
+  set extLib(v: AccountId) {
     this._extLib = v;
-    const stora = new Storage<Account>("flipper.flag");
+    const stora = new Storage<AccountId>("flipper.flag");
     stora.store(this._extLib!);
   }
 }
@@ -52,7 +54,7 @@ class CrossCall {
   constructor() { this.stored = new Stored(); }
 
   // @deployer
-  onDeploy(exblib: Account): void {
+  onDeploy(exblib: AccountId): void {
     this.stored.extLib = exblib;
   }
 
@@ -75,10 +77,10 @@ export function deploy(): i32 {
 
   if (msg.isSelector(ctorWithParams)) {
     let fnP = new FnParameters(msg.data);
-    let acct = fnP.get<Account>();
+    let acct = fnP.get<AccountId>();
     callext.onDeploy(acct);
   } else if (msg.isSelector(ctorWithoutParams)) {
-    callext.onDeploy(new Account());
+    callext.onDeploy(new AccountId());
   } else {
     // nop
   }

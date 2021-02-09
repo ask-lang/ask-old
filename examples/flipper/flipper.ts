@@ -3,12 +3,12 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Bool } from "as-scale-codec";
 import { Storage } from "../../assembly/storage";
 import { Log } from "../../assembly/utils/Log";
 import { ReturnData } from "../../assembly/primitives/returndata";
 import { Msg } from "../../assembly/buildins/Msg";
 import { FnParameters } from "../../assembly/buildins/FnParameters";
+import { Bool, Codec } from "../../assembly/deps/as-scale-codec";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,
@@ -18,6 +18,7 @@ var msg: Msg = new Msg();
 
 class Stored {
   private _flag: Bool | null;
+  private _arrary: Array<T> = new Array();
 
   constructor() {
     this._flag = null;

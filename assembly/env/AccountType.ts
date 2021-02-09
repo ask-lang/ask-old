@@ -3,4 +3,4 @@
  * @author liangqin.fan@gmail.com
  */
 
-export type AccountId = Array<u8>;
+export type AccountType = Array<u8>;

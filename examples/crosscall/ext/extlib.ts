@@ -3,11 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { FnParameters } from "../../../assembly/buildins/FnParameters";
-import { Msg } from "../../../assembly/buildins/Msg";
-import { UInt32 } from "../../../assembly/deps/as-scale-codec";
-import { ReturnData } from "../../../assembly/primitives/returndata";
-import { Log } from "../../../assembly/utils/Log";
+import { FnParameters, Msg, UInt32, ReturnData, Log } from "../../../assembly/";
 
  var msg = new Msg();
 // @contract
