@@ -3,32 +3,32 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { AccountId, Balance, TransferBalance } from "../env";
+import { AccountType, BalanceType, TransferBalance } from "../env";
 import { ReturnCode } from "../primitives/alias";
 import { Callable } from "./Callable";
 import { u128 } from "as-bignum";
 import { Codec } from "../deps/as-scale-codec";
 /**
- * @class Account
- * Class Account stands for an address, which should be a storagable type.
+ * @class AccountId
+ * Class AccountId stands for an address, which should be a storagable type.
  */
 
 const BytesCount = 32;
-export class Account implements Codec {
+export class AccountId implements Codec {
 
-  private _id: AccountId;
+  private _id: AccountType;
 
   constructor(bytes: u8[] = []) {
     this._id = new Array<u8>(BytesCount);
     memory.copy(changetype<usize>(this._id.buffer), changetype<usize>(bytes.buffer), BytesCount);
   }
 
-  static from(uarr: u8[]): Account {
-    return new Account(uarr);
+  static from(uarr: u8[]): AccountId {
+    return new AccountId(uarr);
   }
 
   // transfer from `contract.address` to this.account
-  transfer(value: Balance): void {
+  transfer(value: BalanceType): void {
     TransferBalance(this._id, value);
   }
 
@@ -48,18 +48,18 @@ export class Account implements Codec {
   }
 
   populateFromBytes(bytes: u8[], index: i32 = 0): void {
-    assert(bytes.length >= BytesCount, "Can not populate AccountId from bytes.");
+    assert(bytes.length >= BytesCount, "Can not populate AccountType from bytes.");
     this._id = bytes.slice(index, index + BytesCount);
   }
 
-  eq(other: Account): bool {
+  eq(other: AccountId): bool {
     return memory.compare(
       changetype<usize>(this._id.buffer),
       changetype<usize>(other.buffer),
       BytesCount) === 0;
   }
 
-  notEq(other: Account): bool {
+  notEq(other: AccountId): bool {
     return memory.compare(
       changetype<usize>(this._id.buffer),
       changetype<usize>(other.buffer),

@@ -4,12 +4,13 @@
  */
 
 import { UInt64 } from "../deps/as-scale-codec";
+import { BlockNumber } from "../env";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_block_number, seal_now } from "../seal/seal0";
 
 export class Block {
   private _timestamp: UInt64 | null = null;
-  private _number   : UInt64 | null = null;
+  private _number   : BlockNumber | null = null;
 
   get timestamp(): u64 {
     if (this._timestamp === null) {

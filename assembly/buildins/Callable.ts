@@ -9,11 +9,12 @@ import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_call } from "../seal/seal0";
 import { UInt128, UInt64 } from "../deps/as-scale-codec/";
 import { u128 } from "as-bignum";
+import { ValueType } from "../env/ValueType";
 
 export class Callable {
   private _callee: u8[] | null = null;
   private _gas: UInt64 | null = null;
-  private _value: UInt128 | null = null;
+  private _value: ValueType | null = null;
   private _data: u8[] | null = null;
   private _outBuffer: ReadBuffer | null = null;
 

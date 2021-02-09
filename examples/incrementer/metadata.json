@@ -1,0 +1,106 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "",
+    "language": "ask! 1.0.0-dev",
+    "compiler": "asc 1.49.0-nightly"
+  },
+  "contract": {
+    "name": "Incrementer",
+    "version": "1.0",
+    "authors": [
+      "[your_name] <[your_email]>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [
+          {
+            "name": "",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 1
+            }
+          },
+        ],
+        "docs": [
+          ""
+        ],
+        "name": [
+          "onDeploy"
+        ],
+        "selector": "0xd183512b"
+      },
+      {
+        "args": [
+        ],
+        "docs": [
+          ""
+        ],
+        "name": [
+          "onDeploy"
+        ],
+        "selector": "0xd183512b"
+      }
+    ],
+    "docs": [],
+    "events": [],
+    "messages": [
+      {
+        "args": [
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "inc"
+        ],
+        "payable": false,
+        "returnType": {
+        },
+        "selector": "0x1e5ca456"
+      },
+      {
+        "args": [
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "get"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u32"
+          ],
+          "type": 
+        },
+        "selector": "0x1e5ca456"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+        {
+          "layout": {
+            "cell": {
+              "key": "0x7731ef81a5a4ab0de057d389664e9d2c61fdb67b3782dd355002c03f5441dbbfa34bc303aca41b045d5ee8130c425826343987a57decd903d850da7468222693",
+              "ty": 1
+            }
+          },
+          "name": "value"
+        }
+      ]
+    }
+  },
+  "types": [
+    {
+      "def": {
+        "primitive": "u32"
+      }
+    }
+  ]
+}
