@@ -6,25 +6,25 @@
     "compiler": "asc 1.49.0-nightly"
   },
   "contract": {
-    "name": "{{exportDef.className}}",
-    "version": "{{exportDef.version}}",
+    "name": "{{contract.name}}",
+    "version": "{{contract.version}}",
     "authors": [
       "[your_name] <[your_email]>"
     ]
   },
   "spec": {
     "constructors": [
-      {{#each exportDef.deployers}}
+      {{#each contract.cntrFuncDefs}}
       {
         "args": [
-          {{#each paramters}}
+          {{#each parameters}}
           {
-            "name": "{{typeName}}",
+            "name": "{{name}}",
             "type": {
               "displayName": [
-                "{{originalType}}"
+                "{{type.originalType}}"
               ],
-              "type": {{index}}
+              "type": {{type.index}}
             }
           }{{#if isMid}},{{/if}}
           {{/each}}
@@ -42,17 +42,17 @@
     "docs": [],
     "events": [],
     "messages": [
-      {{#each exportDef.messages}}
+      {{#each contract.msgFuncDefs}}
       {
         "args": [
-          {{#each paramters}}
+          {{#each parameters}}
           {
-            "name": "{{typeName}}",
+            "name": "{{name}}",
             "type": {
               "displayName": [
-                "{{originalType}}"
+                "{{type.originalType}}"
               ],
-              "type": {{index}}
+              "type": {{type.index}}
             }
           }{{#if isMid}},{{/if}}
           {{/each}}
@@ -97,7 +97,7 @@
     {{#each types}}
     {
       "def": {
-        "primitive": "{{type}}"
+        "primitive": "{{name}}"
       }
     }
     {{/each}}
