@@ -21,7 +21,7 @@ class Incrementer {
 
   constructor() { this.stored = new Stored(); }
 
-  @deployer
+  @constructor
   onDeploy(initFlag: u32): void {
     this.stored.value = initFlag;
   }

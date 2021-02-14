@@ -10,7 +10,7 @@ import { FnParameters, Msg, UInt32, ReturnData, Log } from "../../../assembly/";
 class ExtLib {
   constructor() { }
 
-  // @deployer
+  // @constructor
   onDeploy(): void {
   }
 

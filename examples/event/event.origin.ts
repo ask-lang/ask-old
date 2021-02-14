@@ -21,7 +21,7 @@ class EventEmitter {
 
   constructor() { }
 
-  @deployer
+  @constructor
   onDeploy(): void {
   }
 

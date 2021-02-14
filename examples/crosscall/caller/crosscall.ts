@@ -53,7 +53,7 @@ class CrossCall {
 
   constructor() { this.stored = new Stored(); }
 
-  // @deployer
+  // @constructor
   onDeploy(exblib: AccountId): void {
     this.stored.extLib = exblib;
   }
