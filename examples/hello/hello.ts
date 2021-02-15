@@ -12,11 +12,10 @@ class Planets {
 
 @contract
 class SolarSystem {
-  private stored: Planets;
+  protected stored: Planets;
 
   constructor() {
     this.stored = new Planets();
-    this.default();
   }
 
   @constructor
@@ -28,14 +27,14 @@ class SolarSystem {
 
   @message
   set(name: string, radius: u32, isdwarf: boolean): void {
-    if (this.stored.name != name) {
+    if (this.stored.isdwarf !== isdwarf) {
       this.stored.name = name;
       this.stored.radius = radius;
       this.stored.isdwarf = isdwarf;
     }
   }
 
-  @message(payable, mutates = false, selector = "0x0a0b0c0d")
+  @message(mutates = false, selector = "0x0a0b0c0d")
   getRadius(): u32 {
     return this.stored.radius;
   }

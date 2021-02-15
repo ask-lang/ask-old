@@ -3,8 +3,6 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt128 } from "../deps/as-scale-codec";
-
 /**
  * ReturnCode stands for the status when you call a host api.
  */
@@ -34,6 +32,3 @@ export enum ReturnCode {
   /// or is a tombstone.
   NotCallable = 8,
 }
-
-export type GasCount = UInt128;
-export type BalanceCount = UInt128;

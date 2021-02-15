@@ -40,7 +40,7 @@ export class Storage<T extends Codec> {
     );
     // if read storage from native successfully, then populate it.
     // otherwise let it alon with default constructed value.
-    if (status == ReturnCode.Success && readBuf.readSize == len) {
+    if (status == ReturnCode.Success && readBuf.readSize <= len) {
       value.populateFromBytes(readBuf.valueBytes, 0);
     }
 

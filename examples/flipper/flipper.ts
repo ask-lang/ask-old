@@ -83,9 +83,10 @@ export function deploy(): i32 {
     // more parameters
     // const s: UInt32 = fnParameters.get<UInt32>();
 
-    flipper.onDeploy(v.unwrap());
+    // flipper.onDeploy(v.unwrap());
+    flipper.default(a, b, c);
   } else if (msg.isSelector(ctorWithoutParams)) {
-    flipper.onDeploy(false);
+    // flipper.onDeploy(false);
   } else {
     // nop
   }
