@@ -31,6 +31,15 @@ export class ScaleString extends ByteArray {
         }
     }
     /**
+     * @description Returns encoded byte length of the type
+     */
+    public encodedLength(): i32 {
+        // set default buffer size to 1024 while read from native
+        if (this._valueStr === "") return 1024;
+        else return super.encodedLength();
+    }
+
+    /**
      * @description Non-static constructor method used to populate defined properties of the model
      * @param bytes SCALE encoded bytes
      * @param index index to start decoding the bytes from
@@ -55,8 +64,8 @@ export class ScaleString extends ByteArray {
 
     /**
      * Internal private function to compute the string value from the bytes
-     * @param bytes 
-     * @param index 
+     * @param bytes
+     * @param index
      */
     static _computeValueStr(bytes: u8[], index: i32 = 0): string {
         const len = Bytes.decodeCompactInt(bytes, index);

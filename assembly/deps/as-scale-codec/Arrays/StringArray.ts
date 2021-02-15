@@ -34,7 +34,7 @@ export class StringArray extends AbstractArray<ScaleString, string>{
             encodedStringLength
         )
     }
-    
+
     /**
      * @description Returns encoded byte length of the type
      */
@@ -56,7 +56,7 @@ export class StringArray extends AbstractArray<ScaleString, string>{
         const bytesReader = new BytesReader(bytes.slice(index));
         const data = bytesReader.readInto<CompactInt>();
 
-        for(let i: i32 = 0; i < data.unwrap(); i++){
+        for(let i: i32 = 0; i < i32(data.unwrap()); i++){
             const element: ScaleString = bytesReader.readInto<ScaleString>();
             this.values.push(element.toString());
         }
