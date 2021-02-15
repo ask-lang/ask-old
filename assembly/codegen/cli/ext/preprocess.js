@@ -1,5 +1,6 @@
 const Handlebars = require("handlebars");
 const fs = require("fs");
+const path = require("path");
 var blake2 = require('blake2');
 /**
  * Register the tag of each.
@@ -104,10 +105,10 @@ function removeSourceCode(sourceText, range, store) {
 
 // Write text (also fallback)
 function outputCode(sourceText, contractInfo) {
-  let mainTpl = fs.readFileSync(__dirname + "/tpl/main.tpl", { encoding: "utf8" });
+  let mainTpl = fs.readFileSync(path.join(__dirname, "tpl", "main.tpl"), { encoding: "utf8" });
   const render = Handlebars.compile(mainTpl);
   const exportMain = render(contractInfo);
-  let storeTpl = fs.readFileSync(__dirname + "/tpl/store.tpl", { encoding: "utf8" });
+  let storeTpl = fs.readFileSync(path.join(__dirname, "tpl", "store.tpl"), { encoding: "utf8" });
   
   for (let index = 0; index < contractInfo.storages.length; index ++) {
     let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
@@ -122,7 +123,7 @@ function outputCode(sourceText, contractInfo) {
 }
 
 function outputAbi(abiInfo) {
-  let abiTpl = fs.readFileSync(__dirname + "/tpl/abi.tpl", { encoding: "utf8" });
+  let abiTpl = fs.readFileSync(path.join(__dirname, "tpl", "abi.tpl"), { encoding: "utf8" });
   const render = Handlebars.compile(abiTpl);
   const output = render(abiInfo);
   return output;
