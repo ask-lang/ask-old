@@ -22,7 +22,7 @@ class Flipper {
 
   constructor() { this.stored = new Stored(); }
 
-  @deployer
+  @constructor
   onDeploy(initFlag: bool): void {
     this.stored.flag = initFlag;
   }

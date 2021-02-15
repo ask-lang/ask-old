@@ -5,7 +5,7 @@
 
 @contract
 class MessageContract {
-  @deploy
+  @constructor
   onDeploy() {
 
   }

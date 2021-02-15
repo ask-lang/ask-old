@@ -1,37 +1,42 @@
 var msg: Msg = new Msg();
 
 export function deploy(): i32 {
-  let _{{exportDef.contractName}} = new {{exportDef.className}}();
+  let {{contract.instanceName}} = new {{contract.className}}();
 
-  {{#each exportDef.deployers}}
-  const {{methodName}}Selector: u8[] = {{#selectorArr methodName}}{{/selectorArr}};
+  {{#each contract.cntrFuncDefs}}
+  const {{methodName}}Selector: u8[] = {{#selector methodName}}{{u8Arr}}{{/selector}};
   if (msg.isSelector({{methodName}}Selector)) {
+    {{#neq parameters.length 0}}
     const fnParameters = new FnParameters(msg.data);
-    {{#each paramters}}
-    let p{{_index}} = fnParameters.get<{{codecType}}>();
+    {{/neq}}
+    {{#each parameters}}
+    let p{{_index}} = fnParameters.get<{{type.codecType}}>();
     {{/each}}
-    _{{../exportDef.contractName}}.{{methodName}}({{#joinParams paramters}}{{/joinParams}}{{ctrDefaultVals}});
+    {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}}{{ctrDefaultVals}});
   }
   {{/each}}
+  return 0;
 }
 
 export function call(): i32 {
-  const _{{exportDef.contractName}} = new {{exportDef.className}}();
-  {{#each exportDef.messages}}
-  const {{methodName}}Selector: u8[] = {{#selectorArr methodName}}{{/selectorArr}};
+  const {{contract.instanceName}} = new {{contract.className}}();
+  {{#each contract.msgFuncDefs}}
+  const {{methodName}}Selector: u8[] = {{#existSelector methodName messageDecorator.selector}}{{u8Arr}}{{/existSelector}};
   if (msg.isSelector({{methodName}}Selector)) {
+    {{#neq parameters.length 0}}
     const fnParameters = new FnParameters(msg.data);
-    {{#each paramters}}
-    let p{{_index}} = fnParameters.get<{{codecType}}>();
+    {{/neq}}
+    {{#each parameters}}
+    let p{{_index}} = fnParameters.get<{{type.codecType}}>();
     {{/each}}
-    {{#if hasReturnVal}}
-    let rs = _{{../exportDef.contractName}}.{{methodName}}({{#joinParams paramters}}{{/joinParams}});
+    {{#if isReturnable}}
+    let rs = {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}});
     ReturnData.set<{{returnType.codecType}}>(new {{returnType.codecType}}(rs));
     {{/if}}
-    {{#unless hasReturnVal}}
-    _{{../exportDef.contractName}}.{{methodName}}({{#joinParams paramters}}{{/joinParams}});
+    {{#unless isReturnable}}
+    {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}});
     {{/unless}}
   }
   {{/each}}
-
+  return 0;
 }

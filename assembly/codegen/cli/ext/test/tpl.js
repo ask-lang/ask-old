@@ -3,13 +3,11 @@ const fs = require("fs");
 
 let mainTpl = fs.readFileSync("../tpl/main.tpl", { encoding: "utf8" });
 const template = Handlebars.compile(mainTpl);
-let output = template(
-  {
-    ctorWithParams: "filter"
-  }
-)
+let output = template({
+  ctorWithParams: "filter"
+});
 
-console.log(output)
+console.log(output);
 
 
 

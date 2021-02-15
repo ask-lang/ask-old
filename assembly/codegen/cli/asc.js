@@ -80,11 +80,13 @@ var assemblyscript;
   try {
     // note that this case will always trigger in recent node.js versions for typical installs
     // see: https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
+    // assemblyscript = dynrequire("../dist/assemblyscript.js");
+    // throw new Error();
     assemblyscript = dynrequire("../dist/assemblyscript.js");
   } catch (e) {
     try { // `asc` on the command line (unnecessary in recent node)
-      assemblyscript = require("assemblyscript");
-    } catch (e) {
+      assemblyscript = require("assemblyscript");  
+  } catch (e) {
       try { // `asc` on the command line without dist files (unnecessary in recent node)
         dynrequire("ts-node").register({
           project: path.join(__dirname, "..", "src", "tsconfig.json"),
@@ -864,8 +866,8 @@ exports.main = function main(argv, options, callback) {
 
     // Extension add START
     if (opts.sourceFile != null || !hasOutput) {
-      out = preprocess.outputCode(contractInfo);
-      writeFile(opts.sourceFile, process.sourceText + out, baseDir);
+      out = preprocess.outputCode(process.sourceText, contractInfo);
+      writeFile(opts.sourceFile, out , baseDir);
     }
 
     if (opts.sourceFile != null || !hasOutput) {
