@@ -9,7 +9,12 @@ class {{className}} {
       const st = new Storage<{{type.codecType}}>("{{storeKey}}");
       this.{{varName}} = st.load();
     }
-    return this.{{varName}}!.unwrap();
+    {{#eq type.codecType 'ScaleString'}}
+    return this.{{varName}}!.toString();
+    {{/eq}}
+    {{#neq type.codecType 'ScaleString'}}
+      return this.{{varName}}!.unwrap();
+    {{/neq}}
   }
   set {{name}}(v: {{type.originalType}}) {
     this.{{varName}} = new {{type.codecType}}(v);

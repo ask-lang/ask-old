@@ -6191,8 +6191,200 @@ declare module "assemblyscript/src/definitions" {
         build(): string;
     }
 }
+declare module "assemblyscript/src/ext/collectionutil" {
+    export class Collections {
+        /**
+         * Check the array is empty
+         * @param arr parameter array
+         */
+        static isEmptyArray<T>(arr: T[]): boolean;
+        static newArray<T>(arg1: T): T[];
+    }
+}
+declare module "assemblyscript/src/ext/contract/storage" {
+    export class TypePair {
+        key: string;
+        ty: number;
+    }
+    export class StorageDef {
+        className: string;
+        fields: FieldDef[];
+    }
+    export class LayoutDef {
+    }
+    export class CellLayoutDef extends LayoutDef {
+        cell: TypePair;
+    }
+    export class FieldDef {
+        layout: LayoutDef;
+        name: string;
+        fieldType: string;
+        fieldCodecType: string | undefined;
+        storeKey: string;
+        varName: string;
+        path: string;
+    }
+}
+declare module "assemblyscript/src/ext/primitiveutil" {
+    export class Strings {
+        /**
+           * Judge the string whetehr aroud by qutation or not.
+           * The charcode of '"' is 0x22
+           * @param str The string to judge
+           */
+        static isAroundQuotation(str: string): boolean;
+        static EMPTY: string;
+        /**
+         * If the string around quotation, remove the quotation.
+         * @param str The source string
+         */
+        static removeQuotation(str: string): string;
+        static lowerFirstCase(str: string): string;
+    }
+    export class AbiUtils {
+        private static DATABASE_CHARSETS;
+        /**
+         * Check the action name whether is legal.
+         * The action name should be less or equal than 21 characters.
+         * @param str the action name
+         */
+        static checkActionName(str: string): void;
+        /**
+         * Check the database name whether is legal.
+         * The database name should be less or equal than 12 characters.
+         * @param name the database name
+         */
+        static checkDatabaseName(name: string): void;
+    }
+    export class Verify {
+        static verify(expression: boolean, message: string): void;
+    }
+}
+declare module "assemblyscript/src/ext/contract/base" {
+    import { DecoratorNode, NamedTypeNode, ParameterNode, Source } from "assemblyscript/src/ast";
+    import { Element, FieldPrototype, FunctionPrototype } from "assemblyscript/src/program";
+    import { LayoutDef } from "assemblyscript/src/ext/contract/storage";
+    /**
+     * The parameter type enum
+     * basic type and composite type, array and map.
+     *
+     */
+    export enum TypeEnum {
+        NUMBER = 0,
+        STRING = 1,
+        ARRAY = 2,
+        MAP = 3,
+        CLASS = 4
+    }
+    export class FieldDef {
+        protected fieldPrototype: FieldPrototype;
+        layout: LayoutDef;
+        name: string;
+        type: NamedTypeNodeDef | null;
+        storeKey: string;
+        varName: string;
+        path: string;
+        constructor(field: FieldPrototype);
+        private resolveField;
+    }
+    export class ParameterNodeDef {
+        private parameterNode;
+        name: string;
+        type: NamedTypeNodeDef;
+        constructor(parent: Element, parameterNode: ParameterNode);
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+    }
+    export class DecoratorNodeDef {
+        private decorator;
+        constructor(decorator: DecoratorNode);
+    }
+    export class MessageDecoratorNodeDef extends DecoratorNodeDef {
+        private payable;
+        private mutates;
+        private selector;
+        constructor(decorator: DecoratorNode);
+    }
+    export class FunctionDef {
+        private funcProto;
+        methodName: string;
+        parameters: ParameterNodeDef[];
+        isReturnable: boolean;
+        returnType: NamedTypeNodeDef | undefined;
+        defaultVals: string[];
+        constructor(funcPrototype: FunctionPrototype);
+        resolve(): void;
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+    }
+    export class MessageFuctionDef extends FunctionDef {
+        messageDecorator: MessageDecoratorNodeDef;
+        constructor(funcPrototype: FunctionPrototype);
+    }
+    export class TypeUtil {
+        static typeWrapperMap: Map<string, string>;
+        static abiTypeMap: Map<string, string>;
+        static defaultValMap: Map<string, string>;
+        static getWrapperType(asType: string): string;
+        static getDefaultVal(asType: string): string;
+        static getAbiType(asType: string): string;
+    }
+    export class ImportSourceDef {
+        private entrySources;
+        private importedElement;
+        unimports: String[];
+        constructor(sources: Source[]);
+        private resolveImportSource;
+        toImportElement(name: String): void;
+    }
+    /**
+     * Type node description
+     */
+    export class NamedTypeNodeDef {
+        protected parent: Element;
+        protected typeNode: NamedTypeNode;
+        typeKind: TypeEnum | undefined;
+        typeArguments: NamedTypeNodeDef[];
+        name: string;
+        codecType: string;
+        originalType: string;
+        defaultVal: string;
+        abiType: string;
+        index: number;
+        constructor(parent: Element, typeNode: NamedTypeNode);
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+        getDeclareType(): string;
+        isReturnVoid(): boolean;
+        get typeEnum(): TypeEnum;
+        isArray(): boolean;
+        getArrayArgAbiTypeEnum(): TypeEnum;
+        isPrimaryType(): boolean;
+        getArrayArg(): string;
+        getAbiDeclareType(): string;
+        private getArgs;
+        getAsTypes(): string[];
+        /**
+        * the typename maybe global scope or local scope.
+        * So search the local firtst, then search the global scope.
+        *
+        * @param typeName typename without type arguments
+        */
+        findElement(typeName: string): Element | null;
+        /**
+         * Get the type {@type Type} by the type name
+         * @param asTypeName the AssemblyScript type name
+         */
+        private findSourceAsElement;
+        /**
+         * Find the source type name,
+         * eg: declare type account_name = u64;
+         *     declare type account_name_alias = account_name;
+         *     findSourceAsTypeName("account_name_alias") return "account_name";
+         */
+        private findSourceAsTypeName;
+        findSourceAbiType(typeName: string): string;
+    }
+}
 declare module "assemblyscript/src/ext/utils" {
-    import { DeclarationStatement, DecoratorKind, Node, ClassDeclaration, DecoratorNode } from "assemblyscript/src/ast";
+    import { DeclarationStatement, DecoratorKind, Node, ClassDeclaration, DecoratorNode, Expression } from "assemblyscript/src/ast";
     import { Range } from "assemblyscript/src/tokenizer";
     import { ClassPrototype, Element, ElementKind } from "assemblyscript/src/program";
     export class ElementUtil {
@@ -6216,7 +6408,9 @@ declare module "assemblyscript/src/ext/utils" {
            * @param statement Ast declaration statement
            * @param kind The specify decorators
            */
-        static haveSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean;
+        static hasSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean;
+        static getIdentifier(expression: Expression): string;
+        static getBinaryExprRight(expression: Expression): string;
         static isString(typeName: string): boolean;
         /**
            * Get the node internal name
@@ -6263,41 +6457,6 @@ declare module "assemblyscript/src/ext/utils" {
         static location(range: Range): string;
     }
 }
-declare module "assemblyscript/src/ext/primitiveutil" {
-    export class Strings {
-        /**
-           * Judge the string whetehr aroud by qutation or not.
-           * The charcode of '"' is 0x22
-           * @param str The string to judge
-           */
-        static isAroundQuotation(str: string): boolean;
-        static EMPTY: string;
-        /**
-         * If the string around quotation, remove the quotation.
-         * @param str The source string
-         */
-        static removeQuotation(str: string): string;
-        static lowerFirstCase(str: string): string;
-    }
-    export class AbiUtils {
-        private static DATABASE_CHARSETS;
-        /**
-         * Check the action name whether is legal.
-         * The action name should be less or equal than 21 characters.
-         * @param str the action name
-         */
-        static checkActionName(str: string): void;
-        /**
-         * Check the database name whether is legal.
-         * The database name should be less or equal than 12 characters.
-         * @param name the database name
-         */
-        static checkDatabaseName(name: string): void;
-    }
-    export class Verify {
-        static verify(expression: boolean, message: string): void;
-    }
-}
 declare module "assemblyscript/src/ext/analyzer" {
     import { Program } from "assemblyscript/src/program";
     export class ProgramAnalyzar {
@@ -6307,146 +6466,6 @@ declare module "assemblyscript/src/ext/analyzer" {
         logSources(): void;
         logFilesByName(): void;
         logElementsByDeclaration(): void;
-    }
-}
-declare module "assemblyscript/src/ext/collectionutil" {
-    export class Collections {
-        /**
-         * Check the array is empty
-         * @param arr parameter array
-         */
-        static isEmptyArray<T>(arr: T[]): boolean;
-        static newArray<T>(arg1: T): T[];
-    }
-}
-declare module "assemblyscript/src/ext/contract/storage" {
-    export class TypePair {
-        key: string;
-        ty: number;
-    }
-    export class StorageDef {
-        className: string;
-        fields: FieldDef[];
-    }
-    export class LayoutDef {
-    }
-    export class CellLayoutDef extends LayoutDef {
-        cell: TypePair;
-    }
-    export class FieldDef {
-        layout: LayoutDef;
-        name: string;
-        fieldType: string;
-        fieldCodecType: string | undefined;
-        storeKey: string;
-        varName: string;
-        path: string;
-    }
-}
-declare module "assemblyscript/src/ext/contract/base" {
-    import { NamedTypeNode, ParameterNode, Source } from "assemblyscript/src/ast";
-    import { Element, FieldPrototype, FunctionPrototype } from "assemblyscript/src/program";
-    import { LayoutDef } from "assemblyscript/src/ext/contract/storage";
-    /**
-     * The parameter type enum
-     * basic type and composite type, array and map.
-     *
-     */
-    export enum TypeEnum {
-        NUMBER = 0,
-        STRING = 1,
-        ARRAY = 2,
-        MAP = 3,
-        CLASS = 4
-    }
-    export class FieldDef {
-        protected fieldPrototype: FieldPrototype;
-        layout: LayoutDef;
-        name: string;
-        type: NamedTypeNodeDef | null;
-        storeKey: string;
-        varName: string;
-        path: string;
-        constructor(field: FieldPrototype);
-        private resolveField;
-    }
-    export class ParameterNodeDef {
-        private parameterNode;
-        name: string;
-        type: NamedTypeNodeDef;
-        constructor(parent: Element, parameterNode: ParameterNode);
-        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
-    }
-    export class FunctionDef {
-        private funcProto;
-        methodName: string;
-        parameters: ParameterNodeDef[];
-        isReturnable: boolean;
-        returnType: NamedTypeNodeDef | undefined;
-        defaultVals: string[];
-        constructor(funcPrototype: FunctionPrototype);
-        resolve(): void;
-        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
-    }
-    export class TypeUtil {
-        static typeWrapperMap: Map<string, string>;
-        static defaultValMap: Map<string, string>;
-        static getWrapperType(asType: string): string;
-        static getDefaultVal(asType: string): string;
-    }
-    export class ImportSourceDef {
-        private entrySources;
-        private importedElement;
-        unimports: String[];
-        constructor(sources: Source[]);
-        private resolveImportSource;
-        toImportElement(name: String): void;
-    }
-    /**
-     * Type node description
-     */
-    export class NamedTypeNodeDef {
-        protected parent: Element;
-        protected typeNode: NamedTypeNode;
-        typeKind: TypeEnum | undefined;
-        typeArguments: NamedTypeNodeDef[];
-        name: string;
-        codecType: string;
-        originalType: string;
-        defaultVal: string;
-        index: number;
-        constructor(parent: Element, typeNode: NamedTypeNode);
-        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
-        getDeclareType(): string;
-        isReturnVoid(): boolean;
-        get typeEnum(): TypeEnum;
-        isArray(): boolean;
-        getArrayArgAbiTypeEnum(): TypeEnum;
-        isPrimaryType(): boolean;
-        getArrayArg(): string;
-        getAbiDeclareType(): string;
-        private getArgs;
-        getAsTypes(): string[];
-        /**
-        * the typename maybe global scope or local scope.
-        * So search the local firtst, then search the global scope.
-        *
-        * @param typeName typename without type arguments
-        */
-        findElement(typeName: string): Element | null;
-        /**
-         * Get the type {@type Type} by the type name
-         * @param asTypeName the AssemblyScript type name
-         */
-        private findSourceAsElement;
-        /**
-         * Find the source type name,
-         * eg: declare type account_name = u64;
-         *     declare type account_name_alias = account_name;
-         *     findSourceAsTypeName("account_name_alias") return "account_name";
-         */
-        private findSourceAsTypeName;
-        findSourceAbiType(typeName: string): string;
     }
 }
 declare module "assemblyscript/src/ext/interperter" {
@@ -6468,7 +6487,7 @@ declare module "assemblyscript/src/ext/interperter" {
         isReturnable: boolean;
         constructor(clzPrototype: ClassPrototype);
         private resolveContractClass;
-        setTypeInde(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
     }
     export class StorageInterpreter extends ClassInterpreter {
         fields: FieldDef[];
@@ -6486,6 +6505,7 @@ declare module "assemblyscript/src/ext/interperter" {
         private typeNodeMap;
         constructor(program: Program);
         private sortStorages;
+        private getFields;
         private addDefaultImports;
         private resolve;
         private setTypeIndex;

@@ -9,43 +9,53 @@ Handlebars.registerHelper("each", function (context, options) {
   for (var i = 0, j = context.length; i < j; i++) {
     let data = context[i];
     data._index = i;
-    data.isMid = (i != j - 1 || (i == 0 && j == 1));
+    data.isMid = (i != j - 1 || (i == 0 && j != 1));
     ret = ret + options.fn(data);
   }
   return ret;
 });
+
+function getSelector(key) {
+  let keyHash = blake2.createHash('blake2b', { digestLength: 32 });
+  keyHash.update(Buffer.from(key));
+  let hexStr = keyHash.digest("hex");
+  let selectorArr = [];
+  for (let index = 0; index < 4; index++) {
+    selectorArr.push("0x" + hexStr.substring(index * 2, index * 2 + 2));
+  }
+  let data = {
+    hex: `0x${hexStr}`,
+    short: `0x${hexStr.substr(0, 8)}`,
+    u8Arr: `[${selectorArr.join(",")}]`
+  };
+  return data;
+}
+
 /**
  * Register the tag of selector.
  */
 Handlebars.registerHelper("selector", function (context, options) {
-  let keyHash = blake2.createHash('blake2b', { digestLength: 32 });
-  keyHash.update(Buffer.from(context));
-  let hexStr = keyHash.digest("hex");
-  return `0x${hexStr.substr(0,8)}`;
+  // let data = context;
+  let data = getSelector(context);
+  return options.fn(data);
 });
 
 /**
  * Register the tag of selector.
  */
-Handlebars.registerHelper("keySelector", function (context, options) {
-  let keyHash = blake2.createHash('blake2b', { digestLength: 32 });
-  keyHash.update(Buffer.from(context));
-  let hexStr = keyHash.digest("hex");
-  return `0x${hexStr}`;
-});
-
-/**
- * Register the tag of selector.
- */
-Handlebars.registerHelper("selectorArr", function (context, options) {
-  let keyHash = blake2.createHash('blake2b', { digestLength: 32 });
-  keyHash.update(Buffer.from(context));
-  let hexStr = keyHash.digest("hex");
-  let selectorArr = [];
-  for (let index = 0; index < 4; index ++) {
-    selectorArr.push("0x" + hexStr.substring(index * 2, index * 2 + 2));
+Handlebars.registerHelper("existSelector", function (key, existSelector, options) {
+  let data = {};
+  if (existSelector) {
+    let selectorArr = [];
+    for (let index = 0; index < 4; index++) {
+      selectorArr.push("0x" + existSelector.substring(index * 2 + 2, index * 2 + 4));
+    }
+    data.short = `${existSelector}`;
+    data.u8Arr = `[${selectorArr.join(",")}]`;
+  } else {
+    data = getSelector(key);
   }
-  return `[${selectorArr.join(",")}]`;
+  return options.fn(data);
 });
 
 /**

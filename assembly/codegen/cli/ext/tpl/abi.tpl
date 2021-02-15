@@ -14,6 +14,12 @@
   },
   "spec": {
     "constructors": [
+      {
+        "args": [ ],
+        "docs": [ "" ],
+        "name": [ "new" ],
+        "selector": "{{#selector 'new'}}{{short}}{{/selector}}"
+      }{{#neq contract.cntrFuncDefs.length 0}},{{/neq}}
       {{#each contract.cntrFuncDefs}}
       {
         "args": [
@@ -29,17 +35,13 @@
           }{{#if isMid}},{{/if}}
           {{/each}}
         ],
-        "docs": [
-          ""
-        ],
-        "name": [
-          "{{methodName}}"
-        ],
-        "selector": "0xd183512b"
+        "docs": [ "" ],
+        "name": [ "{{methodName}}" ],
+        "selector": "{{#selector methodName}}{{short}}{{/selector}}"
       }{{#if isMid}},{{/if}}
       {{/each}}
     ],
-    "docs": [],
+    "docs": [ "" ],
     "events": [],
     "messages": [
       {{#each contract.msgFuncDefs}}
@@ -57,21 +59,23 @@
           }{{#if isMid}},{{/if}}
           {{/each}}
         ],
-        "docs": [],
-        "mutates": false,
+        "docs": [ "" ],
+        "mutates": {{messageDecorator.mutates}},
         "name": [
           "{{methodName}}"
         ],
-        "payable": false,
+        "payable": {{messageDecorator.payable}},
+        {{#if isReturnable}} 
         "returnType": {
-          {{#if hasReturnVal}}
           "displayName": [
             "{{returnType.originalType}}"
           ],
-          "type": {{index}}
-          {{/if}}
+          "type": {{returnType.index}}
         },
-        "selector": "0x1e5ca456"
+        {{else}}
+        "returnType": null,
+        {{/if}}
+        "selector": "{{#existSelector methodName messageDecorator.selector}}{{short}}{{/existSelector}}"
       }{{#if isMid}},{{/if}}
       {{/each}}
     ]
@@ -83,12 +87,12 @@
         {
           "layout": {
             "cell": {
-              "key": "{{#keySelector layout.cell.key}}{{/keySelector}}",
-              "ty": {{layout.cell.ty}}
+              "key": "{{#selector storeKey}}{{hex}}{{/selector}}",
+              "ty": {{type.index}}
             }
           },
           "name": "{{name}}"
-        }
+        }{{#if isMid}},{{/if}}
         {{/each}}
       ]
     }
@@ -97,9 +101,9 @@
     {{#each types}}
     {
       "def": {
-        "primitive": "{{name}}"
+        "primitive": "{{abiType}}"
       }
-    }
+    }{{#if isMid}},{{/if}}
     {{/each}}
   ]
 }
