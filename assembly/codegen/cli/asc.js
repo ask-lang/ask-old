@@ -870,7 +870,7 @@ exports.main = function main(argv, options, callback) {
       writeFile(opts.sourceFile, out , baseDir);
     }
 
-    if (opts.sourceFile != null || !hasOutput) {
+    if (opts.abiFile != null || !hasOutput) {
       out = preprocess.outputAbi(contractInfo);
       writeFile(opts.abiFile, out, baseDir);
     }
