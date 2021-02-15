@@ -2,8 +2,8 @@
   "metadataVersion": "0.1.0",
   "source": {
     "hash": "{{hash}}",
-    "language": "ask! 1.0.0-dev",
-    "compiler": "asc 1.49.0-nightly"
+    "language": "ask v0.1",
+    "compiler": "ask v0.1, asc v0.18.9"
   },
   "contract": {
     "name": "{{contract.name}}",
