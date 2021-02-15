@@ -65,7 +65,8 @@
   },
   "bin": {
     "asc": "bin/asc",
-    "asinit": "bin/asinit"
+    "asinit": "bin/asinit",
+    "ask": "bin/ask"
   },
   "scripts": {
     "build": "npm run build:bundle && npm run build:dts && npm run build:sdk",

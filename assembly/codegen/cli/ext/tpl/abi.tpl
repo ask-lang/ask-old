@@ -2,76 +2,80 @@
   "metadataVersion": "0.1.0",
   "source": {
     "hash": "{{hash}}",
-    "language": "ask! 1.0.0-dev",
-    "compiler": "asc 1.49.0-nightly"
+    "language": "ask v0.1",
+    "compiler": "ask v0.1, asc v0.18.9"
   },
   "contract": {
-    "name": "{{exportDef.className}}",
-    "version": "{{exportDef.version}}",
+    "name": "{{contract.name}}",
+    "version": "{{contract.version}}",
     "authors": [
       "[your_name] <[your_email]>"
     ]
   },
   "spec": {
     "constructors": [
-      {{#each exportDef.deployers}}
+      {
+        "args": [ ],
+        "docs": [ "" ],
+        "name": [ "new" ],
+        "selector": "{{#selector 'new'}}{{short}}{{/selector}}"
+      }{{#neq contract.cntrFuncDefs.length 0}},{{/neq}}
+      {{#each contract.cntrFuncDefs}}
       {
         "args": [
-          {{#each paramters}}
+          {{#each parameters}}
           {
-            "name": "{{typeName}}",
+            "name": "{{name}}",
             "type": {
               "displayName": [
-                "{{originalType}}"
+                "{{type.originalType}}"
               ],
-              "type": {{index}}
+              "type": {{type.index}}
             }
           }{{#if isMid}},{{/if}}
           {{/each}}
         ],
-        "docs": [
-          ""
-        ],
-        "name": [
-          "{{methodName}}"
-        ],
-        "selector": "0xd183512b"
+        "docs": [ "" ],
+        "name": [ "{{methodName}}" ],
+        "selector": "{{#selector methodName}}{{short}}{{/selector}}"
       }{{#if isMid}},{{/if}}
       {{/each}}
     ],
-    "docs": [],
+    "docs": [ "" ],
     "events": [],
     "messages": [
-      {{#each exportDef.messages}}
+      {{#each contract.msgFuncDefs}}
       {
         "args": [
-          {{#each paramters}}
+          {{#each parameters}}
           {
-            "name": "{{typeName}}",
+            "name": "{{name}}",
             "type": {
               "displayName": [
-                "{{originalType}}"
+                "{{type.originalType}}"
               ],
-              "type": {{index}}
+              "type": {{type.index}}
             }
           }{{#if isMid}},{{/if}}
           {{/each}}
         ],
-        "docs": [],
-        "mutates": false,
+        "docs": [ "" ],
+        "mutates": {{messageDecorator.mutates}},
         "name": [
           "{{methodName}}"
         ],
-        "payable": false,
+        "payable": {{messageDecorator.payable}},
+        {{#if isReturnable}} 
         "returnType": {
-          {{#if hasReturnVal}}
           "displayName": [
             "{{returnType.originalType}}"
           ],
-          "type": {{index}}
-          {{/if}}
+          "type": {{returnType.index}}
         },
-        "selector": "0x1e5ca456"
+        {{else}}
+        "returnType": null,
+        {{/if}}
+        "selector": "{{#existSelector methodName messageDecorator.selector}}{{short}}{{/existSelector}}"
       }{{#if isMid}},{{/if}}
       {{/each}}
     ]
@@ -83,12 +87,12 @@
         {
           "layout": {
             "cell": {
-              "key": "{{#keySelector layout.cell.key}}{{/keySelector}}",
-              "ty": {{layout.cell.ty}}
+              "key": "{{#selector storeKey}}{{hex}}{{/selector}}",
+              "ty": {{type.index}}
             }
           },
           "name": "{{name}}"
-        }
+        }{{#if isMid}},{{/if}}
         {{/each}}
       ]
     }
@@ -97,9 +101,9 @@
     {{#each types}}
     {
       "def": {
-        "primitive": "{{type}}"
+        "primitive": "{{abiType}}"
       }
-    }
+    }{{#if isMid}},{{/if}}
     {{/each}}
   ]
 }

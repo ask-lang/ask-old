@@ -1278,9 +1278,10 @@ declare module "assemblyscript/src/ast" {
         MESSAGE = 13,
         STORAGE = 14,
         DEPLOYER = 15,
-        CONTRACT = 16,
-        DATABASE = 17,
-        PRIMARYID = 18
+        CONSTRUCTOR = 16,
+        CONTRACT = 17,
+        DATABASE = 18,
+        PRIMARYID = 19
     }
     export namespace DecoratorKind {
         /** Returns the kind of the specified decorator name node. Defaults to {@link DecoratorKind.CUSTOM}. */
@@ -4363,7 +4364,8 @@ declare module "assemblyscript/src/program" {
         DEPLOYER = 8192,
         CONTRACT = 16384,
         DATABASE = 32768,
-        PRIMARYID = 65536
+        PRIMARYID = 65536,
+        CONSTRUCTOR = 131072
     }
     export namespace DecoratorFlags {
         /** Translates a decorator kind to the respective decorator flag. */
@@ -6199,102 +6201,161 @@ declare module "assemblyscript/src/ext/collectionutil" {
         static newArray<T>(arg1: T): T[];
     }
 }
-declare module "assemblyscript/src/ext/astutil" {
-    import { DeclarationStatement, DecoratorKind, Node, ClassDeclaration, DecoratorNode, NamedTypeNode } from "assemblyscript/src/ast";
-    import { Range } from "assemblyscript/src/tokenizer";
-    import { ClassPrototype, Element, ElementKind } from "assemblyscript/src/program";
-    export class AstUtil {
-        /**
-         * Check the statment weather have the specify the decorator
-         * @param statement Ast declaration statement
-         * @param kind The specify decorators
-         */
-        static haveSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean;
-        static getSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): DecoratorNode | null;
-        static isString(typeName: string): boolean;
-        /**
-         * Get the node internal name
-         * @param node The program node
-         */
-        static getInternalName(node: Node): string;
-        /**
-         * Get the basic type name
-         * If the type name is string[], so the basic type name is string
-         * @param declareType
-         */
-        static getArrayTypeArgument(declareType: string): string;
-        /**
-         * Test the declare type whether is array type or not.
-         * @param declareType The declare type
-         */
-        static isArrayType(declareType: string): boolean;
-        /**
-         * Whether the declare type is map
-         * @param declareType the declare type
-         */
-        static isMapType(declareType: string): boolean;
-        /**
-         * Test the class whether to implement the Serializable interface or not.
-         */
-        static impledSerializable(classPrototype: ClassPrototype | null): boolean;
-        /**
-         * Test the class whetherto implement the Returnable interface or not.
-         * @param classDeclaration The class declaration
-         */
-        static impledReturnable(classDeclaration: ClassDeclaration): boolean;
-        private static impledInterface;
-        /**
-         * Check the classPrototype whther have the contract class.
-         */
-        static extendedContract(classPrototype: ClassPrototype): boolean;
-        static isClassPrototype(element: Element): boolean;
-        static isSpecifyElement(element: Element, kind: ElementKind): boolean;
-        /**
-         * Check the element whether is action function prototype.
-         * @param element
-         */
-        static isMessageFuncPrototype(element: Element): boolean;
-        /**
-        * Check the element whether is action function prototype.
-        * @param element
-        */
-        static isDeployerFnPrototype(element: Element): boolean;
-        /**
-         * Get interfaces that class prototype implements.
-         * @param classPrototype classPrototype
-         */
-        static impledInterfaces(classPrototype: ClassPrototype): string[];
-        static location(range: Range): string;
+declare module "assemblyscript/src/ext/contract/storage" {
+    export class TypePair {
+        key: string;
+        ty: number;
     }
+    export class StorageDef {
+        className: string;
+        fields: FieldDef[];
+    }
+    export class LayoutDef {
+    }
+    export class CellLayoutDef extends LayoutDef {
+        cell: TypePair;
+    }
+    export class FieldDef {
+        layout: LayoutDef;
+        name: string;
+        fieldType: string;
+        fieldCodecType: string | undefined;
+        storeKey: string;
+        varName: string;
+        path: string;
+    }
+}
+declare module "assemblyscript/src/ext/primitiveutil" {
+    export class Strings {
+        /**
+           * Judge the string whetehr aroud by qutation or not.
+           * The charcode of '"' is 0x22
+           * @param str The string to judge
+           */
+        static isAroundQuotation(str: string): boolean;
+        static EMPTY: string;
+        /**
+         * If the string around quotation, remove the quotation.
+         * @param str The source string
+         */
+        static removeQuotation(str: string): string;
+        static lowerFirstCase(str: string): string;
+    }
+    export class AbiUtils {
+        private static DATABASE_CHARSETS;
+        /**
+         * Check the action name whether is legal.
+         * The action name should be less or equal than 21 characters.
+         * @param str the action name
+         */
+        static checkActionName(str: string): void;
+        /**
+         * Check the database name whether is legal.
+         * The database name should be less or equal than 12 characters.
+         * @param name the database name
+         */
+        static checkDatabaseName(name: string): void;
+    }
+    export class Verify {
+        static verify(expression: boolean, message: string): void;
+    }
+}
+declare module "assemblyscript/src/ext/contract/base" {
+    import { DecoratorNode, NamedTypeNode, ParameterNode, Source } from "assemblyscript/src/ast";
+    import { Element, FieldPrototype, FunctionPrototype } from "assemblyscript/src/program";
+    import { LayoutDef } from "assemblyscript/src/ext/contract/storage";
     /**
-     * Abi type enum
+     * The parameter type enum
+     * basic type and composite type, array and map.
+     *
      */
-    export enum AbiTypeEnum {
+    export enum TypeEnum {
         NUMBER = 0,
         STRING = 1,
         ARRAY = 2,
         MAP = 3,
         CLASS = 4
     }
-    export class TypeNodeDesc {
-        typeKind: AbiTypeEnum | undefined;
-        abiType: AbiTypeEnum | undefined;
-        typeName: string;
+    export class FieldDef {
+        protected fieldPrototype: FieldPrototype;
+        layout: LayoutDef;
+        name: string;
+        type: NamedTypeNodeDef | null;
+        storeKey: string;
+        varName: string;
+        path: string;
+        constructor(field: FieldPrototype);
+        private resolveField;
+    }
+    export class ParameterNodeDef {
+        private parameterNode;
+        name: string;
+        type: NamedTypeNodeDef;
+        constructor(parent: Element, parameterNode: ParameterNode);
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+    }
+    export class DecoratorNodeDef {
+        private decorator;
+        constructor(decorator: DecoratorNode);
+    }
+    export class MessageDecoratorNodeDef extends DecoratorNodeDef {
+        private payable;
+        private mutates;
+        private selector;
+        constructor(decorator: DecoratorNode);
+    }
+    export class FunctionDef {
+        private funcProto;
+        methodName: string;
+        parameters: ParameterNodeDef[];
+        isReturnable: boolean;
+        returnType: NamedTypeNodeDef | undefined;
+        defaultVals: string[];
+        constructor(funcPrototype: FunctionPrototype);
+        resolve(): void;
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+    }
+    export class MessageFuctionDef extends FunctionDef {
+        messageDecorator: MessageDecoratorNodeDef;
+        constructor(funcPrototype: FunctionPrototype);
+    }
+    export class TypeUtil {
+        static typeWrapperMap: Map<string, string>;
+        static abiTypeMap: Map<string, string>;
+        static defaultValMap: Map<string, string>;
+        static getWrapperType(asType: string): string;
+        static getDefaultVal(asType: string): string;
+        static getAbiType(asType: string): string;
+    }
+    export class ImportSourceDef {
+        private entrySources;
+        private importedElement;
+        unimports: String[];
+        constructor(sources: Source[]);
+        private resolveImportSource;
+        toImportElement(name: String): void;
+    }
+    /**
+     * Type node description
+     */
+    export class NamedTypeNodeDef {
+        protected parent: Element;
+        protected typeNode: NamedTypeNode;
+        typeKind: TypeEnum | undefined;
+        typeArguments: NamedTypeNodeDef[];
+        name: string;
         codecType: string;
         originalType: string;
         defaultVal: string;
+        abiType: string;
         index: number;
-    }
-    export class TypeNodeAnalyzer extends TypeNodeDesc {
-        parent: Element;
-        typeNode: NamedTypeNode;
-        subTypes: TypeNodeAnalyzer[];
         constructor(parent: Element, typeNode: NamedTypeNode);
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
         getDeclareType(): string;
         isReturnVoid(): boolean;
-        get abiTypeEnum(): AbiTypeEnum;
+        get typeEnum(): TypeEnum;
         isArray(): boolean;
-        getArrayArgAbiTypeEnum(): AbiTypeEnum;
+        getArrayArgAbiTypeEnum(): TypeEnum;
         isPrimaryType(): boolean;
         getArrayArg(): string;
         getAbiDeclareType(): string;
@@ -6322,181 +6383,143 @@ declare module "assemblyscript/src/ext/astutil" {
         findSourceAbiType(typeName: string): string;
     }
 }
-declare module "assemblyscript/src/ext/primitiveutil" {
-    export class Strings {
-        /**
-         * Judge the string whetehr aroud by qutation or not.
-         * The charcode of '"' is 0x22
-         * @param str The string to judge
-         */
-        static isAroundQuotation(str: string): boolean;
-        static EMPTY: string;
-        /**
-         * If the string around quotation, remove the quotation.
-         * @param str The source string
-         */
-        static removeQuotation(str: string): string;
-        static lowerFirstCase(str: string): string;
-    }
-    export class AbiUtils {
-        private static DATABASE_CHARSETS;
-        /**
-         * Check the action name whether is legal.
-         * The action name should be less or equal than 21 characters.
-         * @param str the action name
-         */
-        static checkActionName(str: string): void;
-        /**
-         * Check the database name whether is legal.
-         * The database name should be less or equal than 12 characters.
-         * @param name the database name
-         */
-        static checkDatabaseName(name: string): void;
-    }
-    /**
-     * Indent for program,
-     */
-    export class Indent {
-        private body;
-        private indentX1;
-        private indentX2;
-        private indentX4;
-        private padding;
-        private defaultBlank;
-        constructor(numBlanks?: number);
-        private initPadding;
-        indent(level: number): Indent;
-        add(row: string): Indent;
-        increase(): Indent;
-        decrease(): Indent;
-        toString(): string;
-        addAll(body: string[]): void;
-        joinIndents(indents: Indent[]): Indent;
-        getContent(): string[];
-    }
-    export class Verify {
-        static verify(expression: boolean, message: string): void;
-    }
-}
-declare module "assemblyscript/src/ext/inserter" {
-    import { ClassDeclaration } from "assemblyscript/src/ast";
-    import { Program } from "assemblyscript/src/program";
+declare module "assemblyscript/src/ext/utils" {
+    import { DeclarationStatement, DecoratorKind, Node, ClassDeclaration, DecoratorNode, Expression } from "assemblyscript/src/ast";
     import { Range } from "assemblyscript/src/tokenizer";
-    import { Indent } from "assemblyscript/src/ext/primitiveutil";
-    export class InsertPoint {
-        protected range: Range;
-        protected insertCode: string;
-        protected code: string[];
-        private static descComparator;
-        static toSortedMap(insertPoints: Array<InsertPoint>): Map<string, Array<InsertPoint>>;
-        constructor(range: Range, insertCode?: string);
-        get line(): number;
-        get normalizedPath(): string;
-        get indentity(): string;
-        toString(): string;
-        addInsertCode(code: string): void;
-        getCodes(): string;
+    import { ClassPrototype, Element, ElementKind } from "assemblyscript/src/program";
+    export class ElementUtil {
+        static isContractClassPrototype(element: Element): boolean;
+        static isStoreClassPrototype(element: Element): boolean;
+        /**
+         * Check the element whether is action function prototype.
+         * @param element
+         */
+        static isCntrFuncPrototype(element: Element): boolean;
+        /**
+         * Check the element whether is action function prototype.
+         * @param element
+         */
+        static isMessageFuncPrototype(element: Element): boolean;
     }
-    export class SerializePoint extends InsertPoint {
-        serialize: Indent;
-        deserialize: Indent;
-        primaryKey: Indent;
-        needSerialize: boolean;
-        needDeserialize: boolean;
-        needPrimaryid: boolean;
-        classDeclaration: ClassDeclaration | undefined;
-        constructor(range: Range);
-        get indentity(): string;
-        getCodes(): string;
+    export class AstUtil {
+        static getSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): DecoratorNode | null;
+        /**
+           * Check the statment weather have the specify the decorator
+           * @param statement Ast declaration statement
+           * @param kind The specify decorators
+           */
+        static hasSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean;
+        static getIdentifier(expression: Expression): string;
+        static getBinaryExprRight(expression: Expression): string;
+        static isString(typeName: string): boolean;
+        /**
+           * Get the node internal name
+           * @param node The program node
+           */
+        static getInternalName(node: Node): string;
+        /**
+           * Get the basic type name
+           * If the type name is string[], so the basic type name is string
+           * @param declareType
+           */
+        static getArrayTypeArgument(declareType: string): string;
+        /**
+           * Test the declare type whether is array type or not.
+           * @param declareType The declare type
+           */
+        static isArrayType(declareType: string): boolean;
+        /**
+           * Whether the declare type is map
+           * @param declareType the declare type
+           */
+        static isMapType(declareType: string): boolean;
+        /**
+           * Test the class whether to implement the Serializable interface or not.
+           */
+        static impledSerializable(classPrototype: ClassPrototype | null): boolean;
+        /**
+           * Test the class whetherto implement the Returnable interface or not.
+           * @param classDeclaration The class declaration
+           */
+        static impledReturnable(classDeclaration: ClassDeclaration): boolean;
+        private static impledInterface;
+        /**
+           * Check the classPrototype whther have the contract class.
+           */
+        static extendedContract(classPrototype: ClassPrototype): boolean;
+        static isClassPrototype(element: Element): boolean;
+        static isSpecifyElement(element: Element, kind: ElementKind): boolean;
+        /**
+           * Get interfaces that class prototype implements.
+           * @param classPrototype classPrototype
+           */
+        static impledInterfaces(classPrototype: ClassPrototype): string[];
+        static location(range: Range): string;
     }
-    export class SerializeInserter {
-        program: Program;
-        private serializeClassname;
-        private insertPoints;
+}
+declare module "assemblyscript/src/ext/analyzer" {
+    import { Program } from "assemblyscript/src/program";
+    export class ProgramAnalyzar {
+        private program;
         constructor(program: Program);
-        private resolve;
-        getInsertPoints(): InsertPoint[];
+        print(): void;
+        logSources(): void;
+        logFilesByName(): void;
+        logElementsByDeclaration(): void;
     }
 }
-declare module "assemblyscript/src/ext/contract/base" {
-    import { TypeNodeDesc } from "assemblyscript/src/ext/astutil";
-    export class MethodDef {
-        methodName: string;
-        paramters: TypeNodeDesc[];
-        hasReturnVal: boolean;
-        returnType: TypeNodeDesc | undefined;
-        defaultVals: string[];
-        ctrDefaultVals: string;
-    }
-    export class TypeUtil {
-        static typeWrapperMap: Map<string, string>;
-        static defaultValMap: Map<string, string>;
-        static getWrapperType(asType: string): string;
-        static getDefaultVal(asType: string): string;
-    }
-}
-declare module "assemblyscript/src/ext/annotation" {
-    import { FunctionPrototype, ClassPrototype, DeclaredElement, FieldPrototype } from "assemblyscript/src/program";
-    import { ContractExportDef, StorageDef } from "assemblyscript/src/ext/abi";
-    import { MethodDef } from "assemblyscript/src/ext/contract/base";
-    export class ContractInterperter {
-        private classPrototype;
-        private className;
-        private instanceName;
-        private exportDef;
+declare module "assemblyscript/src/ext/interperter" {
+    import { ClassPrototype, DeclaredElement, Program } from "assemblyscript/src/program";
+    import { Range } from "assemblyscript/src/tokenizer";
+    import { FunctionDef, FieldDef, ImportSourceDef, NamedTypeNodeDef } from "assemblyscript/src/ext/contract/base";
+    export class ClassInterpreter {
+        protected classPrototype: ClassPrototype;
+        className: string;
+        instanceName: string;
+        range: Range;
         constructor(clzPrototype: ClassPrototype);
-        getExportMethods(): ContractExportDef;
-        private resolveDeployerFuncPrototype;
-        getMethodDesc(funcProto: FunctionPrototype): MethodDef;
     }
-    export class StorageGenerator {
-        private classPrototype;
-        storageDef: StorageDef;
+    export class ContractInterpreter extends ClassInterpreter {
+        name: string;
+        version: string;
+        cntrFuncDefs: FunctionDef[];
+        msgFuncDefs: FunctionDef[];
+        isReturnable: boolean;
+        constructor(clzPrototype: ClassPrototype);
+        private resolveContractClass;
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+    }
+    export class StorageInterpreter extends ClassInterpreter {
+        fields: FieldDef[];
         constructor(clzPrototype: ClassPrototype);
         resolveInstanceMembers(instanceMembers: Map<string, DeclaredElement>): void;
-        resolveFieldPrototype(fieldPrototype: FieldPrototype): void;
+        setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void;
+    }
+    export class ContractProgram {
+        program: Program;
+        contract: ContractInterpreter | null;
+        storages: StorageInterpreter[];
+        types: NamedTypeNodeDef[];
+        fields: FieldDef[];
+        import: ImportSourceDef;
+        private typeNodeMap;
+        constructor(program: Program);
+        private sortStorages;
+        private getFields;
+        private addDefaultImports;
+        private resolve;
+        private setTypeIndex;
     }
 }
-declare module "assemblyscript/src/ext/abi" {
-    import { InsertPoint } from "assemblyscript/src/ext/inserter";
-    import { MethodDef } from "assemblyscript/src/ext/contract/base";
+declare module "assemblyscript/src/ext/contract" {
     import { Element, ClassPrototype, Program } from "assemblyscript/src/program";
     import { Expression } from "assemblyscript/src/ast";
+    import { ContractProgram } from "assemblyscript/src/ext/interperter";
     class StructDef {
         name: string;
         fields: Array<Object>;
         base: string;
         addField(name: string, type: string): void;
-    }
-    export class ContractExportDef {
-        className: string;
-        contractName: string;
-        version: string;
-        deployers: MethodDef[];
-        messages: MethodDef[];
-        constructor(clzName: string);
-    }
-    export class TypePair {
-        key: string;
-        ty: number;
-    }
-    export class LayoutDef {
-    }
-    export class CellLayoutDef extends LayoutDef {
-        cell: TypePair;
-    }
-    export class FieldDef {
-        layout: LayoutDef;
-        name: string;
-        fieldType: string;
-        fieldCodecType: string | undefined;
-        storeKey: string;
-        varName: string;
-        path: string;
-    }
-    export class StorageDef {
-        className: string;
-        fields: FieldDef[];
     }
     class AbiAliasDef {
         new_type_name: string;
@@ -6533,10 +6556,6 @@ declare module "assemblyscript/src/ext/abi" {
         actions: Array<ActionDef>;
         tables: Array<TableDef>;
     }
-    export class TypeDef {
-        type: string;
-        index: number;
-    }
     export class ContractInfo {
         abiInfo: AbiDef;
         program: Program;
@@ -6544,13 +6563,6 @@ declare module "assemblyscript/src/ext/abi" {
         typeAliasSet: Set<string>;
         structsLookup: Map<string, StructDef>;
         elementLookup: Map<string, Element>;
-        insertPointsLookup: Map<string, Array<InsertPoint>>;
-        exportDef: ContractExportDef;
-        stores: StorageDef[];
-        typeMap: Map<string, TypeDef>;
-        types: TypeDef[];
-        typeIndex: number;
-        fields: FieldDef[];
         constructor(program: Program);
         private addAbiTypeAlias;
         resolveDatabaseDecorator(clsProto: ClassPrototype): void;
@@ -6583,13 +6595,8 @@ declare module "assemblyscript/src/ext/abi" {
          * Resolve funciton prototype to abi
          */
         private resolveFunctionPrototype;
-        private isContractClassPrototype;
-        private isStoreClassPrototype;
-        private pickUpAbiTypes;
-        private getIndexOfAbiTypes;
-        private resolve;
     }
-    export function getContractInfo(program: Program): ContractInfo;
+    export function getContractInfo(program: Program): ContractProgram;
     export {};
 }
 declare module "assemblyscript/src/extra/ast" {
@@ -6834,47 +6841,17 @@ declare module "assemblyscript/src/index" {
     export * from "assemblyscript/src/resolver";
     export * from "assemblyscript/src/tokenizer";
     export * from "assemblyscript/src/types";
-    export * from "assemblyscript/src/ext/abi";
+    export * from "assemblyscript/src/ext/contract";
     export * from "assemblyscript/src/extra/ast";
     import * as util from "assemblyscript/src/util/index";
     export { util };
     export * from "assemblyscript/src/util/index";
 }
-declare module "assemblyscript/src/ext/analyzer" {
-    export class ContractAnalyzar {
-    }
-}
 declare module "assemblyscript/src/ext/index" {
-    export * from "assemblyscript/src/ext/abi";
+    export * from "assemblyscript/src/ext/contract";
 }
 declare module "assemblyscript/src/ext/contract/metadata" {
     export class MetadataDef {
-    }
-}
-declare module "assemblyscript/src/ext/contract/storage" {
-    export class StructDef {
-    }
-    export class TypePair {
-        key: string;
-        ty: number;
-    }
-    export class StorageDef {
-        className: string;
-        fields: FieldDef[];
-    }
-    export class LayoutDef {
-    }
-    export class CellLayoutDef extends LayoutDef {
-        cell: TypePair;
-    }
-    export class FieldDef {
-        layout: LayoutDef;
-        name: string;
-        fieldType: string;
-        fieldCodecType: string | undefined;
-        storeKey: string;
-        varName: string;
-        path: string;
     }
 }
 /**

@@ -52,7 +52,7 @@ export class Storage<T extends Codec> {
   }
 
   private hashKey(): ArrayBuffer {
-    const hash = Crypto.sha256s(this.key);
+    const hash = Crypto.blake256s(this.key);
     return hash.toU8a().buffer;
   }
 }
