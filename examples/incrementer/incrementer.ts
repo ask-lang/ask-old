@@ -3,13 +3,6 @@
  * @author liangqin.fan@gmail.com
  */
 
-/*
- * This is the contract template,
- * which will be processed by Preprocessor,
- * to generate metadata.json file and
- * the compilable target contract file.
- */
-
 @storage
 class Stored {
   value: u32;
@@ -22,8 +15,8 @@ class Incrementer {
   constructor() { this.stored = new Stored(); }
 
   @constructor
-  onDeploy(initFlag: u32): void {
-    this.stored.value = initFlag;
+  default(initValue: u32): void {
+    this.stored.value = initValue;
   }
 
   @message
@@ -32,7 +25,7 @@ class Incrementer {
     this.stored.value = ++v;
   }
 
-  @message
+  @message(mutates = false)
   get(): u32 {
     return this.stored.value;
   }
