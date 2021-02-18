@@ -36,16 +36,16 @@ if (/\ask$/.test(process.argv[1])) {
   let wasmPath = path.join(dirname, "target", "target.wasm");
   let extensionPath = path.join(dirname, "extension.ts");
 
-  process.argv.push("-p");
-  process.argv.push(extensionPath)
   process.argv.push("-a");
   process.argv.push(abiPath)
+  process.argv.push("-p");
+  process.argv.push(extensionPath)
   asc.ready.then(() => {
     process.exitCode = asc.main(process.argv.slice(2));
     if (process.exitCode == 0) {
       process.argv[2] = extensionPath;
-      process.argv.push("-b");
-      process.argv.push(wasmPath);
+      let len = process.argv.length;
+      process.argv.splice(len - 4, 4, "-b", wasmPath);
       asc.ready.then(() => process.exitCode = asc.main(process.argv.slice(2)));
     }
   });
