@@ -27,7 +27,7 @@ class SolarSystem {
 
   @message
   set(name: string, radius: u32, isdwarf: boolean): void {
-    if (this.stored.isdwarf !== isdwarf) {
+    if (this.stored.name != name) {
       this.stored.name = name;
       this.stored.radius = radius;
       this.stored.isdwarf = isdwarf;
