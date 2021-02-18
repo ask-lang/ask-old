@@ -5,12 +5,12 @@
 
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_address } from "../seal/seal0";
-import { Account } from "./AccountId";
+import { AccountId } from "./AccountId";
 import { Msg } from "./Msg";
 
 export class BaseContract {
   protected _msg: Msg | null = null;
-  protected _address: Account | null = null;
+  protected _address: AccountId | null = null;
   
   /**
    * get informations of this message invoked by external users.
@@ -34,11 +34,11 @@ export class BaseContract {
    * @type {AccountId}
    * @memberof BaseContract
    */
-  get address(): Account {
+  get address(): AccountId {
     if (this._address === null) {
       let readbuf = new ReadBuffer(32);
       seal_address(readbuf.valueBuffer, readbuf.sizeBuffer);
-      this._address = Account.from(readbuf.valueBytes);
+      this._address = AccountId.from(readbuf.valueBytes);
     }
 
     return this._address;
