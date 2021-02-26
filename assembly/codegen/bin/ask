@@ -16,37 +16,37 @@ if (~tailArgs) {
 
 try { require("source-map-support").install(); } catch (e) { }
 
+const ARGS = [
+  "--importMemory",
+  "--initialMemory",
+  "2",
+  "--maximumMemory",
+  "16",
+  "--noExportMemory",
+  "--runtime",
+  "half",
+  "--use",
+  "abort= ",
+  "-O2"
+]
+
 const asc = module.exports = require("../cli/asc.js");
 if (/\ask$/.test(process.argv[1])) {
-  process.argv.push("--importMemory");
-  process.argv.push("--initialMemory");
-  process.argv.push("2");
-  process.argv.push("--maximumMemory");
-  process.argv.push("16");
-  process.argv.push("--noExportMemory");
-  process.argv.push("--runtime");
-  process.argv.push("half");
-  process.argv.push("--use");
-  process.argv.push("abort= ");
-  process.argv.push("-O2");
   let sourcePath = process.argv[2];
-
   let dirname = path.dirname(sourcePath);
   let abiPath = path.join(dirname, "target", "metadata.json");
   let wasmPath = path.join(dirname, "target", "target.wasm");
   let extensionPath = path.join(dirname, "extension.ts");
-
-  process.argv.push("-a");
-  process.argv.push(abiPath)
-  process.argv.push("-p");
-  process.argv.push(extensionPath)
   asc.ready.then(() => {
-    process.exitCode = asc.main(process.argv.slice(2));
+
+    const preprocessArgs = [sourcePath, ...ARGS];
+    preprocessArgs.push("-a", abiPath, "-p", extensionPath)
+    process.exitCode = asc.main(preprocessArgs);
+
     if (process.exitCode == 0) {
-      process.argv[2] = extensionPath;
-      let len = process.argv.length;
-      process.argv.splice(len - 4, 4, "-b", wasmPath);
-      asc.ready.then(() => process.exitCode = asc.main(process.argv.slice(2)));
+      const postprocessArgs = [extensionPath, ...ARGS];
+      postprocessArgs.push("-b", wasmPath)
+      asc.ready.then(() => process.exitCode = asc.main(postprocessArgs));
     }
   });
 }
