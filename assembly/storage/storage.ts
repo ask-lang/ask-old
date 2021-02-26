@@ -8,7 +8,6 @@ import { ReturnCode } from "../primitives/alias";
 
 import { Codec } from '../deps/as-scale-codec';
 import { ReadBuffer } from "../primitives/readbuffer";
-import { WriteBuffer } from "../primitives/writebuffer";
 import { Crypto } from "../primitives/crypto";
 
 export class Storage<T extends Codec> {
@@ -19,11 +18,11 @@ export class Storage<T extends Codec> {
   }
 
   store(value: T): ReturnCode {
-    const buf = new WriteBuffer(value.toU8a().buffer);
+    const bytes = value.toU8a();
     seal_set_storage(
       this.hashKey(),
-      buf.buffer,
-      buf.size
+      bytes.buffer,
+      bytes.length,
     );
     return ReturnCode.Success;
   }

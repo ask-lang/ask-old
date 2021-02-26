@@ -7,13 +7,11 @@ import { Codec, Hash } from "../deps/as-scale-codec";
 import { seal_hash_blake2_128, seal_hash_blake2_256, seal_hash_keccak_256, seal_hash_sha2_256, seal_random } from "../seal/seal0";
 import { typedToArray } from "../utils/ArrayUtils";
 import { ReadBuffer } from "./readbuffer";
-import { WriteBuffer } from "./writebuffer";
 
 function invoke_hash_algo(message: ArrayBuffer, outLen: u32,
   fn: (i: ArrayBuffer, is: u32, o: ArrayBuffer) => void): Hash {
-  const wbuf = new WriteBuffer(message);
   const outbuf = new Uint8Array(outLen);
-  fn(wbuf.buffer, wbuf.size, outbuf.buffer);
+  fn(message, message.byteLength, outbuf.buffer);
   return Hash.bytesToHash(typedToArray(outbuf));
 }
 
@@ -36,9 +34,8 @@ export class Crypto {
   }
 
   static random(subject: u8[]): Hash {
-    const wbuf = new WriteBuffer(subject.buffer);
     const outbuf = new ReadBuffer(32);
-    seal_random(wbuf.buffer, wbuf.size, outbuf.valueBuffer, outbuf.sizeBuffer);
+    seal_random(subject.buffer, subject.length, outbuf.valueBuffer, outbuf.sizeBuffer);
     return Hash.bytesToHash(outbuf.valueBytes);
   }
 

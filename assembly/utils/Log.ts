@@ -4,17 +4,16 @@
  */
 
 import { seal_println } from "../seal/seal0";
-import { WriteBuffer } from "../primitives/writebuffer";
 const HexChar = ['0', '1', '2', '3', '4', '5', '6', '7', '8',
   '9', 'a', 'b', 'c', 'd', 'e', 'f'];
 
 class Logger {
   println(message: string): void {
-    const outbuf = new WriteBuffer(String.UTF8.encode(message));
+    const bytes = String.UTF8.encode(message);
 
     seal_println(
-      outbuf.buffer,
-      outbuf.size
+      bytes.buffer,
+      bytes.byteLength,
     );
   }
 

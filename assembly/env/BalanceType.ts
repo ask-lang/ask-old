@@ -5,7 +5,6 @@
 
 import { UInt128 } from "../deps/as-scale-codec";
 import { ReturnCode } from "../primitives/alias";
-import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_transfer } from "../seal/seal0";
 import { AccountType } from "./AccountType";
 
@@ -18,14 +17,12 @@ import { AccountType } from "./AccountType";
 export type BalanceType = UInt128;
 
 export function SendBalance(destination: AccountType, value: BalanceType): bool {
-  let destBuffer = new WriteBuffer(destination.buffer);
-  let valBuffer = new WriteBuffer(value.toU8a().buffer);
-
+  let valBuffer = value.toU8a();
   let ret = seal_transfer(
-    destBuffer.buffer,
-    destBuffer.size,
+    destination.buffer,
+    destination.length,
     valBuffer.buffer,
-    valBuffer.size
+    valBuffer.length,
   );
 
   return ret === ReturnCode.Success;

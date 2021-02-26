@@ -5,7 +5,6 @@
 
 import { Codec } from "../deps/as-scale-codec";
 import { Crypto } from "../primitives/crypto";
-import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_deposit_event } from "../seal/seal0";
 
 const MAX_EVENT_TOPICS = 4; // Refer to `frame/contracts/src/schedule.rs` L464
@@ -45,10 +44,7 @@ export abstract class Event {
 
     assert(Event._data.length !== 0, "invalid event defined.");
 
-    const topicBuf = new WriteBuffer(topicsData.buffer);
-    const dataBuf = new WriteBuffer(datas.buffer);
-
-    seal_deposit_event(topicBuf.buffer, topicBuf.size, dataBuf.buffer, dataBuf.size);
+    seal_deposit_event(topicsData.buffer, topicsData.length, datas.buffer, datas.length);
     // to release allocated memory
     Event.reset();
   }
