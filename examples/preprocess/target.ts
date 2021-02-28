@@ -4,11 +4,12 @@
  */
 
 import { Bool } from "as-scale-codec";
-import { Storage } from "../../assembly/storage";
+import { Storage, StoreMode } from "../../assembly/storage";
 import { Log } from "../../assembly/utils/Log";
 import { ReturnData } from "../../assembly/primitives/returndata";
 import { Msg } from "../../assembly/buildins/Msg";
 import { FnParameters } from "../../assembly/buildins/FnParameters";
+import { u128 } from "../../assembly";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,
@@ -49,13 +50,13 @@ class Flipper {
   }
 
   flip(): void {
-    assert(msg.notPayable(), "Can not accept value");
+    assert(msg.value == u128.Zero, "method is not payable");
     const v = this.stored.flag;
     this.stored.flag = !v;
   }
 
   get(): bool {
-    assert(msg.notPayable(), "Can not accept value");
+    Storage.mode = StoreMode.R;
     return this.stored.flag;
   }
 
@@ -63,7 +64,7 @@ class Flipper {
   }
 
   specific(): void {
-    assert(msg.notPayable(), "Can not accept value");
+    assert(msg.value == u128.Zero, "method is not payable");
   }
 }
 
