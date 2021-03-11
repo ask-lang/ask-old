@@ -11,14 +11,25 @@ import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { Crypto } from "../primitives/crypto";
 
+export enum StoreMode {W = 0, R = 1, WR = 2}
+
 export class Storage<T extends Codec> {
+  // store mode, to limit store value to native in `mutates = false`
+  private static sStoreMode: StoreMode = StoreMode.WR;
+  static set mode(mode: StoreMode) {
+    Storage.sStoreMode = mode;
+  }
+
   private key: string;
 
   constructor(_key: string) {
     this.key = _key;
   }
 
+
   store(value: T): ReturnCode {
+    assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
+
     const buf = new WriteBuffer(value.toU8a().buffer);
     seal_set_storage(
       this.hashKey(),
