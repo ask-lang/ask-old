@@ -32,6 +32,7 @@ const ARGS = [
 
 const asc = module.exports = require("../cli/asc.js");
 if (/\ask$/.test(process.argv[1])) {
+  console.log("Build Start ····")
   let sourcePath = process.argv[2];
   let dirname = path.dirname(sourcePath);
   let abiPath = path.join(dirname, "target", "metadata.json");
@@ -41,12 +42,17 @@ if (/\ask$/.test(process.argv[1])) {
 
     const preprocessArgs = [sourcePath, ...ARGS];
     preprocessArgs.push("-a", abiPath, "-p", extensionPath)
+    console.log("Build Inprocess. Generating extension and metadata.json file.")
     process.exitCode = asc.main(preprocessArgs);
 
     if (process.exitCode == 0) {
       const postprocessArgs = [extensionPath, ...ARGS];
       postprocessArgs.push("-b", wasmPath)
-      asc.ready.then(() => process.exitCode = asc.main(postprocessArgs));
+      asc.ready.then(() => {
+        console.log("Build Inprocess. Generating wasm file.")
+        process.exitCode = asc.main(postprocessArgs);
+        console.log("Build Done. Targets generated")
+      })
     }
   });
 }
