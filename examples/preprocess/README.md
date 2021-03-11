@@ -1,9 +1,11 @@
-# 预编译器处理模板
+# Test sample for Preprocessor
 
-## 文件说明
-* `origin.ts`: 模拟由合约开发人员编写的合约
-* `target.ts`: 预计由预处理器处理之后应该生成的合约样式.
+**Not for common users**
 
-## 编译说明
-* 命令  
+## Notice
+* `origin.ts`: what a contract developer should write.
+* `target.ts`: what the preprocessor should generate.
+
+## how to compile
+* command  
 `./src/codegen/bin/asc ./examples/preprocess/origin.ts -p ./examples/preprocess/entry.ts`
