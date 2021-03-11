@@ -6264,6 +6264,7 @@ declare module "assemblyscript/src/ext/contract/base" {
     import { DecoratorNode, NamedTypeNode, ParameterNode, Source } from "assemblyscript/src/ast";
     import { Element, FieldPrototype, FunctionPrototype } from "assemblyscript/src/program";
     import { LayoutDef } from "assemblyscript/src/ext/contract/storage";
+    import { Range } from "assemblyscript/src/tokenizer";
     /**
      * The parameter type enum
      * basic type and composite type, array and map.
@@ -6300,12 +6301,12 @@ declare module "assemblyscript/src/ext/contract/base" {
     }
     export class MessageDecoratorNodeDef extends DecoratorNodeDef {
         private payable;
-        private mutates;
+        mutates: string;
         private selector;
         constructor(decorator: DecoratorNode);
     }
     export class FunctionDef {
-        private funcProto;
+        protected funcProto: FunctionPrototype;
         methodName: string;
         parameters: ParameterNodeDef[];
         isReturnable: boolean;
@@ -6317,6 +6318,8 @@ declare module "assemblyscript/src/ext/contract/base" {
     }
     export class MessageFuctionDef extends FunctionDef {
         messageDecorator: MessageDecoratorNodeDef;
+        bodyRange: Range;
+        havingMutates: boolean;
         constructor(funcPrototype: FunctionPrototype);
     }
     export class TypeUtil {

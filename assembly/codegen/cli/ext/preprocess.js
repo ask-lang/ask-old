@@ -103,17 +103,32 @@ function removeSourceCode(sourceText, range, store) {
   return prefix + store + suffix;
 }
 
+let replaceCode = [];
+
 // Write text (also fallback)
 function outputCode(sourceText, contractInfo) {
   let mainTpl = fs.readFileSync(path.join(__dirname, "tpl", "main.tpl"), { encoding: "utf8" });
+
   const render = Handlebars.compile(mainTpl);
   const exportMain = render(contractInfo);
   let storeTpl = fs.readFileSync(path.join(__dirname, "tpl", "store.tpl"), { encoding: "utf8" });
   
+  contractInfo.contract.msgFuncDefs.forEach(item => {
+    if (item.messageDecorator.mutates == "false") {
+      let body = item.bodyRange.toString();
+      body = body.replace(/{/i, "{\n    Storage.mode = StoreMode.R;");
+      replaceCode.push({range: item.bodyRange, body: body});
+    }
+  });
+
   for (let index = 0; index < contractInfo.storages.length; index ++) {
     let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
-    sourceText = removeSourceCode(sourceText, contractInfo.storages[index].range, store);
+    replaceCode.push({ range: contractInfo.storages[index].range, body: store });
   }
+
+  replaceCode.sort((a, b) => (b.range.end - a.range.end)).forEach(item => {
+    sourceText = removeSourceCode(sourceText, item.range, item.body);
+  });
 
   if (contractInfo.import.unimports.length != 0) {
     let importElement = `import { ${contractInfo.import.unimports.join(", ")}} from "../../assembly";\n`;
