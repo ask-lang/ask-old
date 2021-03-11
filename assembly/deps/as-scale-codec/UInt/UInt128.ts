@@ -43,8 +43,9 @@ export class UInt128 implements UnwrappableCodec<u128> {
      * @param index index to start decoding the bytes from
      */
     populateFromBytes(bytes: u8[], index: i32 = 0): void{
-      assert(bytes.length == 16, 'Invalid input: Byte array should be 16');
-      this._value = u128.from(bytes);
+      const v = bytes.slice(index);
+      assert(v.length == 16, 'Invalid input: Byte array should be 16');
+      this._value = u128.from(v);
     }
     /**
      * @description The length of Int when the value is encoded
