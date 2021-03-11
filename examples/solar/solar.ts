@@ -25,15 +25,16 @@ class SolarSystem {
     this.stored.name = name;
     this.stored.radius = radius;
     this.stored.isdwarf = isdwarf;
+    this.stored.typeU128 = type128;
   }
 
   @message
-  set(name: string, radius: u32, isdwarf: boolean): void {
+  set(name: string, radius: u32, isdwarf: boolean, type128: u128): void {
     if (this.stored.name != name) {
       this.stored.name = name;
       this.stored.radius = radius;
       this.stored.isdwarf = isdwarf;
-      this.stored.typeU128 = u128.fromU64(32);
+      this.stored.typeU128 = type128;
     }
   }
 
