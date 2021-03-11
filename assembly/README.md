@@ -1,3 +1,3 @@
  # Framework
 
-Framework封装substrate链上的能力, 导出api, 并封装成组件
+This folder contains the implementation for `Ask! Framework`, which is applied for writing contracts with ask!.
