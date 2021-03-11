@@ -17,9 +17,9 @@
     "test:summary": "asp --summary"
   },
   "devDependencies": {
-    "@as-pect/assembly": "^4.0.0",
-    "@as-pect/cli": "^4.0.0",
-    "@as-pect/core": "^4.0.0",
+    "@as-pect/assembly": "^6.0.0",
+    "@as-pect/cli": "^6.0.0",
+    "@as-pect/core": "^6.0.0",
     "@assemblyscript/loader": "^0.16.1",
     "@types/node": "^14.14.12",
     "@typescript-eslint/eslint-plugin": "^4.14.0",
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "as-bignum": "^0.2.14",
+    "assemblyscript": "^0.18.14",
     "binaryen": "98.0.0-nightly.20201109",
     "blake2": "^4.0.1",
     "handlebars": "^4.7.6",
