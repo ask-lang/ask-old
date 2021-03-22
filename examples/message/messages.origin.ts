@@ -5,34 +5,21 @@
 
 @contract
 class MessageContract {
-  @constructor
-  onDeploy() {
+    @constructor
+    onDeploy() {}
 
-  }
+    @message
+    defaultMessage() {}
 
-  @message
-  defaultMessage() {
+    @message(payable)
+    payableMessage() {}
 
-  }
+    @message((mutates = "false"))
+    mutatesMessage() {}
 
-  @message(payable)
-  payableMessage() {
+    @message((selector = "0x12345678"))
+    slectorMessage() {}
 
-  }
-
-  @message(mutates="false")
-  mutatesMessage() {
-
-  }
-
-  @message(selector="0x12345678")
-  slectorMessage() {
-
-  }
-
-  @message(payable, mutates, selector="0x87654321")
-  comositeMessage() {
-
-  }
-
+    @message(payable, mutates, (selector = "0x87654321"))
+    comositeMessage() {}
 }

@@ -1,3 +1,3 @@
 # Examples
 
-Here we put examples.
+使用ASK编写合约的示例代码.

@@ -1,0 +1,37 @@
+{
+  "name": "as-scale-example",
+  "version": "0.0.1",
+  "description": "Example of AssemblyScript SCALE codec",
+  "main": "./assembly/index.ts",
+  "contributors": [
+    "Daniel Ivanov <daniel-k-ivanov>",
+    "Lyubomir Kiprov <bakasura980>"
+  ],
+  "scripts": {
+    "start": "node index.js",
+    "test": "asp --verbose",
+    "build": "npx asc assembly/index.ts -b build/example.wasm -t build/example.wat --sourceMap --runtime full --optimize",
+    "build:debug": "npm run build -- --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LimeChain/assemblyscript-scale-codec.git"
+  },
+  "keywords": [
+    "assembly-script",
+    "SCALE",
+    "Polkadot",
+    "Substrate"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/LimeChain/assemblyscript-scale-codec/issues"
+  },
+  "homepage": "https://github.com/LimeChain/assemblyscript-scale-codec#readme",
+  "dependencies": {
+    "@as-pect/cli": "^4.0.0",
+    "@assemblyscript/loader": "0.0.0",
+    "as-scale-codec": "file:../",
+    "assemblyscript": "^0.13.1"
+  }
+}

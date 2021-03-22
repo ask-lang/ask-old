@@ -1,42 +1,46 @@
 {
   "name": "@patract/ask",
   "version": "0.1.0",
-  "description": "compile assemblyscript to substrate conctract",
+  "description": "compile assemblyscript to substrate wasm contract",
   "keywords": [
     "assemblyscript",
     "ask",
+    "wasm",
     "smart-contract",
+    "contract-metadata",
     "substrate"
   ],
-  "main": "./assembly/index.ts",
-  "author": "",
+  "workspaces": [
+    "as-packages/*",
+    "ts-packages/*",
+    "examples"
+  ],
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
-    "test": "asp --verbose",
-    "test:summary": "asp --summary"
+    "prettify": "prettier -w ./**/*.ts --config ./.prettierrc.js",
+    "test": "yarn test:as && yarn test:ts",
+    "test:ts": "jest ts-packages",
+    "test:as": "asp --verbose",
+    "test:as:summary": "asp --summary"
   },
+
+  "private": true,
   "devDependencies": {
+    "@types/jest": "26.0.21",
+    "@types/node": "^14.14.35",
+    "ts-jest": "^26.3.0",
+    "jest": "^26.6.3",
     "@as-pect/assembly": "^6.0.0",
+    "assemblyscript": "0.18",
     "@as-pect/cli": "^6.0.0",
     "@as-pect/core": "^6.0.0",
-    "@assemblyscript/loader": "^0.16.1",
-    "@types/node": "^14.14.12",
-    "@typescript-eslint/eslint-plugin": "^4.14.0",
-    "@typescript-eslint/parser": "^4.9.1",
-    "eslint": "^7.15.0",
-    "source-map-support": "^0.5.19",
+    "@assemblyscript/loader": "^0.18",
+    "@typescript-eslint/eslint-plugin": "^4.16",
+    "@typescript-eslint/parser": "^4.16",
+    "eslint": "^7.21.0",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.2"
-  },
-  "dependencies": {
-    "as-bignum": "^0.2.14",
-    "assemblyscript": "^0.18.14",
-    "binaryen": "98.0.0-nightly.20201109",
-    "blake2": "^4.0.1",
-    "handlebars": "^4.7.6",
-    "long": "^4.0.0",
-    "source-map-support": "^0.5.19",
-    "ts-node": "^6.2.0"
+    "prettier": "^2.1.1",
+    "typescript": "4.0"
   }
 }

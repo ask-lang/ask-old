@@ -5,28 +5,30 @@
 
 @storage
 class Stored {
-  value: u32;
+    value: u32;
 }
 
 @contract
 class Incrementer {
-  private stored: Stored;
+    private stored: Stored;
 
-  constructor() { this.stored = new Stored(); }
+    constructor() {
+        this.stored = new Stored();
+    }
 
-  @constructor
-  default(initValue: u32): void {
-    this.stored.value = initValue;
-  }
+    @constructor
+    default(initValue: u32): void {
+        this.stored.value = initValue;
+    }
 
-  @message
-  inc(): void {
-    let v = this.stored.value;
-    this.stored.value = ++v;
-  }
+    @message
+    inc(): void {
+        let v = this.stored.value;
+        this.stored.value = ++v;
+    }
 
-  @message(mutates = false)
-  get(): u32 {
-    return this.stored.value;
-  }
+    @message((mutates = false))
+    get(): u32 {
+        return this.stored.value;
+    }
 }
