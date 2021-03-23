@@ -1,6 +1,6 @@
 import { ConstructorSpec } from ".";
 
-describe("Decoder", () => {
+describe("ToMetadata", () => {
     it("ConstructorSpec", () => {
         const json = {
             name: ["foo"],

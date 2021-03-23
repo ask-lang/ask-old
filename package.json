@@ -19,6 +19,9 @@
   "scripts": {
     "lint": "eslint .",
     "prettify": "prettier -w ./**/*.ts --config ./.prettierrc.js",
+    "checks": "yarn checks:metadata && yarn checks:transform",
+    "checks:metadata": "yarn --cwd ./ts-packages/transform checks",
+    "checks:transform": "yarn --cwd ./ts-packages/transform checks",
     "test": "yarn test:as && yarn test:ts",
     "test:ts": "jest ts-packages",
     "test:as": "asp --verbose",
