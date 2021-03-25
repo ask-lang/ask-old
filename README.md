@@ -14,7 +14,7 @@ Riot Group for disscusion: [https://app.element.io/#/room/#PatractLabsDev:matrix
 ## Overview
 AS uses the asc compiler to compile TypeScript (TS) files into WebAssembly bytecode. However, asc is a general-purpose compilation tool, which cannot directly compile TS files into WASM bytecode and metadata information with smart contract structure. Although AS is only a subset of TS, there are a wide range of developers who use TS as a development language, so the cost of learning AS for these developers is very low. Therefore, we think the Ask! project has a very good application development prospect. Compared with Rust-based ink!, we believe that AS-based Ask! can effectively lower the threshold for contract developers and enrich the contract development ecosystem.
 
-[Patract Hub](https://patract.io/) develops local open source toolkits and one-stop cloud smart IDE, committed to provide free development toolkits and infrastructure services for the entire WASM smart contract ecosystem. We have launched 7 projects in Polkadot/Kusama Treasury, and Ask! will be our 8th project. Current proposal for this repo is [Patract Hub's proposal for Ask! v0.1 (ink! in AssemblyScript)](https://kusama.polkassembly.io/post/398)
+[Patract](https://patract.io/) develops local open source toolkits and one-stop cloud smart IDE, committed to provide free development toolkits and infrastructure services for the entire WASM smart contract ecosystem. We have launched 7 projects in Polkadot/Kusama Treasury, and Ask! will be our 8th project. Current proposal for this repo is [Patract's proposal for Ask! v0.1 (ink! in AssemblyScript)](https://kusama.polkassembly.io/post/398)
 
 ## Design
 > TODO
