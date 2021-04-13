@@ -15,47 +15,65 @@ import {
     TypeDefinition,
     Range,
     DecoratorNode,
+    DeclarationStatement,
+    DecoratorKind,
 } from "assemblyscript";
 
-import { AstUtil, ContractDecoratorKind } from "../utils";
+import { AstUtil, ContractDecoratorKind, ElementUtil } from "../utils";
 import { Collections } from "../collectionutil";
-import { AbiHelper } from "../contract";
-import { LayoutDef } from "./storage";
 import { Strings } from "../primitiveutil";
+import { LayoutDef } from "./storage";
 
 /**
  * The parameter type enum
- * basic type and composite type, array and map.
- *
+ * basic type and composite type, array and map. 
+ * 
  */
 export enum TypeEnum {
     NUMBER,
     STRING,
     ARRAY,
     MAP,
-    CLASS,
+    CLASS
+}
+
+export class DecoratorsInfo {
+    decorators: DecoratorNode[] | null;
+    isIgnore = false;
+    isTopic = false;
+
+    constructor(decorators: DecoratorNode[] | null) {
+        this.decorators = decorators;
+        if (decorators && AstUtil.containDecorator(decorators, ContractDecoratorKind.IGNORE)) {
+            this.isIgnore = true;
+        }
+        if (decorators && AstUtil.containDecorator(decorators, ContractDecoratorKind.TOPIC)) {
+            this.isTopic = true;
+        }
+    }
 }
 export class FieldDef {
     protected fieldPrototype: FieldPrototype;
     layout: LayoutDef = new LayoutDef();
-    name = "";
+    name: string;
     type: NamedTypeNodeDef | null = null;
-    storeKey = "";
-    varName = "";
-    path = "";
+    storeKey: string;
+    varName: string;
+    doc: string;
+    decorators: DecoratorsInfo;
 
     constructor(field: FieldPrototype) {
         this.fieldPrototype = field;
         this.name = field.name;
+        this.doc = DecoratorUtil.getDoc(field.declaration);
         this.varName = "_" + this.name;
         this.storeKey = this.fieldPrototype.parent.name + this.name;
+        this.decorators = new DecoratorsInfo(this.fieldPrototype.declaration.decorators);
         this.resolveField();
     }
 
     private resolveField(): void {
-        let fieldDeclaration: FieldDeclaration = <FieldDeclaration>(
-            this.fieldPrototype.declaration
-        );
+        let fieldDeclaration: FieldDeclaration = <FieldDeclaration>this.fieldPrototype.declaration;
         let commonType: TypeNode | null = fieldDeclaration.type;
         if (commonType && commonType.kind == NodeKind.NAMEDTYPE) {
             let typeNode = <NamedTypeNode>commonType;
@@ -63,7 +81,15 @@ export class FieldDef {
         }
     }
 }
+export class TopicFieldDef extends FieldDef {
 
+    isTopic = false;
+    constructor(field: FieldPrototype) {
+        super(field);
+        this.isTopic = ElementUtil.isTopicField(field);
+    }
+
+}
 export class ParameterNodeDef {
     private parameterNode: ParameterNode;
     name: string;
@@ -72,10 +98,7 @@ export class ParameterNodeDef {
     constructor(parent: Element, parameterNode: ParameterNode) {
         this.parameterNode = parameterNode;
         this.name = this.parameterNode.name.range.toString();
-        this.type = new NamedTypeNodeDef(
-            parent,
-            <NamedTypeNode>this.parameterNode.type
-        );
+        this.type = new NamedTypeNodeDef(parent, <NamedTypeNode>this.parameterNode.type);
     }
 
     setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
@@ -85,13 +108,31 @@ export class ParameterNodeDef {
 
 export class DecoratorNodeDef {
     private decorator: DecoratorNode;
-
+    private decoratorKind: DecoratorKind;
     constructor(decorator: DecoratorNode) {
         this.decorator = decorator;
+        this.decoratorKind = decorator.decoratorKind;
+    }
+}
+
+export class DocDecoratorNodeDef extends DecoratorNodeDef {
+    doc = "";
+    constructor(decorator: DecoratorNode) {
+        super(decorator);
+        if (decorator.args) {
+            decorator.args.forEach(expression => {
+                let identifier = AstUtil.getIdentifier(expression);
+                if (identifier == 'desc') {
+                    let docStr = AstUtil.getBinaryExprRight(expression);
+                    this.doc = Strings.removeQuotation(docStr);
+                }
+            });
+        }
     }
 }
 
 export class MessageDecoratorNodeDef extends DecoratorNodeDef {
+
     private payable = false;
     mutates = "true";
     private selector = "";
@@ -99,16 +140,14 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode) {
         super(decorator);
         if (decorator.args) {
-            decorator.args.forEach((expression) => {
+            decorator.args.forEach(expression => {
                 let identifier = AstUtil.getIdentifier(expression);
-                if (identifier == "payable") {
+                if (identifier == 'payable') {
                     this.payable = true;
-                } else if (identifier == "mutates") {
+                } else if (identifier == 'mutates') {
                     this.mutates = AstUtil.getBinaryExprRight(expression);
-                } else if (identifier == "selector") {
-                    this.selector = Strings.removeQuotation(
-                        AstUtil.getBinaryExprRight(expression)
-                    );
+                } else if (identifier == 'selector') {
+                    this.selector = Strings.removeQuotation(AstUtil.getBinaryExprRight(expression));
                 }
             });
         }
@@ -121,9 +160,11 @@ export class FunctionDef {
     parameters: ParameterNodeDef[] = [];
     isReturnable = false;
     returnType: NamedTypeNodeDef | undefined;
+    doc: string;
     defaultVals: string[] = [];
 
     constructor(funcPrototype: FunctionPrototype) {
+        this.doc = DecoratorUtil.getDoc(funcPrototype.declaration);
         this.funcProto = funcPrototype;
         this.methodName = this.funcProto.name;
         this.resolve();
@@ -131,14 +172,11 @@ export class FunctionDef {
 
     resolve(): void {
         let params = this.funcProto.functionTypeNode.parameters;
-        params.forEach((param) => {
+        params.forEach(param => {
             this.parameters.push(new ParameterNodeDef(this.funcProto, param));
         });
         let returnType = this.funcProto.functionTypeNode.returnType;
-        let returnTypeDesc = new NamedTypeNodeDef(
-            this.funcProto,
-            <NamedTypeNode>returnType
-        );
+        let returnTypeDesc = new NamedTypeNodeDef(this.funcProto, <NamedTypeNode>returnType);
         if (!returnTypeDesc.isReturnVoid()) {
             let wrapType = TypeUtil.getWrapperType(returnTypeDesc.name);
             returnTypeDesc.codecType = wrapType;
@@ -149,7 +187,7 @@ export class FunctionDef {
     }
 
     public setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
-        this.parameters.forEach((item) => {
+        this.parameters.forEach(item => {
             item.setTypeIndex(typeNodeMap);
         });
         if (this.isReturnable) {
@@ -158,17 +196,36 @@ export class FunctionDef {
     }
 }
 
+export class DecoratorUtil {
+    public static parseDeclaration(statement: DeclarationStatement): void {
+        let decoratorDefs: DecoratorNodeDef[] = [];
+        if (statement.decorators) {
+            let decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.MESSAGE);
+            if (decorator) {
+                decoratorDefs.push(new MessageDecoratorNodeDef(decorator));
+            }
+            decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.DOC);
+            if (decorator) {
+                decoratorDefs.push(new DocDecoratorNodeDef(decorator));
+            }
+        }
+    }
+
+    public static getDoc(statement: DeclarationStatement): string {
+        let decortor = AstUtil.getDocDecorator(statement);
+        return decortor == null ? Strings.EMPTY : new DocDecoratorNodeDef(decortor).doc;
+    }
+}
+
 export class MessageFuctionDef extends FunctionDef {
+
     messageDecorator: MessageDecoratorNodeDef;
     bodyRange: Range;
     havingMutates = false;
 
     constructor(funcPrototype: FunctionPrototype) {
         super(funcPrototype);
-        let msgDecorator = AstUtil.getSpecifyDecorator(
-            funcPrototype.declaration,
-            ContractDecoratorKind.MESSAGE
-        );
+        let msgDecorator = AstUtil.getSpecifyDecorator(funcPrototype.declaration, ContractDecoratorKind.MESSAGE);
         this.messageDecorator = new MessageDecoratorNodeDef(msgDecorator!);
         this.bodyRange = this.funcProto.bodyNode!.range;
         if (this.messageDecorator.mutates == "false") {
@@ -177,7 +234,33 @@ export class MessageFuctionDef extends FunctionDef {
     }
 }
 export class TypeUtil {
-    static typeWrapperMap: Map<string, string> = new Map([
+
+    /**
+     * Main node support internal abi type
+     * bool
+     */
+    static abiTypeLookup: Map<string, string> = new Map([
+        ["i8", "int8"],
+        ["i16", "int16"],
+        ["i32", "int32"],
+        ["i64", "int64"],
+        ["i128", "i128"],
+        ["isize", "uin32"],
+        ["u8", "uint8"],
+        ["u16", "uint16"],
+        ["u32", "uint32"],
+        ["u64", "uint64"],
+        ["u128", "u128"],
+        ["usize", "usize"],
+        ["f32", "float32"],
+        ["f64", "float64"],
+        ["bool", "bool"],
+        ["boolean", "bool"],
+        ["string", "string"],
+        ["String", "string"],
+    ]);
+
+    static primitiveToCodecMap: Map<string, string> = new Map([
         ["i8", "Int8"],
         ["i16", "Int16"],
         ["i32", "Int32"],
@@ -194,10 +277,10 @@ export class TypeUtil {
         ["f64", "float64"],
         ["bool", "Bool"],
         ["boolean", "Bool"],
-        ["string", "ScaleString"],
+        ["string", "ScaleString"]
     ]);
 
-    static abiTypeMap: Map<string, string> = new Map([
+    static primitiveToAbiMap: Map<string, string> = new Map([
         ["i8", "i8"],
         ["i16", "i16"],
         ["i32", "i32"],
@@ -212,10 +295,11 @@ export class TypeUtil {
         ["usize", "u32"],
         ["bool", "bool"],
         ["boolean", "bool"],
-        ["string", "str"],
+        ["string", "str"]
     ]);
 
-    static defaultValMap: Map<string, string> = new Map([
+
+    static primitiveToDefaultMap: Map<string, string> = new Map([
         ["i8", "0"],
         ["i16", "0"],
         ["i32", "0"],
@@ -232,22 +316,22 @@ export class TypeUtil {
         ["f64", "0"],
         ["bool", "false"],
         ["boolean", "false"],
-        ["string", "''"],
+        ["string", "''"]
     ]);
 
     static getWrapperType(asType: string): string {
-        let type: string | undefined = TypeUtil.typeWrapperMap.get(asType);
-        return type == undefined ? "" : type;
+        let type: string | undefined = TypeUtil.primitiveToCodecMap.get(asType);
+        return type == undefined ? Strings.EMPTY : type;
     }
 
     static getDefaultVal(asType: string): string {
-        let type: string | undefined = TypeUtil.defaultValMap.get(asType);
-        return type == undefined ? "" : type;
+        let type: string | undefined = TypeUtil.primitiveToDefaultMap.get(asType);
+        return type == undefined ? Strings.EMPTY : type;
     }
 
     static getAbiType(asType: string): string {
-        let type: string | undefined = TypeUtil.abiTypeMap.get(asType);
-        return type == undefined ? "" : type;
+        let type: string | undefined = TypeUtil.primitiveToAbiMap.get(asType);
+        return type == undefined ? Strings.EMPTY : type;
     }
 }
 export class ImportSourceDef {
@@ -256,7 +340,7 @@ export class ImportSourceDef {
     unimports: string[] = [];
 
     constructor(sources: Source[]) {
-        sources.forEach((element) => {
+        sources.forEach(element => {
             if (element.sourceKind == SourceKind.USER_ENTRY) {
                 this.entrySources.push(element);
                 this.resolveImportSource(element);
@@ -265,11 +349,11 @@ export class ImportSourceDef {
     }
 
     private resolveImportSource(source: Source): void {
-        source.statements.forEach((statement) => {
+        source.statements.forEach(statement => {
             if (statement.kind == NodeKind.IMPORT) {
                 let importStatement = <ImportStatement>statement;
                 if (importStatement.declarations) {
-                    importStatement.declarations.forEach((declaration) => {
+                    importStatement.declarations.forEach(declaration => {
                         this.importedElement.add(declaration.range.toString());
                     });
                 }
@@ -285,6 +369,7 @@ export class ImportSourceDef {
     }
 }
 
+
 /**
  * Type node description
  */
@@ -293,12 +378,11 @@ export class NamedTypeNodeDef {
     protected typeNode: NamedTypeNode;
     typeKind: TypeEnum | undefined;
     typeArguments: NamedTypeNodeDef[] = [];
-    name = "";
-    codecType = "";
-    originalType = "";
-    defaultVal = "";
-    abiType = "";
-    protected index = 0;
+    name: string;
+    codecType: string;
+    originalType: string;
+    abiType: string;
+    index = 0;
 
     constructor(parent: Element, typeNode: NamedTypeNode) {
         this.parent = parent;
@@ -307,7 +391,6 @@ export class NamedTypeNodeDef {
         this.originalType = this.name;
         this.abiType = TypeUtil.getAbiType(this.name);
         this.codecType = TypeUtil.getWrapperType(this.originalType);
-        this.defaultVal = TypeUtil.getDefaultVal(this.originalType);
         this.getArgs();
     }
 
@@ -322,6 +405,7 @@ export class NamedTypeNodeDef {
         }
     }
 
+
     getDeclareType(): string {
         return this.typeNode.range.toString();
     }
@@ -332,7 +416,7 @@ export class NamedTypeNodeDef {
 
     get typeEnum(): TypeEnum {
         var typeName = this.name;
-        if (AstUtil.isString(typeName)) {
+        if (Strings.isString(typeName)) {
             return TypeEnum.STRING;
         }
         if (AstUtil.isArrayType(typeName)) {
@@ -349,7 +433,7 @@ export class NamedTypeNodeDef {
                 let declaration = <TypeDeclaration>typeDefine.declaration;
                 let _typeNode = <NamedTypeNode>declaration.type;
                 let name = _typeNode.name.range.toString();
-                if (AbiHelper.abiTypeLookup.get(name) && name != "Asset") {
+                if (TypeUtil.abiTypeLookup.get(name) && name != "Asset") {
                     return TypeEnum.NUMBER;
                 }
             }
@@ -366,7 +450,7 @@ export class NamedTypeNodeDef {
 
     getArrayArgAbiTypeEnum(): TypeEnum {
         var typeName = this.getArgs()[0];
-        if (AstUtil.isString(typeName)) {
+        if (Strings.isString(typeName)) {
             return TypeEnum.STRING;
         }
         var type = this.findSourceAsElement(typeName);
@@ -387,10 +471,8 @@ export class NamedTypeNodeDef {
         if (this.typeNode.typeArguments) {
             return this.typeNode.typeArguments[0].range.toString();
         }
-        throw new Error(
-            `The typenode is not array:${this.name}.` +
-                ` Location in ${AstUtil.location(this.typeNode.range)}`
-        );
+        throw new Error(`The typenode is not array:${this.name}.`
+            + ` Location in ${AstUtil.location(this.typeNode.range)}`);
     }
 
     getAbiDeclareType(): string {
@@ -423,10 +505,7 @@ export class NamedTypeNodeDef {
             for (let arg of args) {
                 // console.log(`arg node type kind`, NodeKind[arg.kind]);
                 if (arg.kind == NodeKind.NAMEDTYPE) {
-                    let typeAnalyzer: NamedTypeNodeDef = new NamedTypeNodeDef(
-                        this.parent,
-                        <NamedTypeNode>arg
-                    );
+                    let typeAnalyzer: NamedTypeNodeDef = new NamedTypeNodeDef(this.parent, <NamedTypeNode>arg);
                     this.typeArguments.push(typeAnalyzer);
                 }
                 argType.push(arg.range.toString());
@@ -444,11 +523,11 @@ export class NamedTypeNodeDef {
     }
 
     /**
-     * the typename maybe global scope or local scope.
-     * So search the local firtst, then search the global scope.
-     *
-     * @param typeName typename without type arguments
-     */
+    * the typename maybe global scope or local scope.
+    * So search the local first, then search the global scope.
+    *
+    * @param typeName typename without type arguments
+    */
     findElement(typeName: string): Element | null {
         return this.parent.lookup(typeName);
     }
@@ -480,8 +559,7 @@ export class NamedTypeNodeDef {
     }
 
     findSourceAbiType(typeName: string): string {
-        var abiType: string | null =
-            AbiHelper.abiTypeLookup.get(typeName) || null;
+        var abiType: string | null = TypeUtil.abiTypeLookup.get(typeName) || null;
         if (abiType) {
             return abiType;
         }

@@ -13,7 +13,7 @@ class Planets {
 }
 
 @contract
-class SolarSystem {
+export class SolarSystem {
     protected stored: Planets;
 
     constructor() {

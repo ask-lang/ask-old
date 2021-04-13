@@ -23,10 +23,9 @@ export class AskTransform extends Transform {
         const info = getContractInfo(program);
         const abi = preprocess.outputAbi(info);
         const out = preprocess.outputCode(source.text, info);
-        const outPath = path.join("target", "extension.ts");
+        process.sourceModifer = out;
         const abiPath = path.join("target", "metadata.json");
         const baseDir = path.dirname(source.normalizedPath);
-        this.writeFile(outPath, out, baseDir);
         this.writeFile(abiPath, abi, baseDir);
     }
 }

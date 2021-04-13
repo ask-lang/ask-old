@@ -1,11 +1,8 @@
 import Handlebars from "handlebars";
 import * as blake2 from "blake2";
-// import { ContractInfo } from './contract';
 import { Range } from "assemblyscript";
-import { ContractProgram } from "./interperter";
-import { abiTpl, mainTpl, storeTpl } from "./tpl";
-import { ContractInfo } from "./contract";
-import { MessageFuctionDef } from "./contract/base";
+import { ContractProgram } from "./contract";
+import { abiTpl, mainTpl, storeTpl, eventTpl } from "./tpl";
 
 /**
  * Register the tag of each.
@@ -15,14 +12,14 @@ Handlebars.registerHelper("each", function (context, options) {
     for (var i = 0, j = context.length; i < j; i++) {
         let data = context[i];
         data._index = i;
-        data.isMid = i != j - 1 || (i == 0 && j != 1);
+        data.isMid = (i != j - 1 || (i == 0 && j != 1));
         ret = ret + options.fn(data);
     }
     return ret;
 });
 
 function getSelector(key: string) {
-    let keyHash = blake2.createHash("blake2b", { digestLength: 32 });
+    let keyHash = blake2.createHash('blake2b', { digestLength: 32 });
     keyHash.update(Buffer.from(key));
     let hexStr = keyHash.digest("hex");
     let selectorArr = [];
@@ -32,7 +29,7 @@ function getSelector(key: string) {
     let data = {
         hex: `0x${hexStr}`,
         short: `0x${hexStr.substr(0, 8)}`,
-        u8Arr: `[${selectorArr.join(",")}]`,
+        u8Arr: `[${selectorArr.join(",")}]`
     };
     return data;
 }
@@ -49,30 +46,25 @@ Handlebars.registerHelper("selector", function (context, options) {
 /**
  * Register the tag of selector.
  */
-Handlebars.registerHelper(
-    "existSelector",
-    function (key, existSelector, options) {
-        let data: any = {};
-        if (existSelector) {
-            let selectorArr = [];
-            for (let index = 0; index < 4; index++) {
-                selectorArr.push(
-                    "0x" + existSelector.substring(index * 2 + 2, index * 2 + 4)
-                );
-            }
-            data.short = `${existSelector}`;
-            data.u8Arr = `[${selectorArr.join(",")}]`;
-        } else {
-            data = getSelector(key);
+Handlebars.registerHelper("existSelector", function (key, existSelector, options) {
+    let data = {};
+    if (existSelector) {
+        let selectorArr = [];
+        for (let index = 0; index < 4; index++) {
+            selectorArr.push("0x" + existSelector.substring(index * 2 + 2, index * 2 + 4));
         }
-        return options.fn(data);
+        data.short = `${existSelector}`;
+        data.u8Arr = `[${selectorArr.join(",")}]`;
+    } else {
+        data = getSelector(key);
     }
-);
+    return options.fn(data);
+});
 
 /**
  * Register the tag of join.
  */
-Handlebars.registerHelper("joinParams", function (context) {
+Handlebars.registerHelper("joinParams", function (context, options) {
     var data = [];
     for (var i = 0, j = context.length; i < j; i++) {
         if (context[i].type.codecType == "ScaleString") {
@@ -87,7 +79,7 @@ Handlebars.registerHelper("joinParams", function (context) {
 /**
  * Register the tag of equal
  */
-Handlebars.registerHelper("eq", function (this: any, v1, v2, options) {
+Handlebars.registerHelper("eq", function (v1, v2, options) {
     if (v1 == v2) {
         return options.fn(this);
     } else {
@@ -98,7 +90,7 @@ Handlebars.registerHelper("eq", function (this: any, v1, v2, options) {
 /**
  * Register the tag of neq (Not equal)
  */
-Handlebars.registerHelper("neq", function (this: any, v1, v2, options) {
+Handlebars.registerHelper("neq", function (v1, v2, options) {
     if (v1 != v2) {
         return options.fn(this);
     } else {
@@ -106,54 +98,82 @@ Handlebars.registerHelper("neq", function (this: any, v1, v2, options) {
     }
 });
 
-function removeSourceCode(sourceText: string, range: Range, store: string) {
-    let prefix = sourceText.substring(0, range.start);
-    let suffix = sourceText.substring(range.end, sourceText.length);
-    return prefix + store + suffix;
+export class ModifyPoint {
+    range: Range;
+    mode: string;
+    code: string;
+
+    constructor(range: Range, mode: string, code: string) {
+        this.range = range;
+        this.mode = mode;
+        this.code = code;
+    }
 }
 
-const replaceCode: Array<{ range: Range; body: string }> = [];
+const INSERT = "INSERT", REPLACE = "REPLACE", TOP = "TOP", APPEND = "APPEND";
+export class SourceModifier {
+    modifyPoints: ModifyPoint[] = [];
+    fileExtMap: Map = new Map();
+
+    public addModifyPoint(point: ModifyPoint): void {
+        this.modifyPoints.push(point);
+    }
+ 
+    public toModifyFileMap(): void {
+        this.modifyPoints.forEach(item => {
+            let path = item.range.source.normalizedPath;
+            if (this.fileExtMap.has(path)) {
+                this.fileExtMap.get(path).push(item);
+            } else {
+                this.fileExtMap.set(path, [item]);
+            }
+        });
+    }
+}
+
+let sourceModifier = new SourceModifier();
 
 // Write text (also fallback)
-export function outputCode(sourceText: string, contractInfo: ContractProgram) {
+function outputCode(sourceText: string, contractInfo: ContractProgram) {
+    if (!contractInfo.contract) {
+        throw Error("Not found annotation @contract that indicate contract!");
+    }
     const render = Handlebars.compile(mainTpl);
     const exportMain = render(contractInfo);
 
-    contractInfo.contract.msgFuncDefs.forEach((_item) => {
-        let item = _item as MessageFuctionDef;
+    contractInfo.contract.msgFuncDefs.forEach(item => {
         if (item.messageDecorator.mutates == "false") {
             let body = item.bodyRange.toString();
-            body = body.replace(/{/i, "{\n    Storage.mode = StoreMode.R;");
-            replaceCode.push({ range: item.bodyRange, body: body });
+            body = body.replace(/{/i, "{\n  Storage.mode = StoreMode.R;");
+            sourceModifier.addModifyPoint(new ModifyPoint(item.bodyRange, REPLACE, body));
+            // replaceCode.push({range: item.bodyRange, body: body});
         }
     });
 
     for (let index = 0; index < contractInfo.storages.length; index++) {
         let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
-        replaceCode.push({
-            range: contractInfo.storages[index].range,
-            body: store,
-        });
+        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.storages[index].range, REPLACE, store));
     }
-
-    replaceCode
-        .sort((a, b) => b.range.end - a.range.end)
-        .forEach((item) => {
-            sourceText = removeSourceCode(sourceText, item.range, item.body);
-        });
-
+    contractInfo.events.forEach(event => {
+        let code = Handlebars.compile(eventTpl)(event);
+        sourceModifier.addModifyPoint(new ModifyPoint(event.range, REPLACE, code));
+    });
     if (contractInfo.import.unimports.length != 0) {
-        // TODO: config
-        let importElement = `import { ${contractInfo.import.unimports.join(
-            ", "
-        )}} from "ask-lang";\n`;
-        sourceText = importElement + sourceText;
+        let importElement = `import { ${contractInfo.import.unimports.join(", ")}} from "ask-lang";\n`;
+        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, TOP, importElement));
     }
-    return sourceText + exportMain;
+    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, APPEND, exportMain));
+    sourceModifier.toModifyFileMap();
+    return sourceModifier;
 }
 
-export function outputAbi(abiInfo: ContractProgram) {
+function outputAbi(abiInfo: ContractProgram) {
     const render = Handlebars.compile(abiTpl);
-    const output = render(abiInfo);
-    return output;
+    return render(abiInfo);
 }
+
+exports.outputCode = outputCode;
+
+exports.outputAbi = outputAbi;
+
+exports.SourceModifier = SourceModifier;

@@ -177,3 +177,23 @@ export function call(): i32 {
   {{/each}}
   return 0;
 }`;
+
+
+export const eventTpl = `class {{className}} extends Event {
+  {{#each fields}}
+  private {{varName}}: {{type.codecType}};
+  {{/each}}
+
+  prepare(): void {
+    {{#each fields}}
+    {{#if decorators.isTopic}}
+    Event.appendTopic(this.{{varName}});
+    {{/if}}
+    {{/each}}
+
+    {{#each fields}}
+    Event.appendData(this.{{varName}});
+    {{/each}}
+  }
+
+}`;
