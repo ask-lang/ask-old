@@ -64,7 +64,7 @@ Handlebars.registerHelper("existSelector", function (key, existSelector, options
 /**
  * Register the tag of join.
  */
-Handlebars.registerHelper("joinParams", function (context, options) {
+Handlebars.registerHelper("joinParams", function (context) {
     var data = [];
     for (var i = 0, j = context.length; i < j; i++) {
         if (context[i].type.codecType == "ScaleString") {
@@ -100,20 +100,25 @@ Handlebars.registerHelper("neq", function (v1, v2, options) {
 
 export class ModifyPoint {
     range: Range;
-    mode: string;
+    mode: ModifyType;
     code: string;
 
-    constructor(range: Range, mode: string, code: string) {
+    constructor(range: Range, mode: ModifyType, code: string) {
         this.range = range;
         this.mode = mode;
         this.code = code;
     }
 }
 
-const INSERT = "INSERT", REPLACE = "REPLACE", TOP = "TOP", APPEND = "APPEND";
+export enum ModifyType {
+    REPLACE,
+    INSERT,
+    TOP,
+    APPEND
+}
 export class SourceModifier {
     modifyPoints: ModifyPoint[] = [];
-    fileExtMap: Map = new Map();
+    fileExtMap: Map<string, ModifyPoint[]> = new Map();
 
     public addModifyPoint(point: ModifyPoint): void {
         this.modifyPoints.push(point);
@@ -123,7 +128,7 @@ export class SourceModifier {
         this.modifyPoints.forEach(item => {
             let path = item.range.source.normalizedPath;
             if (this.fileExtMap.has(path)) {
-                this.fileExtMap.get(path).push(item);
+                this.fileExtMap.get(path)!.push(item);
             } else {
                 this.fileExtMap.set(path, [item]);
             }
@@ -131,10 +136,10 @@ export class SourceModifier {
     }
 }
 
-let sourceModifier = new SourceModifier();
 
 // Write text (also fallback)
-function outputCode(sourceText: string, contractInfo: ContractProgram) {
+export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
+    let sourceModifier = new SourceModifier();
     if (!contractInfo.contract) {
         throw Error("Not found annotation @contract that indicate contract!");
     }
@@ -145,35 +150,39 @@ function outputCode(sourceText: string, contractInfo: ContractProgram) {
         if (item.messageDecorator.mutates == "false") {
             let body = item.bodyRange.toString();
             body = body.replace(/{/i, "{\n  Storage.mode = StoreMode.R;");
-            sourceModifier.addModifyPoint(new ModifyPoint(item.bodyRange, REPLACE, body));
+            sourceModifier.addModifyPoint(new ModifyPoint(item.bodyRange, ModifyType.REPLACE, body));
             // replaceCode.push({range: item.bodyRange, body: body});
         }
     });
 
     for (let index = 0; index < contractInfo.storages.length; index++) {
         let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
-        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.storages[index].range, REPLACE, store));
+        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.storages[index].range, ModifyType.REPLACE, store));
     }
     contractInfo.events.forEach(event => {
         let code = Handlebars.compile(eventTpl)(event);
-        sourceModifier.addModifyPoint(new ModifyPoint(event.range, REPLACE, code));
+        sourceModifier.addModifyPoint(new ModifyPoint(event.range, ModifyType.REPLACE, code));
     });
+    
+    console.log(`impoftElement ${contractInfo.import}`);
+
     if (contractInfo.import.unimports.length != 0) {
         let importElement = `import { ${contractInfo.import.unimports.join(", ")}} from "ask-lang";\n`;
-        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, TOP, importElement));
+        console.log(`impoftElement ${importElement}`);
+        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.TOP, importElement));
     }
-    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, APPEND, exportMain));
+    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.APPEND, exportMain));
     sourceModifier.toModifyFileMap();
     return sourceModifier;
 }
 
-function outputAbi(abiInfo: ContractProgram) {
+export function getAbiInfo(abiInfo: ContractProgram): string {
     const render = Handlebars.compile(abiTpl);
     return render(abiInfo);
 }
 
-exports.outputCode = outputCode;
+// exports.getExtCodeInfo = getExtCodeInfo;
 
-exports.outputAbi = outputAbi;
+// exports.getAbiInfo = getAbiInfo;
 
-exports.SourceModifier = SourceModifier;
+// exports.SourceModifier = SourceModifier;

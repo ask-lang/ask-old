@@ -21,9 +21,9 @@ export class AskTransform extends Transform {
             }
         }
         const info = getContractInfo(program);
-        const abi = preprocess.outputAbi(info);
-        const out = preprocess.outputCode(source.text, info);
-        process.sourceModifer = out;
+        const out = preprocess.getExtCodeInfo(info);
+        const abi = preprocess.getAbiInfo(info);
+        process.sourceModifier = out;
         const abiPath = path.join("target", "metadata.json");
         const baseDir = path.dirname(source.normalizedPath);
         this.writeFile(abiPath, abi, baseDir);
