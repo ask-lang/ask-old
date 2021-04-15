@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Msg, Bool, UInt8, Event } from "../../assembly/";
+import { Msg, Bool, UInt8, Event } from "../../as-packages/lang";
 
 // storage class should be implemented by preprocessor automatilly like auto load and save.
 // Besides these primitives types, any composite type like classes embeded,
@@ -19,12 +19,15 @@ class Approved extends Event {
 
     // as-preprocessor should generate this method for @Event
     prepare(): void {
-        Event.appendTopic(this.from);
-        Event.appendTopic(this.to);
 
-        Event.appendData(this.from);
-        Event.appendData(this.to);
-        Event.appendData(this.success);
+        Event.Index = 0;
+
+        this.appendTopic(this.from);
+        this.appendTopic(this.to);
+
+        this.appendData(this.from);
+        this.appendData(this.to);
+        this.appendData(this.success);
     }
 }
 

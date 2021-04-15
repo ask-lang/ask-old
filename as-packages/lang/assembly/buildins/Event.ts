@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { Codec, CompactInt } from "as-scale-codec";
 import { Crypto } from "../primitives/crypto";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_deposit_event } from "as-contract-runtime";
@@ -11,42 +11,45 @@ import { seal_deposit_event } from "as-contract-runtime";
 const MAX_EVENT_TOPICS = 4; // Refer to `frame/contracts/src/schedule.rs` L464
 
 export abstract class Event {
-    private static _topics: Codec[] = new Array<Codec>();
-    private static _data: Codec[] = new Array<Codec>();
+  private _topics: Codec[];
+  private _data: Codec[];
 
-    private static reset(): void {
-        Event._topics.length = 0;
-        Event._data.length = 0;
+  constructor() {
+    this._topics = new Array<Codec>();
+    this._data = new Array<Codec>();
+  }
+
+  static Index: u8 = 0;
+
+  appendTopic<T extends Codec>(t: T): void {
+    this._topics.push(t);
+  }
+
+  appendData<T extends Codec>(d: T): void {
+    this._data.push(d);
+  }
+
+  emit(): void {
+    this.prepare();
+
+    assert(this._topics.length <= MAX_EVENT_TOPICS, "too many topics defined.");
+
+    let topicsData = new Array<u8>();
+    topicsData = topicsData.concat(new CompactInt(i64(this._topics.length)).toU8a());
+    for (let i = 0; i < this._topics.length; i++) {
+      let hash = Crypto.blake256(this._topics[i]).toU8a();
+      topicsData = topicsData.concat(hash);
     }
 
-    static appendTopic<T extends Codec>(t: T): void {
-        Event._topics.push(t);
+    let datas = new Array<u8>();
+    datas.push(Event.Index);
+
+    for (let i = 0; i < this._data.length; i++) {
+      let d = this._data[i].toU8a(false);
+      datas = datas.concat(d);
     }
 
-    static appendData<T extends Codec>(d: T): void {
-        Event._data.push(d);
-    }
-
-    static emit<T extends Event>(e: T): void {
-        e.prepare();
-
-        assert(
-            Event._topics.length <= MAX_EVENT_TOPICS,
-            "too many topics defined."
-        );
-
-        let topicsData = new Array<u8>();
-        for (let i = 0; i < Event._topics.length; i++) {
-            let hash = Crypto.blake256(Event._topics[i]);
-            topicsData.concat(hash.toU8a());
-        }
-
-        let datas = new Array<u8>();
-        for (let i = 0; i < Event._data.length; i++) {
-            datas.concat(Event._data[i].toU8a());
-        }
-
-        assert(Event._data.length !== 0, "invalid event defined.");
+    assert(this._data.length !== 0, "invalid event defined.");
 
         const topicBuf = new WriteBuffer(topicsData.buffer);
         const dataBuf = new WriteBuffer(datas.buffer);
@@ -57,16 +60,16 @@ export abstract class Event {
             dataBuf.buffer,
             dataBuf.size
         );
-        // to release allocated memory
-        Event.reset();
-    }
-    // add another way to send an event,
-    // besides `Event.emit(e)`,
-    // you can also use `e.send()` while `e` is initialized.
-    public send(): void {
-        this.prepare();
-        Event.emit(this);
-    }
+    // // to release allocated memory
+    // Event.reset();
+  }
+  // add another way to send an event,
+  // besides `Event.emit(e)`,
+  // you can also use `e.send()` while `e` is initialized.
+  public send(): void {
+    this.prepare();
+    this.emit();
+  }
 
     abstract prepare(): void;
 }

@@ -4,7 +4,7 @@
  */
 
 import { u128 } from "as-bignum";
-import { UnwrappableCodec } from "..";
+import { UnwrappableCodec, Bytes, BIT_LENGTH } from "..";
 
 /** Representation for a UInt128 value in the system. */
 // Most of the implementation copied from as-scale-codec,
