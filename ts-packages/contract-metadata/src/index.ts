@@ -8,7 +8,7 @@ import {
     IEventSpec,
     IMessageParamSpec,
     IMessageSpec,
-    ITypeSpec,
+    ITypeSpec
 } from "./specs";
 import { Type } from "./types";
 import { ISource } from "./specs";
@@ -19,6 +19,9 @@ export interface ToMetadata {
     toMetadata(): unknown;
 }
 
+/**
+ * The main metadata
+ */
 export class ContractMetadata implements ToMetadata {
     public readonly metadataVersion: string = METADATA_VERSION;
 
@@ -157,7 +160,7 @@ export class MessageSpec implements ToMetadata {
         public readonly name: string[],
         public readonly selector: string,
         public readonly args: ArgumentSpec[] = [],
-        public readonly returnType: TypeSpec,
+        public readonly returnType: TypeSpec | null,
         public readonly docs: string[] = []
     ) {}
 
@@ -176,7 +179,7 @@ export class MessageSpec implements ToMetadata {
             mutates: this.mutates,
             payable: this.payable,
             args: this.args.map((arg) => arg.toMetadata()),
-            returnType: this.returnType.toMetadata(),
+            returnType: this.returnType?.toMetadata() || null,
             docs: this.docs,
             name: this.name,
             selector: this.selector,
@@ -202,7 +205,7 @@ export class EventSpec implements ToMetadata {
 
 export class EventParamSpec implements ToMetadata {
     constructor(
-        public readonly indexed: string,
+        public readonly indexed: boolean,
         public readonly type: ITypeSpec,
         public readonly docs: string[],
         public readonly name: string
@@ -219,7 +222,7 @@ export class ArgumentSpec implements ToMetadata {
     toMetadata(): IMessageParamSpec {
         return {
             type: this.type.toMetadata(),
-            name: this.name,
+            name: this.name
         };
     }
 }
@@ -231,6 +234,9 @@ export class TypeSpec implements ToMetadata {
     ) {}
 
     toMetadata(): ITypeSpec {
-        return this;
+        return {
+            type: this.type,
+            displayName: [this.displayName]
+        };
     }
 }

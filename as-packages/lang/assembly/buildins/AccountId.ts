@@ -63,7 +63,7 @@ export class AccountId implements Codec {
         return (
             memory.compare(
                 changetype<usize>(this._id.buffer),
-                changetype<usize>(other.buffer),
+                changetype<usize>(other.toU8a().buffer),
                 BytesCount
             ) == 0
         );
@@ -73,7 +73,7 @@ export class AccountId implements Codec {
         return (
             memory.compare(
                 changetype<usize>(this._id.buffer),
-                changetype<usize>(other.buffer),
+                changetype<usize>(other.toU8a().buffer),
                 BytesCount
             ) != 0
         );

@@ -1,5 +1,5 @@
+import { u128 } from "as-bignum";
 import {SolarSystem} from "../solar/solar";
-
 @contract
 class SubContract extends SolarSystem {
 

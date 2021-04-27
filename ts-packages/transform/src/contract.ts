@@ -1,165 +1,100 @@
 import {
-    ElementKind,
     ClassPrototype,
-    FunctionPrototype,
     Program,
-    FieldPrototype,
-    Range
 } from "assemblyscript";
 
-import { ElementUtil } from "./utils";
+import {
+    Contract,
+    ContractMetadata,
+    ContractSpec,
+    Source
+} from "../../contract-metadata/src/index";
 
-import { Strings } from "./primitiveutil";
-// import { ProgramAnalyzar } from "./analyzer";
-import { DecoratorUtil, FieldDef, FunctionDef, ImportSourceDef, MessageFuctionDef, NamedTypeNodeDef } from "./contract/base";
-export class ClassInterpreter {
-    protected classPrototype: ClassPrototype;
-    className: string;
-    instanceName: string;
-    range: Range;
-    doc: string;
-    fields: FieldDef[] = [];
+import { ElementUtil } from "./utils/utils";
 
-    constructor(clzPrototype: ClassPrototype) {
-        this.doc = DecoratorUtil.getDoc(clzPrototype.declaration);
-        this.classPrototype = clzPrototype;
-        this.className = clzPrototype.name;
-        this.instanceName = "_" + this.className.toLowerCase();
-        this.range = this.classPrototype.declaration.range;
-    }
-
-    isExtends(): boolean {
-        return this.classPrototype.basePrototype != null;
-    }
-
-    resolveInstanceMembers(): void {
-        this.classPrototype.instanceMembers &&
-            this.classPrototype.instanceMembers.forEach((element, _) => {
-                if (element.kind == ElementKind.FIELD_PROTOTYPE) {
-                    this.fields.push(new FieldDef(<FieldPrototype>element));
-                }
-            });
-    }
-
-    setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
-        this.fields.forEach(item => {
-            if (item.type) {
-                item.type.setTypeIndex(typeNodeMap);
-            }
-        });
-    }
-}
-
-export class ContractInterpreter extends ClassInterpreter {
-    name: string;
-    version: string;
-    cntrFuncDefs: FunctionDef[] = [];
-    msgFuncDefs: FunctionDef[] = [];
-    isReturnable = false;
-
-    constructor(clzPrototype: ClassPrototype) {
-        super(clzPrototype);
-        this.name = Strings.lowerFirstCase(this.className);
-        this.version = "1.0";
-        this.instanceName = Strings.lowerFirstCase(this.className);
-        this.resolveContractClass();
-    }
-
-    private resolveContractClass(): void {
-        this.classPrototype.instanceMembers &&
-            this.classPrototype.instanceMembers.forEach((instance, _) => {
-                if (ElementUtil.isCntrFuncPrototype(instance)) {
-                    this.cntrFuncDefs.push(new FunctionDef(<FunctionPrototype>instance));
-                }
-                if (ElementUtil.isMessageFuncPrototype(instance)) {
-                    let msgFunc = new MessageFuctionDef(<FunctionPrototype>instance);
-                    this.isReturnable = this.isReturnable || msgFunc.isReturnable;
-                    this.msgFuncDefs.push(msgFunc);
-                }
-            });
-        this.resolveBaseClass(this.classPrototype);
-    }
-
-    private resolveBaseClass(sonClassPrototype: ClassPrototype): void {
-        if (sonClassPrototype.basePrototype) {
-            let basePrototype = sonClassPrototype.basePrototype;
-            basePrototype.instanceMembers &&
-                basePrototype.instanceMembers.forEach((instance, _) => {
-                    if (ElementUtil.isMessageFuncPrototype(instance)) {
-                        let msgFunc = new MessageFuctionDef(<FunctionPrototype>instance);
-                        this.isReturnable = this.isReturnable || msgFunc.isReturnable;
-                        this.msgFuncDefs.push(msgFunc);
-                    }
-                });
-            this.resolveBaseClass(basePrototype);
-        }
-    }
-
-    public setTypeIndex(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
-        this.cntrFuncDefs.forEach(funcDef => {
-            funcDef.setTypeIndex(typeNodeMap);
-        });
-        this.msgFuncDefs.forEach(funcDef => {
-            funcDef.setTypeIndex(typeNodeMap);
-        });
-    }
-}
-
-export class EventInterpreter extends ClassInterpreter {
-
-    constructor(clzPrototype: ClassPrototype) {
-        super(clzPrototype);
-        this.resolveInstanceMembers();
-    }
-}
-
-export class StorageInterpreter extends ClassInterpreter {
-
-    constructor(clzPrototype: ClassPrototype) {
-        super(clzPrototype);
-        this.resolveInstanceMembers();
-    }
-}
+import { ProgramAnalyzar } from "./analyzer";
+import { ConstructorDef, MessageFuctionDef, NamedTypeNodeDef } from "./contract/elementdef";
+import { CONFIG } from "./config/compile";
+import { FieldLayout, Layout, StructLayout } from "../../contract-metadata/src/layouts";
+import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./contract/classdef";
+import { CompositeDef, PrimitiveDef, Type, Field, SequenceDef } from "../../contract-metadata/src/types";
+import { TypeHelper } from "./utils/typeutil";
+import { TypeKindEnum } from "./enums/customtype";
 
 export class ContractProgram {
     program: Program;
-    contract: ContractInterpreter | null = null;
+    contract!: ContractInterpreter;
+    metatdata: ContractMetadata;
     events: EventInterpreter[] = [];
     storages: StorageInterpreter[] = [];
-    types: NamedTypeNodeDef[] = [];
-    fields: FieldDef[] = [];
-    import: ImportSourceDef;
-
-    private typeNodeMap: Map<string, NamedTypeNodeDef> = new Map<string, NamedTypeNodeDef>();
+    dynamics: DynamicIntercepter[] = [];
+    
+    private definedTypeMap: Map<string, NamedTypeNodeDef> = new Map<string, NamedTypeNodeDef>();
 
     constructor(program: Program) {
         this.program = program;
-        this.import = new ImportSourceDef(program.sources);
         this.resolve();
-        this.sortStorages();
-        this.getFields();
+        this.metatdata = this.createMetadata();
     }
 
-    private sortStorages(): void {
-        this.storages.sort((a: ClassInterpreter, b: ClassInterpreter): number => b.range.start - a.range.start);
-    }
-
-    private getFields(): void {
-        this.storages.forEach(item => {
-            item.fields.forEach(field => {
-                this.fields.push(field);
-            });
+    private getContractSpec(): ContractSpec {
+        let events = this.events.map(item => item.createMetadata());
+        let message = this.contract.msgFuncDefs.map(item => {
+            let msg = <MessageFuctionDef>item;
+            return msg.createMetadata();
         });
+        let contract = this.contract.cntrFuncDefs.map(item => {
+            let msg = <ConstructorDef>item;
+            return msg.createMetadata();
+        });
+        return new ContractSpec(contract, message, events, []);
     }
 
-    private addDefaultImports(): void {
-        this.import.toImportElement("FnParameters");
-        this.import.toImportElement("Msg");
-        this.import.toImportElement("Storage");
-        this.import.toImportElement("StoreMode");
-        if (this.contract && this.contract.isReturnable) {
-            this.import.toImportElement("ReturnData");
-        }
+    private createStoreLayout(): Layout {
+        let layouts: FieldLayout[]  = [];
+        this.storages.forEach(item => layouts = layouts.concat(item.createMetadata()));
+        return new StructLayout(layouts);
+    }
+
+    private createTypeMetadata(): Type[] {
+        let metadataTypes = new Array<Type>();
+        let _definedTypeMap = this.definedTypeMap;
+        _definedTypeMap.forEach((type, _) => {
+            console.log(`createTypeMetadata ${type.plainType}, ${TypeKindEnum[type.typeKind]}`);
+            if (TypeHelper.isPrimitiveType(type.typeKind)) {
+                metadataTypes.push(new PrimitiveDef(type.abiType));
+            } else if (type.typeKind == TypeKindEnum.USER_CLASS) {
+                let classType: ClassPrototype = <ClassPrototype>type.current;
+                let interpreter = new ClassInterpreter(classType);
+                interpreter.resolveFieldsMembers();
+                let fieldArr = new Array<Field>();
+                interpreter.fields.forEach(classField => {
+                    let name = classField.name;
+                    let fieldTypeName = classField.type.codecType;
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    let fieldType = _definedTypeMap.get(fieldTypeName)!;
+                    let field = new Field(name, fieldType.index, fieldType.plainType);
+                    fieldArr.push(field);
+                });
+                let compositeDef = new CompositeDef(fieldArr);
+                metadataTypes.push(compositeDef);
+            } else if (type.typeKind == TypeKindEnum.ARRAY) {
+                let argumentType = type.typeArguments[0];
+                let fieldType = _definedTypeMap.get(argumentType.codecType)!;
+                let sequence = new SequenceDef(fieldType.index);
+                metadataTypes.push(sequence);
+            }
+        });
+        return metadataTypes;
+    }
+
+    private createMetadata(): ContractMetadata {
+        let source = new Source("", CONFIG.language, CONFIG.language);
+        let contract = new Contract(this.contract!.camelName, "0.1");
+        let contractSpec = this.getContractSpec();
+        let types = this.createTypeMetadata();
+        let layout = this.createStoreLayout();
+        return new ContractMetadata(source, contract, contractSpec, types, layout);
     }
 
     private resolve(): void {
@@ -171,34 +106,32 @@ export class ContractProgram {
                 this.storages.push(new StorageInterpreter(<ClassPrototype>element));
             }
             if (ElementUtil.isEventClassPrototype(element)) {
-                this.events.push(new EventInterpreter(<ClassPrototype>element));
+                let eventInterpreter = new EventInterpreter(<ClassPrototype>element);
+                this.events.push(eventInterpreter);
+            }
+            if (ElementUtil.isDynamicClassPrototype(element)) {
+                let dynamicInterpreter = new DynamicIntercepter(<ClassPrototype>element);
+                this.dynamics.push(dynamicInterpreter);
             }
         });
-        this.setTypeIndex();
-        this.addDefaultImports();
-
-        this.typeNodeMap.forEach((value, _) => {
-            this.types.push(value);
-            this.import.toImportElement(value.codecType);
-        });
+        this.setTypeSequence();
     }
 
-    private setTypeIndex(): void {
+    private setTypeSequence(): void {
         if (this.contract) {
-            this.contract.setTypeIndex(this.typeNodeMap);
+            this.contract.genTypeSequence(this.definedTypeMap);
         }
         this.storages.forEach(storage => {
-            storage.setTypeIndex(this.typeNodeMap);
+            storage.genTypeSequence(this.definedTypeMap);
         });
-
         this.events.forEach(event => {
-            event.setTypeIndex(this.typeNodeMap);
+            event.genTypeSequence(this.definedTypeMap);
         });
     }
 }
 
 export function getContractInfo(program: Program): ContractProgram {
-    // new ProgramAnalyzar(program);
+    new ProgramAnalyzar(program);
     // program.getSource
     return new ContractProgram(program);
 }

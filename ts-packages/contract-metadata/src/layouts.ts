@@ -33,7 +33,7 @@ export interface Layout extends ToMetadata {
 }
 
 export class StructLayout implements Layout {
-    constructor(public readonly fields: Array<FieldLayout>) {}
+    constructor(public readonly fields: FieldLayout[]) {}
 
     layoutKind(): LayoutKind {
         return LayoutKind.Struct;
@@ -41,7 +41,9 @@ export class StructLayout implements Layout {
 
     toMetadata(): IStructLayout {
         return {
-            fields: this.fields.map((f) => f.toMetadata()),
+            struct: {
+                fields: this.fields.map((f) => f.toMetadata())
+            }
         };
     }
 }

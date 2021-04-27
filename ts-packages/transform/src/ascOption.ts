@@ -1,6 +1,6 @@
 import { APIOptions } from "assemblyscript/cli/asc";
 import { SourceModifier, ModifyPoint, ModifyType } from "./preprocess";
-import  * as path  from "path";
+import * as path from "path";
 import * as fs from "fs";
 export class APIOptionImpl implements APIOptions {
     modifySource(sourceText: string, point: ModifyPoint): string {

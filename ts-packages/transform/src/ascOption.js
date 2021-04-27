@@ -34,6 +34,9 @@ var APIOptionImpl = /** @class */ (function () {
                 }).forEach(function (item) {
                     text_1 = modifySource(text_1, item);
                 });
+                let importLang = `import * as _lang from "ask-lang";\n`;
+                text_1 = importLang + text_1;
+                console.log(`Extension path: ${path} extension after: ${text_1}`);
             }
             return text_1;
         }

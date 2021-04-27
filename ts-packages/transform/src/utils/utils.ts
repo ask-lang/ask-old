@@ -16,21 +16,10 @@ import {
     BinaryExpression,
     SourceKind,
     FieldPrototype,
+    NamedTypeNode
 } from "assemblyscript";
+import { ContractDecoratorKind } from "../enums/decorator";
 import { Strings } from "./primitiveutil";
-
-export enum ContractDecoratorKind {
-    OTHER,
-    CONTRACT,
-    STORAGE,
-    CONSTRUCTOR,
-    MESSAGE,
-    DEPLOYER,
-    EVENT,
-    TOPIC,
-    DOC,
-    IGNORE
-}
 
 export function fromNode(nameNode: Expression): ContractDecoratorKind {
     if (nameNode.kind == NodeKind.IDENTIFIER) {
@@ -44,6 +33,7 @@ export function fromNode(nameNode: Expression): ContractDecoratorKind {
             }
             case CharCode.d: {
                 if (nameStr == 'doc') return ContractDecoratorKind.DOC;
+                if (nameStr == "dynamic") return ContractDecoratorKind.DYNAMIC;
                 break;
             }
             case CharCode.e: {
@@ -97,6 +87,12 @@ export class ElementUtil {
             : false;
     }
 
+    static isDynamicClassPrototype(element: Element): boolean {
+        return (element.kind == ElementKind.CLASS_PROTOTYPE)
+            ? AstUtil.hasSpecifyDecorator((<ClassPrototype>element).declaration, ContractDecoratorKind.DYNAMIC)
+            : false;
+    }
+
     /**
      * Check the element whether is action function prototype.
      * @param element 
@@ -127,8 +123,6 @@ export class ElementUtil {
         }
         return false;
     }
-
-
 }
 export class AstUtil {
 
@@ -169,22 +163,10 @@ export class AstUtil {
         return false;
     }
 
-    // /**
-    //    * Check the statment weather have the specify the decorator
-    //    * @param statement Ast declaration statement
-    //    * @param kind The specify decorators
-    //    */
-    // static hasSpecifyDecorator(statement: DeclarationStatement, kind: DecoratorKind): boolean {
-    //   if (statement.decorators) {      
-    //     for (let decorator of statement.decorators) {
-    //       if (decorator.decoratorKind == kind) {
-    //         return true;
-    //       }
-    //     }
-    //   }
-    //   return false;
-    // }
-
+    static isVoid(type: NamedTypeNode): boolean {
+        return type.name.range.toString() == "void";
+    }
+ 
     static getIdentifier(expression: Expression): string {
         if (expression.kind == NodeKind.IDENTIFIER) {
             return (<IdentifierExpression>expression).text;

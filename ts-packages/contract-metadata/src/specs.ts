@@ -25,9 +25,13 @@ interface Def<T> {
     readonly def: T;
 }
 
-export type ILayout = IStructLayout | ICellLayout | IHashLayout | IArrayLayout;
+export type ILayout = IStructLayout | ICellLayout | IHashLayout | IArrayLayout | StructLayout;
 
 export interface IStructLayout {
+    struct: ArrayFieldLayout;
+}
+
+export interface ArrayFieldLayout {
     fields: Array<IFieldLayout>;
 }
 
@@ -149,7 +153,7 @@ export interface IMessageSpec extends NameSelectorSpec {
     /// The parameters of the message.
     readonly args: Array<IMessageParamSpec>;
     /// The return type of the message.
-    readonly returnType: ITypeSpec;
+    readonly returnType: ITypeSpec | null;
     readonly docs: Array<string>;
 }
 
@@ -161,7 +165,7 @@ export interface IEventSpec extends NameSpec {
 
 export interface IEventParamSpec extends NameSpec {
     /// If the event parameter is indexed.
-    readonly indexed: string;
+    readonly indexed: boolean;
     /// The type of the parameter.
     readonly type: ITypeSpec;
     readonly docs: Array<string>;
@@ -176,7 +180,7 @@ export interface ITypeSpec {
     /// The actual type.
     readonly type: number;
     /// The compile-time known displayed representation of the type.
-    readonly displayName: string;
+    readonly displayName: string[];
 }
 
 interface NameSelectorSpec {
