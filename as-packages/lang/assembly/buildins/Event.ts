@@ -45,7 +45,7 @@ export abstract class Event {
     datas.push(Event.Index);
 
     for (let i = 0; i < this._data.length; i++) {
-      let d = this._data[i].toU8a(false);
+      let d = this._data[i].toU8a();
       datas = datas.concat(d);
     }
 

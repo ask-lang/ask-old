@@ -16,7 +16,6 @@ export class Abi {
     }
 
     static fnSelctor(sig: string): u8[] {
-        // FIXME(liangqin) the generate value is not consisted with native version.....
         return Crypto.blake256s(sig).toU8a().slice(0, 4);
     }
 }
