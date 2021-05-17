@@ -20,25 +20,22 @@ import { AbstractArray } from "./AbstractArray";
 // @ts-ignore
 export class BoolArray extends AbstractArray<Bool, bool> {
     /**
-     * @description BoolArray elements decryption implementation
-     */
-    public decodeElement(value: u8[]): DecodedData<bool> {
+    * @description BoolArray elements decryption implementation
+    */
+    public decodeElement (value: u8[]): DecodedData<bool> {
         const scaleBool = Bool.fromU8a([value[0]]);
 
         return new DecodedData<bool>(
             scaleBool.unwrap(),
             scaleBool.encodedLength()
-        );
+        )
     }
 
     /**
      * @description Returns encoded byte length of the type
      */
-    public encodedLength(): i32 {
-        return (
-            new CompactInt(this.values.length).encodedLength() +
-            super.values.length
-        );
+    public encodedLength(): i32{
+        return (new CompactInt(changetype<i64>(this.values.length)).encodedLength()) + super.values.length;
     }
 
     /**
@@ -46,11 +43,11 @@ export class BoolArray extends AbstractArray<Bool, bool> {
      * @param bytes SCALE encoded bytes
      * @param index index to start decoding the bytes from
      */
-    populateFromBytes(bytes: u8[], index: i32 = 0): void {
+    populateFromBytes(bytes: u8[], index: i32 = 0): void{
         const bytesReader = new BytesReader(bytes.slice(index));
         const data = bytesReader.readInto<CompactInt>();
 
-        for (let i: i32 = 0; i < data.unwrap() - index; i++) {
+        for(let i: i32 = 0; i < data.unwrap() - index; i++){
             const element = bytesReader.readInto<Bool>();
             this.values.push(element.unwrap());
         }

@@ -21,13 +21,11 @@ import { AbstractArray } from "./AbstractArray";
 // @ts-ignore
 export class StringArray extends AbstractArray<ScaleString, string> {
     /**
-     * @description BoolArray elements decryption implementation
-     */
-    public decodeElement(value: u8[]): DecodedData<string> {
+    * @description BoolArray elements decryption implementation
+    */
+    public decodeElement (value: u8[]): DecodedData<string> {
         const stringLength = Bytes.decodeCompactInt(value);
-        const encodedStringLength = i32(
-            stringLength.decBytes + stringLength.value
-        );
+        const encodedStringLength = i32(stringLength.decBytes + stringLength.value);
 
         return new DecodedData<string>(
             ScaleString.fromU8a(value.slice(0, encodedStringLength)).toString(),
@@ -38,7 +36,7 @@ export class StringArray extends AbstractArray<ScaleString, string> {
     /**
      * @description Returns encoded byte length of the type
      */
-    public encodedLength(): i32 {
+    public encodedLength(): i32{
         let len: i32 = new CompactInt(this.values.length).encodedLength();
         for (let i: i32 = 0; i < this.values.length; i++) {
             const value = new ScaleString(this.values[i]);
@@ -56,7 +54,7 @@ export class StringArray extends AbstractArray<ScaleString, string> {
         const bytesReader = new BytesReader(bytes.slice(index));
         const data = bytesReader.readInto<CompactInt>();
 
-        for (let i: i32 = 0; i < i32(data.unwrap()); i++) {
+        for(let i: i32 = 0; i < i32(data.unwrap()); i++){
             const element: ScaleString = bytesReader.readInto<ScaleString>();
             this.values.push(element.toString());
         }

@@ -36,9 +36,9 @@ export class CompactInt implements UnwrappableCodec<i64> {
     }
 
     /**
-     * @description  Encodes the value as u8[] as per the SCALE codec specification
-     */
-    public toU8a(): u8[] {
+    * @description  Encodes the value as u8[] as per the SCALE codec specification
+    */
+    public toU8a (): u8[] {
         const bytesBuffer = new BytesBuffer();
         bytesBuffer.encodeCompactInt(this._value);
 
@@ -49,11 +49,8 @@ export class CompactInt implements UnwrappableCodec<i64> {
      * @param bytes SCALE encoded bytes
      * @param index index to start decoding the bytes from
      */
-    public populateFromBytes(bytes: u8[], index: i32 = 0): void {
-        assert(
-            bytes.length - index > 0,
-            "CompactInt: Empty bytes array provided"
-        );
+    public populateFromBytes(bytes: u8[], index: i32 = 0): void{
+        assert(bytes.length - index > 0, "CompactInt: Empty bytes array provided");
         const decodedData = Bytes.decodeCompactInt(bytes, index);
         this._value = decodedData.value;
         this.bitLength = CompactInt._computeBitLength(decodedData.value);
@@ -80,7 +77,7 @@ export class CompactInt implements UnwrappableCodec<i64> {
     /**
      * @description The length of Int when the value is encoded
      */
-    public encodedLength(): i32 {
+    public encodedLength (): i32 {
         return this.bitLength;
     }
 
@@ -98,11 +95,8 @@ export class CompactInt implements UnwrappableCodec<i64> {
      * @param input SCALE encoded bytes
      * @param index an index of input to start decoding from
      */
-    static fromU8a(value: u8[], index: i32 = 0): CompactInt {
-        assert(
-            value.length - index > 0,
-            "CompactInt: Empty bytes array provided"
-        );
+    static fromU8a (value: u8[], index: i32 = 0): CompactInt {
+        assert(value.length - index > 0, "CompactInt: Empty bytes array provided");
         const decodedData = Bytes.decodeCompactInt(value, index);
         return new CompactInt(decodedData.value);
     }
@@ -117,5 +111,17 @@ export class CompactInt implements UnwrappableCodec<i64> {
     @operator("!=")
     static notEq(a: CompactInt, b: CompactInt): bool {
         return a.notEq(b);
+    }
+
+    toU8aPacked(): u8[] {
+        return this.toU8a();
+    }
+
+    encodedLengthPacked(): i32 {
+        return this.encodedLength();
+    }
+
+    populateFromPackedBytes(bytes: u8[], index: i32 = 0): void {
+        this.populateFromBytes(bytes, index);
     }
 }

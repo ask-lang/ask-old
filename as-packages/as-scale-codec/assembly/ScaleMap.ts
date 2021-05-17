@@ -132,10 +132,7 @@ export class ScaleMap<K extends Codec, V extends Codec>
         return !this.eq(other);
     }
 
-    static fromU8a<K extends Codec, V extends Codec>(
-        input: u8[],
-        index: i32 = 0
-    ): ScaleMap<K, V> {
+    static fromU8a<K extends Codec, V extends Codec>(input: u8[], index: i32 = 0): ScaleMap<K, V>{
         const data = new Map<K, V>();
         const bytesReader = new BytesReader(input);
         const lenComp = bytesReader.readInto<CompactInt>();
@@ -146,5 +143,17 @@ export class ScaleMap<K extends Codec, V extends Codec>
             data.set(key, value);
         }
         return new ScaleMap<K, V>(data);
+    }
+
+    toU8aPacked(): u8[] {
+        return this.toU8a();
+    }
+
+    encodedLengthPacked(): i32 {
+        return this.encodedLength();
+    }
+
+    populateFromPackedBytes(bytes: u8[], index: i32 = 0): void {
+        this.populateFromBytes(bytes, index);
     }
 }

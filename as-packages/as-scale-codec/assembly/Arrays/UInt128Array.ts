@@ -15,22 +15,23 @@
 import { u128 } from "as-bignum";
 import { BytesReader, CompactInt } from "..";
 import { DecodedData } from "../interfaces/DecodedData";
-import { ScaleUInt128 } from "../UInt/ScaleUInt128";
+import { UInt128 } from "../UInt/UInt128";
 import { BIT_LENGTH } from "../utils/Bytes";
 import { AbstractArray } from "./AbstractArray";
 
 // @ts-ignore
-export class UInt128Array extends AbstractArray<ScaleUInt128, u128> {
+export class UInt128Array extends AbstractArray<UInt128, u128> {
+
     /**
-     * @description BoolArray elements decryption implementation
-     */
-    public decodeElement(value: u8[]): DecodedData<u128> {
-        const u128Instance = ScaleUInt128.fromU8a(value);
+    * @description BoolArray elements decryption implementation
+    */
+    public decodeElement (value: u8[]): DecodedData<u128> {
+        const u128Instance = UInt128.fromU8a(value);
 
         return new DecodedData<u128>(
             u128Instance.unwrap(),
             u128Instance.encodedLength()
-        );
+        )
     }
 
     /**
@@ -41,8 +42,8 @@ export class UInt128Array extends AbstractArray<ScaleUInt128, u128> {
     populateFromBytes(bytes: u8[], index: i32 = 0): void {
         const bytesReader = new BytesReader(bytes.slice(index));
         const data = bytesReader.readInto<CompactInt>();
-        for (let i: i32 = 0; i < data.unwrap(); i++) {
-            const element: ScaleUInt128 = bytesReader.readInto<ScaleUInt128>();
+        for(let i: i32 = 0; i < data.unwrap(); i++){
+            const element: UInt128 = bytesReader.readInto<UInt128>();
             this.values.push(element.unwrap());
         }
     }
@@ -57,11 +58,8 @@ export class UInt128Array extends AbstractArray<ScaleUInt128, u128> {
     /**
      * @description Returns encoded byte length of the type
      */
-    public encodedLength(): i32 {
-        return (
-            new CompactInt(this.values.length).encodedLength() +
-            super.values.length * BIT_LENGTH.INT_128
-        );
+    public encodedLength(): i32{
+        return (new CompactInt(this.values.length).encodedLength()) + super.values.length * BIT_LENGTH.INT_128;
     }
 
     @inline

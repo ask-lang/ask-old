@@ -31,9 +31,9 @@ export class Hash implements UnwrappableCodec<Array<u8>> {
     }
 
     /**
-     * @description  Encodes Hash as u8[] as per the SCALE codec specification
-     */
-    public toU8a(): u8[] {
+    * @description  Encodes Hash as u8[] as per the SCALE codec specification
+    */
+    public toU8a (): u8[] {
         const result: u8[] = new Array<u8>(this.encodedLength());
         Bytes.copy<u8>(this._values, result);
 
@@ -73,9 +73,9 @@ export class Hash implements UnwrappableCodec<Array<u8>> {
     }
 
     /**
-     * @description The length of encoded Hash
-     */
-    public encodedLength(): i32 {
+    * @description The length of encoded Hash
+    */
+    public encodedLength (): i32 {
         return 32;
     }
 
@@ -114,5 +114,17 @@ export class Hash implements UnwrappableCodec<Array<u8>> {
     @operator("!=")
     static notEq(a: Hash, b: Hash): bool {
         return a.notEq(b);
+    }
+
+    toU8aPacked(): u8[] {
+        return this.toU8a();
+    }
+
+    encodedLengthPacked(): i32 {
+        return this.encodedLength();
+    }
+
+    populateFromPackedBytes(bytes: u8[], index: i32 = 0): void {
+        this.populateFromBytes(bytes, index);
     }
 }

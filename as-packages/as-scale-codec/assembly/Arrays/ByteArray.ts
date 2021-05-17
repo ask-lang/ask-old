@@ -37,25 +37,22 @@ export class ByteArray extends AbstractArray<Byte, u8> {
         return result;
     }
     /**
-     * @description BoolArray elements decryption implementation
-     */
+    * @description BoolArray elements decryption implementation
+    */
     public decodeElement(value: u8[]): DecodedData<u8> {
         const scaleByte = Byte.fromU8a([value[0]]);
 
         return new DecodedData<u8>(
             scaleByte.unwrap(),
             scaleByte.encodedLength()
-        );
+        )
     }
 
     /**
      * @description Returns encoded byte length of the type
      */
     public encodedLength(): i32 {
-        return (
-            new CompactInt(this.values.length).encodedLength() +
-            super.values.length
-        );
+        return (new CompactInt(i64(this.values.length)).encodedLength()) + super.values.length;
     }
 
     /**
@@ -67,14 +64,14 @@ export class ByteArray extends AbstractArray<Byte, u8> {
         const bytesReader = new BytesReader(bytes.slice(index));
         const data = bytesReader.readInto<CompactInt>();
 
-        for (let i: i32 = 0; i < data.unwrap(); i++) {
+        for(let i: i32 = 0; i < i32(data.unwrap()); i++){
             const element: Byte = bytesReader.readInto<Byte>();
             this.values.push(element.unwrap());
         }
     }
     /**
-     * @description Instantiates ScaleByteArray from u8[] SCALE encoded bytes (Decode)
-     */
+    * @description Instantiates ScaleByteArray from u8[] SCALE encoded bytes (Decode)
+    */
     static fromU8a(input: u8[], index: i32 = 0): ByteArray {
         return AbstractArray.fromU8a<ByteArray>(input.slice(index));
     }

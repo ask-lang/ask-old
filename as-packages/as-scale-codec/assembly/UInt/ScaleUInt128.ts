@@ -170,4 +170,16 @@ export class ScaleUInt128 implements UnwrappableCodec<u128> {
     static notEq(a: ScaleUInt128, b: ScaleUInt128): bool {
         return a.notEq(b);
     }
+
+    toU8aPacked(): u8[] {
+        return this.toU8a();
+    }
+
+    encodedLengthPacked(): i32 {
+        return this.encodedLength();
+    }
+
+    populateFromPackedBytes(bytes: u8[], index: i32 = 0): void {
+        this.populateFromBytes(bytes, index);
+    }
 }

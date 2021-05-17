@@ -29,6 +29,7 @@ export class ScaleString extends ByteArray {
             this.values[i] = u8Input[i];
         }
     }
+
     /**
      * @description Non-static constructor method used to populate defined properties of the model
      * @param bytes SCALE encoded bytes
@@ -60,14 +61,22 @@ export class ScaleString extends ByteArray {
     static _computeValueStr(bytes: u8[], index: i32 = 0): string {
         const len = Bytes.decodeCompactInt(bytes, index);
         const bytesLength = i32(len.value);
-        const stringStart = i32(len.decBytes);
-        assert(
-            bytes.length - index - len.decBytes >= 1,
-            "ScaleString: Incorrectly encoded input"
-        );
-        const buff = new Uint8Array(bytesLength);
-        Bytes.copyToTyped(bytes, buff, 0, index + stringStart);
-        return String.UTF8.decode(buff.buffer);
+        // FIXME(liangqin.fan): Scale does not like ByteArray,
+        // if this is an empty string, the `decBytes` is set to 1,
+        // but there is no more bytes left to read from.
+        if (bytesLength != 0) {
+            const stringStart = i32(len.decBytes);
+            assert(
+                bytes.length - index - len.decBytes >= 1,
+                "ScaleString: Incorrectly encoded input"
+            );
+            const buff = new Uint8Array(bytesLength);
+            Bytes.copyToTyped(bytes, buff, 0, index + stringStart);
+            return String.UTF8.decode(buff.buffer);
+        } else {
+            return "";
+        }
+
     }
     /**
      * @description Instantiates String from u8[] SCALE encoded bytes (Decode)

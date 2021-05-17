@@ -45,7 +45,7 @@ export abstract class AbstractArray<ScaleType extends Codec, NativeType>
     /**
      * @description  Encodes values of all elements in u8[] successively as per the SCALE codec specification
      */
-    public toU8a(): u8[] {
+    public toU8a (): u8[] {
         const bytesBuffer = new BytesBuffer();
         bytesBuffer.encodeCompactInt(this.values.length);
 
@@ -70,14 +70,14 @@ export abstract class AbstractArray<ScaleType extends Codec, NativeType>
     abstract populateFromBytes(bytes: u8[], index: i32): void;
 
     /**
-     * @description Each child class has to provide decryption implementation for elements
-     */
-    public abstract decodeElement(value: u8[]): DecodedData<NativeType>;
+    * @description Each child class has to provide decryption implementation for elements
+    */
+    public abstract decodeElement (value: u8[]): DecodedData<NativeType>;
 
     /**
-     * @description  Instantiates type of ScaleArray from u8[] SCALE encoded bytes (Decode)
-     */
-    static fromU8a<TypeOfScaleArray>(input: u8[]): TypeOfScaleArray {
+    * @description  Instantiates type of ScaleArray from u8[] SCALE encoded bytes (Decode)
+    */
+    static fromU8a<TypeOfScaleArray> (input: u8[]): TypeOfScaleArray {
         const data = Bytes.decodeCompactInt(input);
         let bytes = input.slice(data.decBytes);
 
@@ -91,5 +91,17 @@ export abstract class AbstractArray<ScaleType extends Codec, NativeType>
         }
 
         return scaleArray;
+    }
+
+    toU8aPacked(): u8[] {
+        return this.toU8a();
+    }
+
+    encodedLengthPacked(): i32 {
+        return this.encodedLength();
+    }
+
+    populateFromPackedBytes(bytes: u8[], index: i32 = 0): void {
+        this.populateFromBytes(bytes, index);
     }
 }

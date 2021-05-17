@@ -33,7 +33,7 @@ export class Bool implements UnwrappableCodec<bool> {
      * true -> [1]
      * false -> [0]
      */
-    toU8a(): u8[] {
+    public toU8a (): u8[] {
         let bytesEncoded = new Array<u8>(1);
         bytesEncoded[0] = this._value ? 0x01 : 0x00;
         return bytesEncoded;
@@ -44,11 +44,8 @@ export class Bool implements UnwrappableCodec<bool> {
      * @param bytes SCALE encoded bytes
      * @param index index to start decoding the bytes from
      */
-    public populateFromBytes(bytes: u8[], index: i32 = 0): void {
-        assert(
-            bytes.length > 0 && (bytes[index] == 1 || bytes[index] == 0),
-            "Bool: Cannot decode invalid input"
-        );
+    public populateFromBytes(bytes: u8[], index: i32 = 0): void{
+        assert(bytes.length > 0 && (bytes[index] == 1 || bytes[index] == 0), 'Bool: Cannot decode invalid input');
         this._value = bytes[index] == 1;
     }
 
@@ -69,17 +66,13 @@ export class Bool implements UnwrappableCodec<bool> {
     /**
      * @description The length of Uint8Array when the value is encoded
      */
-    public encodedLength(): i32 {
+    public encodedLength (): i32 {
         return 1;
     }
 
     /** Instantiates new Bool from u8[] SCALE encoded bytes */
-    static fromU8a(value: u8[], index: i32 = 0): Bool {
-        assert(
-            value.length - index > 0 &&
-                (value[index] == 1 || value[index] == 0),
-            "Bool: Cannot decode invalid input"
-        );
+    static fromU8a (value: u8[], index: i32 = 0): Bool {
+        assert(value.length - index > 0 && (value[index] == 1 || value[index] == 0), 'Bool: Cannot decode invalid input');
 
         return new Bool(value[index] == 1);
     }
@@ -94,5 +87,18 @@ export class Bool implements UnwrappableCodec<bool> {
     @operator("!=")
     static notEq(a: Bool, b: Bool): bool {
         return a.notEq(b);
+    }
+
+
+    toU8aPacked(): u8[] {
+        return this.toU8a();
+    }
+
+    encodedLengthPacked(): i32 {
+        return this.encodedLength();
+    }
+
+    populateFromPackedBytes(bytes: u8[], index: i32 = 0): void {
+        this.populateFromBytes(bytes, index);
     }
 }
