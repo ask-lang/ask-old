@@ -9,5 +9,7 @@ export enum ContractDecoratorKind {
     TOPIC,
     DOC,
     IGNORE,
-    DYNAMIC
+    DYNAMIC,
+    PACK,
+    SPREAD
 }

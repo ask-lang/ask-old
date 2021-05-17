@@ -24,7 +24,7 @@ export class ClassInterpreter {
     className: string;
     instanceName: string;
     range: Range;
-    doc: string;
+    doc: string[];
     fields: FieldDef[] = [];
     functions: FunctionDef[] = [];
     variousPrefix = "_";

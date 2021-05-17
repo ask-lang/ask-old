@@ -18,7 +18,6 @@ import {
 } from "assemblyscript";
 
 import { AstUtil, ElementUtil } from "../utils/utils";
-import { Collections } from "../utils/collectionutil";
 import { Strings } from "../utils/primitiveutil";
 import { LayoutDef } from "./storage";
 import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "../../../contract-metadata/src";
@@ -109,6 +108,9 @@ export class DecoratorNodeDef {
     }
 }
 
+/**
+ * Doc decorator info
+ */
 export class DocDecoratorNodeDef extends DecoratorNodeDef {
     doc = "";
     constructor(decorator: DecoratorNode) {
@@ -153,7 +155,7 @@ export class FunctionDef {
     parameters: ParameterNodeDef[] = [];
     isReturnable = false;
     returnType: NamedTypeNodeDef | null = null;
-    doc: string;
+    doc: string[];
     defaultVals: string[] = [];
 
     constructor(funcPrototype: FunctionPrototype) {
@@ -220,9 +222,9 @@ export class DecoratorUtil {
         }
     }
 
-    public static getDoc(statement: DeclarationStatement): string {
+    public static getDoc(statement: DeclarationStatement): string[] {
         let decortor = AstUtil.getDocDecorator(statement);
-        return decortor == null ? Strings.EMPTY : new DocDecoratorNodeDef(decortor).doc;
+        return decortor == null ? [Strings.EMPTY] : [new DocDecoratorNodeDef(decortor).doc];
     }
 }
 
@@ -253,7 +255,7 @@ export class MessageFuctionDef extends FunctionDef {
         return  new MessageSpec([this.methodName],
             new KeySelector(this.methodName).short,
             args,
-            MetadataUtil.createTypeSpec(this.returnType), [this.doc]);
+            MetadataUtil.createTypeSpec(this.returnType), this.doc);
     }
 }
 
@@ -409,6 +411,4 @@ export class ArrayNameTypeNode extends NamedTypeNodeDef {
         super(parent, typeNode);
         // this.resolveArguments();
     }
-
-   
 }
