@@ -33,7 +33,7 @@
     "@as-pect/cli": "^6.0.0",
     "@as-pect/core": "^6.0.0",
     "@assemblyscript/loader": "0.18",
-    "as-bignum": "^0.2.14",
+    "as-bignum": "^0.2.16",
     "assemblyscript": "0.18"
   }
 }
