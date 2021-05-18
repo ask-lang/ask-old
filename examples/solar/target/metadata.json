@@ -1,0 +1,256 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "",
+    "language": "ask v0.1",
+    "compiler": "ask v0.1, asc v0.18.9"
+  },
+  "contract": {
+    "name": "solarSystem",
+    "version": "1.0",
+    "authors": [
+      "[your_name] <[your_email]>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [ ],
+        "docs": [ "" ],
+        "name": [ "new" ],
+        "selector": "0x9bae9d5e"
+      },
+      {
+        "args": [
+          {
+            "name": "name",
+            "type": {
+              "displayName": [
+                "string"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "name": "radius",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "name": "isdwarf",
+            "type": {
+              "displayName": [
+                "boolean"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "name": "type128",
+            "type": {
+              "displayName": [
+                "u128"
+              ],
+              "type": 4
+            }
+          }
+        ],
+        "docs": [ "" ],
+        "name": [ "default" ],
+        "selector": "0xed4b9d1b"
+      }
+    ],
+    "docs": [ "" ],
+    "events": [],
+    "messages": [
+      {
+        "args": [
+          {
+            "name": "name",
+            "type": {
+              "displayName": [
+                "string"
+              ],
+              "type": 1
+            }
+          },
+          {
+            "name": "radius",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "name": "isdwarf",
+            "type": {
+              "displayName": [
+                "boolean"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "name": "type128",
+            "type": {
+              "displayName": [
+                "u128"
+              ],
+              "type": 4
+            }
+          }
+        ],
+        "docs": [ "" ],
+        "mutates": true,
+        "name": [
+          "set"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xe8c45eb6"
+      },
+      {
+        "args": [
+        ],
+        "docs": [ "" ],
+        "mutates": false,
+        "name": [
+          "getType128"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u128"
+          ],
+          "type": 4
+        },
+        "selector": "0x6a01af21"
+      },
+      {
+        "args": [
+          {
+            "name": "type128",
+            "type": {
+              "displayName": [
+                "u128"
+              ],
+              "type": 4
+            }
+          }
+        ],
+        "docs": [ "" ],
+        "mutates": true,
+        "name": [
+          "setType128"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xc9c60bcc"
+      },
+      {
+        "args": [
+        ],
+        "docs": [ "" ],
+        "mutates": false,
+        "name": [
+          "getRadius"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u32"
+          ],
+          "type": 2
+        },
+        "selector": "0x0a0b0c0d"
+      },
+      {
+        "args": [
+        ],
+        "docs": [ "" ],
+        "mutates": false,
+        "name": [
+          "errorGetRadius"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u32"
+          ],
+          "type": 2
+        },
+        "selector": "0x1e561fec"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+        {
+          "layout": {
+            "cell": {
+              "key": "0x400e467bed22c8bd506bf1e3141ee8f44c40670a918a965a19ebd1de4308d5bf",
+              "ty": 1
+            }
+          },
+          "name": "name"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0xf63f7b3511cbd572c4a508bdd73aa4a8257d97e257f98e9e81e63a3ade8f0e93",
+              "ty": 2
+            }
+          },
+          "name": "radius"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x99224a43272b1ca972b5851f50c84273676228f8593c86c4fbd5ac15a65b5a94",
+              "ty": 3
+            }
+          },
+          "name": "isdwarf"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x2cdfa989efe8c1321eecb892407100d80fca2ae3475142e45c98b6f6dbf16973",
+              "ty": 4
+            }
+          },
+          "name": "typeU128"
+        }
+      ]
+    }
+  },
+  "types": [
+    {
+      "def": {
+        "primitive": "str"
+      }
+    },
+    {
+      "def": {
+        "primitive": "u32"
+      }
+    },
+    {
+      "def": {
+        "primitive": "bool"
+      }
+    },
+    {
+      "def": {
+        "primitive": "u128"
+      }
+    }
+  ]
+}

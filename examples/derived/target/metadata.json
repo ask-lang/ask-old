@@ -1,0 +1,84 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "",
+    "language": "ask v0.1",
+    "compiler": "ask v0.1, asc v0.18.9"
+  },
+  "contract": {
+    "name": "base",
+    "version": "1.0",
+    "authors": [
+      "[your_name] <[your_email]>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [ ],
+        "docs": [ "" ],
+        "name": [ "new" ],
+        "selector": "0x9bae9d5e"
+      },
+      {
+        "args": [
+          {
+            "name": "initFlag",
+            "type": {
+              "displayName": [
+                "bool"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [ "" ],
+        "name": [ "default" ],
+        "selector": "0xed4b9d1b"
+      }
+    ],
+    "docs": [ "" ],
+    "events": [],
+    "messages": [
+      {
+        "args": [
+        ],
+        "docs": [ "" ],
+        "mutates": true,
+        "name": [
+          "methodA"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0x28c2ed9b"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+        {
+          "layout": {
+            "cell": {
+              "key": "0xf48b315208a2f735e61c0109854c5aaf8bac5a0e58f285574c4d51661d6db27c",
+              "ty": 2
+            }
+          },
+          "name": "flag"
+        }
+      ]
+    }
+  },
+  "types": [
+    {
+      "def": {
+        "primitive": "bool"
+      }
+    },
+    {
+      "def": {
+        "primitive": "bool"
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "",
+    "language": "ask v0.1",
+    "compiler": "ask v0.1, asc v0.18.9"
+  },
+  "contract": {
+    "name": "eventEmitter",
+    "version": "1.0",
+    "authors": [
+      "[your_name] <[your_email]>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [ ],
+        "docs": [ "" ],
+        "name": [ "new" ],
+        "selector": "0x9bae9d5e"
+      }
+    ],
+    "docs": [ "" ],
+    "events": [],
+    "messages": [
+      {
+        "args": [
+        ],
+        "docs": [ "" ],
+        "mutates": true,
+        "name": [
+          "fireEvent"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0x29ac97fd"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+      ]
+    }
+  },
+  "types": [
+  ]
+}

@@ -1,0 +1,137 @@
+{
+    "metadataVersion": "0.1.0",
+    "source": {
+      "hash": "",
+      "language": "ask v0.1",
+      "compiler": "ask v0.1, asc v0.18.9"
+    },
+    "contract": {
+      "name": "ArrayUsage",
+      "version": "1.0",
+      "authors": [
+        "[your_name] <[your_email]>"
+      ]
+    },
+    "spec": {
+      "constructors": [
+        {
+          "args": [ ],
+          "docs": [ "" ],
+          "name": [ "new" ],
+          "selector": "0x9bae9d5e"
+        },
+        {
+          "args": [
+            {
+              "name": "capacity",
+              "type": {
+                "displayName": [
+                  "i32"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "name": [ "default" ],
+          "selector": "0xed4b9d1b"
+        }
+      ],
+      "docs": [ "" ],
+      "events": [],
+      "messages": [
+        {
+          "args": [
+            {
+              "name": "value",
+              "type": {
+                "displayName": [
+                  "uint128"
+                ],
+                "type": 2
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "mutates": true,
+          "name": [
+            "push"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xe8c45eb6"
+        },
+        {
+          "args": [
+            {
+              "name": "index",
+              "type": {
+                "displayName": [
+                  "i32"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "mutates": false,
+          "name": [
+            "get"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "uint128"
+            ],
+            "type": 2
+          },
+          "selector": "0x6a01af21"
+        },
+        {
+          "args": [
+            {
+              "name": "index",
+              "type": {
+                "displayName": [
+                  "i32"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "mutates": true,
+          "name": [
+            "remove"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "bool"
+            ],
+            "type": 3
+          },
+          "selector": "0x7a01af21"
+        }
+      ]
+    },
+    "storage": {
+    },
+    "types": [
+      {
+        "def": {
+          "primitive": "i32"
+        }
+      },
+      {
+        "def": {
+          "primitive": "u128"
+        }
+      },
+      {
+        "def": {
+          "primitive": "bool"
+        }
+      }
+    ]
+  }

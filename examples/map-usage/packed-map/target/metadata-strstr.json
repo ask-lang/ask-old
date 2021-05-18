@@ -1,0 +1,150 @@
+{
+    "metadataVersion": "0.1.0",
+    "source": {
+      "hash": "",
+      "language": "ask v0.1",
+      "compiler": "ask v0.1, asc v0.18.9"
+    },
+    "contract": {
+      "name": "MapUsages",
+      "version": "1.0",
+      "authors": [
+        "[your_name] <[your_email]>"
+      ]
+    },
+    "spec": {
+      "constructors": [
+        {
+          "args": [ ],
+          "docs": [ "" ],
+          "name": [ "new" ],
+          "selector": "0x9bae9d5e"
+        },
+        {
+          "args": [
+            {
+              "name": "key",
+              "type": {
+                "displayName": [
+                  "str"
+                ],
+                "type": 1
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "displayName": [
+                  "str"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "name": [ "default" ],
+          "selector": "0xed4b9d1b"
+        }
+      ],
+      "docs": [ "" ],
+      "events": [],
+      "messages": [
+        {
+          "args": [
+            {
+              "name": "key",
+              "type": {
+                "displayName": [
+                  "str"
+                ],
+                "type": 1
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "displayName": [
+                  "str"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "mutates": true,
+          "name": [
+            "set"
+          ],
+          "payable": false,
+          "returnType": null,
+          "selector": "0xe8c45eb6"
+        },
+        {
+          "args": [
+            {
+              "name": "key",
+              "type": {
+                "displayName": [
+                  "str"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "mutates": false,
+          "name": [
+            "get"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "str"
+            ],
+            "type": 1
+          },
+          "selector": "0x6a01af21"
+        },
+        {
+          "args": [
+            {
+              "name": "key",
+              "type": {
+                "displayName": [
+                  "str"
+                ],
+                "type": 1
+              }
+            }
+          ],
+          "docs": [ "" ],
+          "mutates": true,
+          "name": [
+            "remove"
+          ],
+          "payable": false,
+          "returnType": {
+            "displayName": [
+              "bool"
+            ],
+            "type": 2
+          },
+          "selector": "0x7a01af21"
+        }
+      ]
+    },
+    "storage": {
+    },
+    "types": [
+      {
+        "def": {
+          "primitive": "str"
+        }
+      },
+      {
+        "def": {
+          "primitive": "bool"
+        }
+      }
+    ]
+  }
