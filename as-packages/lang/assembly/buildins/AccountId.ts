@@ -14,6 +14,7 @@ import { ReturnCode } from "as-contract-runtime";
  */
 
 const BytesCount = 32;
+
 export class AccountId implements Codec {
     private _id: AccountType;
 
@@ -64,7 +65,7 @@ export class AccountId implements Codec {
                 changetype<usize>(this._id.buffer),
                 changetype<usize>(other.buffer),
                 BytesCount
-            ) === 0
+            ) == 0
         );
     }
 
@@ -74,7 +75,9 @@ export class AccountId implements Codec {
                 changetype<usize>(this._id.buffer),
                 changetype<usize>(other.buffer),
                 BytesCount
-            ) !== 0
+            ) != 0
         );
     }
 }
+
+export const AccountId0 = new AccountId([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);

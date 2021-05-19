@@ -8,7 +8,7 @@ import { Storage } from ".";
 import { Crypto } from "../primitives/crypto";
 import { MapEntry } from "./MapEntry";
 
-export abstract class StorableMap<K extends Codec, V extends Codec> {
+export abstract class StorableMap<K extends Codec, V extends Codec> implements Codec {
   abstract hasKey(key: K): K | null;
   abstract setKeyValuePair(key: K, value: V): void;
   abstract deleteKey(key: K): void;
@@ -43,6 +43,26 @@ export abstract class StorableMap<K extends Codec, V extends Codec> {
     let entry = new MapEntry(entries, size);
     let r = strg.store(entry)
     assert(r == ReturnCode.Success, "store entry point of map failed.");
+  }
+
+  toU8a(): u8[] {
+    return this.entrypoint.toU8a();
+  }
+
+  encodedLength(): i32 {
+    return this.entrypoint.encodedLength();
+  }
+
+  populateFromBytes(bytes: u8[], index: i32 = 0): void {
+    this.entrypoint.populateFromBytes(bytes, index);
+  }
+
+  eq(other: StorableMap<K, V>): bool {
+    return this.entrypoint.eq(other.entrypoint);
+  }
+
+  notEq(other: StorableMap<K, V>): bool {
+    return !this.eq(other);
   }
 
   // FIXME(liangqin.fan)

@@ -4,13 +4,13 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec, Int32, UInt32, Hash } from "..";
+import { Codec, Int32, UInt32, Hash, ScaleString } from "..";
 import { ReturnCode } from "../primitives/alias";
 import { Crypto } from "../primitives/crypto";
 import { ArrayEntry } from "./ArrayEntry";
 import { Storage } from "./storage";
 
-export abstract class StorableArray<T extends Codec> {
+export abstract class StorableArray<T extends Codec> implements Codec {
   [key: number]: T;
 
   protected keyPrefix: string;
@@ -27,6 +27,28 @@ export abstract class StorableArray<T extends Codec> {
   constructor(prefix: string = "", capacity: i32 = 0) {
     this.keyPrefix = prefix;
     this.arrayInner = new Array<T>(capacity);
+  }
+
+  toU8a(): u8[] {
+    return (new ScaleString(this.keyPrefix)).toU8a();
+  }
+
+  encodedLength(): i32 {
+    return (new ScaleString(this.keyPrefix)).encodedLength();
+  }
+
+  populateFromBytes(bytes: u8[], index: i32): void {
+    let s: ScaleString = new ScaleString();
+    s.populateFromBytes(bytes, index);
+    this.keyPrefix = s.toString();
+  }
+
+  eq(other: StorableArray<T>): bool {
+    return this.keyPrefix == other.keyPrefix;
+  }
+
+  notEq(other: StorableArray<T>): bool {
+    return !this.eq(other);
   }
 
   protected load_array_entry(): ArrayEntry | null {
