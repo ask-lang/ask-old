@@ -48,8 +48,13 @@ export function fromNode(nameNode: Expression): ContractDecoratorKind {
                 if (nameStr == "message") return ContractDecoratorKind.MESSAGE;
                 break;
             }
+            case CharCode.p: {
+                if (nameStr == "packed") return ContractDecoratorKind.PACKED;
+                break;
+            }
             case CharCode.s: {
                 if (nameStr == "storage") return ContractDecoratorKind.STORAGE;
+                if (nameStr == "spread") return ContractDecoratorKind.SPREAD;
                 break;
             }
             case CharCode.t: {
@@ -129,12 +134,16 @@ export class AstUtil {
     static getSpecifyDecorator(statement: DeclarationStatement, kind: ContractDecoratorKind): DecoratorNode | null {
         if (statement.decorators) {
             for (let decorator of statement.decorators) {
-                if (decorator.decoratorKind == DecoratorKind.CUSTOM && kind == fromNode(decorator.name)) {
+                if (AstUtil.isSpecifyCustomDecorator(decorator, kind)) {
                     return decorator;
                 }
             }
         }
         return null;
+    }
+
+    static isSpecifyCustomDecorator(decorator: DecoratorNode, kind: ContractDecoratorKind): boolean {
+        return  (decorator.decoratorKind == DecoratorKind.CUSTOM && kind == fromNode(decorator.name));
     }
 
     static containDecorator(decorators: DecoratorNode[], kind: ContractDecoratorKind): boolean {
@@ -222,7 +231,7 @@ export class AstUtil {
        * @param declareType The declare type
        */
     static isArrayType(declareType: string): boolean {
-        return declareType == "[]" || declareType == "Array";
+        return declareType == "[]" || declareType == "Array" || declareType == "StorableArray";
     }
 
     /**
@@ -230,7 +239,7 @@ export class AstUtil {
        * @param declareType the declare type
        */
     static isMapType(declareType: string): boolean {
-        return declareType == "Map";
+        return declareType == "Map" || declareType == "StorableMap";
     }
 
     static isClassPrototype(element: Element): boolean {

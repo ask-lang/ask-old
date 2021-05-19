@@ -1,3 +1,5 @@
+import { CONFIG } from "../config/compile";
+import { FieldDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { Strings } from "./primitiveutil";
 
@@ -59,5 +61,33 @@ export class TypeHelper {
         return type == TypeKindEnum.NUMBER 
             || type == TypeKindEnum.BIG_NUM
             || type == TypeKindEnum.STRING;
+    }
+}
+
+
+export class FieldDefHelper {
+
+    /**
+     * Get the storable array export
+     * @param field 
+     * @returns 
+     */
+    static getConcreteStorable(field: FieldDef): string {
+        let typeArgs = field.type.typeArguments.map(item => item.codecType).join(",");
+        let plainType = field.type.plainType;
+        let arrayType = (field.decorators.isPacked ? "Packed" : "Spread") + plainType;
+        let plainVarious = `${CONFIG.namespace}${arrayType}<${typeArgs}>`;
+        return plainVarious;
+    }
+
+    /**
+     * Get the storable array export
+     * @param field 
+     * @returns 
+     */
+    static getStorableExport(field: FieldDef): string {
+        let typeArgs = field.type.typeArguments.map(item => item.codecType).join(",");
+        let plainVarious = `${field.type.getNameSpace()}${field.type.plainType}<${typeArgs}>`;
+        return plainVarious;
     }
 }

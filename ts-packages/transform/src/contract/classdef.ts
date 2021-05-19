@@ -140,7 +140,7 @@ export class StorageInterpreter extends ClassInterpreter {
 
     createMetadata(): FieldLayout[] {
         return this.fields.map(item => {
-            let layout = new CellLayout(item.storeKey, item.type.index);
+            let layout = new CellLayout(item.selector.hex, item.type.index);
             return new FieldLayout(item.name, layout);
         });    
     }

@@ -60,7 +60,6 @@ export class ContractProgram {
         let metadataTypes = new Array<Type>();
         let _definedTypeMap = this.definedTypeMap;
         _definedTypeMap.forEach((type, _) => {
-            console.log(`createTypeMetadata ${type.plainType}, ${TypeKindEnum[type.typeKind]}`);
             if (TypeHelper.isPrimitiveType(type.typeKind)) {
                 metadataTypes.push(new PrimitiveDef(type.abiType));
             } else if (type.typeKind == TypeKindEnum.USER_CLASS) {

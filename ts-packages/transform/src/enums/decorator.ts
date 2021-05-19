@@ -10,6 +10,6 @@ export enum ContractDecoratorKind {
     DOC,
     IGNORE,
     DYNAMIC,
-    PACK,
+    PACKED,
     SPREAD
 }

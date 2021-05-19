@@ -1,7 +1,57 @@
 import Handlebars from "handlebars";
-import { FunctionDef } from "../contract/elementdef";
+import { FieldDef, FunctionDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { KeySelector } from "./selector";
+
+const WIN = process.platform === "win32";
+const EOL = WIN ? "\r\n" : "\n";
+
+let scope = "_lang.";
+
+Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
+    let code: string[] = [];
+    if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
+        code.push(`get ${field.name}(): ${field.type.codecTypeAlias} {`);
+        code.push(`     if (this.${field.varName} === null) {`);
+        code.push(`       const st = new ${field.type.codecTypeGeneric}("${field.selector.key}");`);
+    } else {
+        code.push(`get ${field.name}(): ${field.type.plainType} {`);
+        code.push(`     if (this.${field.varName} === null) {`);
+        code.push(`    const st = new ${scope}Storage(new ${scope}Hash(${field.selector.u8Arr}));`);
+    }
+    code.push(`     }`);
+    if (field.type.typeKind == TypeKindEnum.STRING) {
+        code.push(`     return this.${field.varName}!.toString();`);
+    } else if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
+        code.push(`     return this.${field.varName}!;`);
+    } else {
+        code.push(`     return this.${field.varName}!.unwrap();`);
+    }
+    code.push("  }");
+    return code.join(EOL);
+});
+
+/**
+ *  set {{name}}(v: {{type.plainType}}) {
+    this.{{varName}} = new {{type.codecTypeAlias}}(v);
+    const st = new ${scope}Storage(new ${scope}Hash({{selector.u8Arr}}));
+    st.store<{{type.codecTypeAlias}}>(this.{{varName}}!);
+  }
+ * 
+ */
+Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
+    let code: string[] = [];
+    if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
+        return code.join("\n");
+    }
+    code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
+    code.push(` this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+    code.push(` const st = new ${scope}Storage(new ${scope}Hash(${field.selector.u8Arr}));`);
+    code.push(` st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
+    code.push(` }`);
+    return code.join("\n");
+});
+
 
 /**
  * Register the tag of each.

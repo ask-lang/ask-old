@@ -6,7 +6,7 @@
 
  @storage
  class ArrayTypes {
-     @packed(size = 100)
+     @packed(capacity = 100)
      i8Arr   : StorableArray<Int8>;
      @packed
      strArr   : StorableArray<ScaleString>;

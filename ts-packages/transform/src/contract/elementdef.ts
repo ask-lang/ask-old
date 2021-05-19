@@ -13,7 +13,6 @@ import {
     Range,
     DecoratorNode,
     DeclarationStatement,
-    DecoratorKind,
     ClassPrototype,
 } from "assemblyscript";
 
@@ -24,7 +23,7 @@ import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "../../../c
 import { KeySelector } from "../preprocess/selector";
 import { MetadataUtil } from "../utils/metadatautil";
 import { ContractDecoratorKind } from "../enums/decorator";
-import { TypeHelper } from "../utils/typeutil";
+import { FieldDefHelper, TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
 import { ClassInterpreter } from "./classdef";
 
@@ -32,14 +31,28 @@ export class DecoratorsInfo {
     decorators: DecoratorNode[] | null;
     isIgnore = false;
     isTopic = false;
+    isPacked = false;
+    storeCapacity = 0;
 
     constructor(decorators: DecoratorNode[] | null) {
         this.decorators = decorators;
-        if (decorators && AstUtil.containDecorator(decorators, ContractDecoratorKind.IGNORE)) {
-            this.isIgnore = true;
-        }
-        if (decorators && AstUtil.containDecorator(decorators, ContractDecoratorKind.TOPIC)) {
-            this.isTopic = true;
+
+        if (this.decorators) {
+            for (let decorator of this.decorators) {
+                if (AstUtil.isSpecifyCustomDecorator(decorator, ContractDecoratorKind.IGNORE)) {
+                    this.isIgnore = true;
+                }
+                if (AstUtil.isSpecifyCustomDecorator(decorator, ContractDecoratorKind.TOPIC)) {
+                    this.isTopic = true;
+                }
+                if (AstUtil.isSpecifyCustomDecorator(decorator, ContractDecoratorKind.PACKED)) {
+                    this.isPacked = true;
+                    let decratorDef = new DecoratorNodeDef(decorator);
+                    if (decratorDef.pairs.has("capacity")) {
+                        this.storeCapacity = Number(decratorDef.pairs.get("capacity"));  
+                    }
+                }
+            }
         }
     }
 }
@@ -51,7 +64,7 @@ export class FieldDef {
     storeKey: string;
     selector: KeySelector;
     varName: string;
-    doc: string;
+    doc: string[];
     decorators: DecoratorsInfo;
 
     constructor(field: FieldPrototype) {
@@ -65,12 +78,27 @@ export class FieldDef {
         this.resolveField();
     }
 
+    /**
+     * 
+     */
     private resolveField(): void {
         let fieldDeclaration: FieldDeclaration = <FieldDeclaration>this.fieldPrototype.declaration;
         let commonType: TypeNode | null = fieldDeclaration.type;
         if (commonType && commonType.kind == NodeKind.NAMEDTYPE) {
             let typeNode = <NamedTypeNode>commonType;
             this.type = new NamedTypeNodeDef(this.fieldPrototype, typeNode);
+        }
+        // IF the type is array, special process
+        if (this.type.typeKind == TypeKindEnum.ARRAY) {
+            let str = FieldDefHelper.getConcreteStorable(this);
+            this.type.codecTypeAlias = FieldDefHelper.getStorableExport(this);
+            this.type.codecTypeGeneric = str;
+        }
+
+        if (this.type.typeKind == TypeKindEnum.MAP) {
+            let str = FieldDefHelper.getConcreteStorable(this);
+            this.type.codecTypeAlias = FieldDefHelper.getStorableExport(this);
+            this.type.codecTypeGeneric = str;
         }
     }
 }
@@ -101,10 +129,19 @@ export class ParameterNodeDef {
 
 export class DecoratorNodeDef {
     private decorator: DecoratorNode;
-    private decoratorKind: DecoratorKind;
+    pairs: Map<string, string>;
     constructor(decorator: DecoratorNode) {
         this.decorator = decorator;
-        this.decoratorKind = decorator.decoratorKind;
+        this.pairs = new Map<string, string>();
+        if (decorator.args) {
+            decorator.args.forEach(expression => {
+                if (expression.kind == NodeKind.BINARY) {
+                    let identifier = AstUtil.getIdentifier(expression);
+                    let val = AstUtil.getBinaryExprRight(expression);
+                    this.pairs.set(identifier, val);
+                }
+            });
+        }
     }
 }
 
@@ -115,14 +152,8 @@ export class DocDecoratorNodeDef extends DecoratorNodeDef {
     doc = "";
     constructor(decorator: DecoratorNode) {
         super(decorator);
-        if (decorator.args) {
-            decorator.args.forEach(expression => {
-                let identifier = AstUtil.getIdentifier(expression);
-                if (identifier == 'desc') {
-                    let docStr = AstUtil.getBinaryExprRight(expression);
-                    this.doc = Strings.removeQuotation(docStr);
-                }
-            });
+        if (this.pairs.has("desc")) {
+            this.doc = Strings.removeQuotation(this.pairs.get("desc") || "");
         }
     }
 }
@@ -272,6 +303,7 @@ export class NamedTypeNodeDef {
     plainType: string;
     codecType: string;
     codecTypeAlias: string;
+    codecTypeGeneric =  "";
     abiType: string;
     index = 0;
 
@@ -286,8 +318,8 @@ export class NamedTypeNodeDef {
         this.resolveArguments();
     }
 
-    private getNameSpace(): string {
-        return this.typeKind == TypeKindEnum.USER_CLASS ? "" : "_lang.";
+    public getNameSpace(): string {
+        return this.typeKind == TypeKindEnum.USER_CLASS || this.typeKind == TypeKindEnum.ARRAY ? "" : "_lang.";
     }
 
     // TODO 
