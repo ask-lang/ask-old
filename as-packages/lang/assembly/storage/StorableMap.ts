@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 import { ReturnCode } from "as-contract-runtime";
-import { Codec, Hash} from "as-scale-codec";
+import { Codec, Hash, ScaleString} from "as-scale-codec";
 import { Storage } from ".";
 import { Crypto } from "../primitives/crypto";
 import { MapEntry } from "./MapEntry";
@@ -16,11 +16,11 @@ export abstract class StorableMap<K extends Codec, V extends Codec> implements C
   abstract allKeys(): K[];
   abstract allValues(): V[];
 
-  protected entrypoint: Hash;
+  protected keyPrefix: string;
   protected mapInner: Map<K, V>;
 
   constructor(ep: string = "") {
-    this.entrypoint = Crypto.blake256s(ep);
+    this.keyPrefix = ep;
     this.mapInner = new Map<K, V>();
   }
 
@@ -33,32 +33,43 @@ export abstract class StorableMap<K extends Codec, V extends Codec> implements C
   }
 
   protected load_entry_point(): MapEntry | null {
-    let strg = new Storage(this.entrypoint);
+    let strg = new Storage(Crypto.blake256s(this.keyPrefix));
     let entry = strg.load<MapEntry>();
     return entry;
   }
 
   protected store_entry_point(entries: Hash, size: i32): void {
-    let strg = new Storage(this.entrypoint);
+    let strg = new Storage(Crypto.blake256s(this.keyPrefix));
     let entry = new MapEntry(entries, size);
     let r = strg.store(entry)
     assert(r == ReturnCode.Success, "store entry point of map failed.");
   }
 
+  get entryKey(): string {
+    return this.keyPrefix;
+  }
+
+  set entryKey(str: string) {
+    this.keyPrefix = str;
+  }
+
+
   toU8a(): u8[] {
-    return this.entrypoint.toU8a();
+    return (new ScaleString(this.keyPrefix)).toU8a();
   }
 
   encodedLength(): i32 {
-    return this.entrypoint.encodedLength();
+    return (new ScaleString(this.keyPrefix)).encodedLength();
   }
 
   populateFromBytes(bytes: u8[], index: i32 = 0): void {
-    this.entrypoint.populateFromBytes(bytes, index);
+    let s = new ScaleString();
+    s.populateFromBytes(bytes, index);
+    this.keyPrefix = s.toString();
   }
 
   eq(other: StorableMap<K, V>): bool {
-    return this.entrypoint.eq(other.entrypoint);
+    return this.keyPrefix == other.keyPrefix;
   }
 
   notEq(other: StorableMap<K, V>): bool {

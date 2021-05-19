@@ -78,6 +78,10 @@ export class AccountId implements Codec {
             ) != 0
         );
     }
+
+    toString() {
+        return this._id.join("");
+    }
 }
 
-export const AccountId0 = new AccountId([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+export const AccountId0 = new AccountId(new Array<u8>(32).fill(0));

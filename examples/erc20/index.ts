@@ -1,53 +1,9 @@
 import { AccountId, Codec, AccountId0, SpreadStorableMap, StorableMap, u128, UInt128 } from "ask-lang";
 
-// class Allowance implements Codec {
-//   private mapEntry: string;
-//   private allowance: SpreadStorableMap<AccountId, UInt128>;
-
-//   constructor(mapEntry: string = "") {
-//     this.mapEntry = mapEntry;
-//     this.allowance = new SpreadStorableMap<AccountId, UInt128>(mapEntry)
-//   }
-
-//   @operator("[]=")
-//   set(key: AccountId, value: u128): this {
-//     this.allowance.set(key, new UInt128(value));
-//     return this;
-//   }
-
-//   @operator("[]")
-//   get(key: AccountId): u128 {
-//     return this.allowance.get(key).unwrap();
-//   }
-
-//   toU8a(): u8[] {
-//     return (new ScaleString(this.mapEntry)).toU8a();
-//   }
-
-//   encodedLength(): i32 {
-//     return (new ScaleString(this.mapEntry)).encodedLength();
-//   }
-
-//   populateFromBytes(bytes: u8[], index: i32): void {
-//     let s: ScaleString = new ScaleString();
-//     s.populateFromBytes(bytes, index);
-//     this.mapEntry = s.toString();
-//     this.allowance = new SpreadStorableMap<AccountId, UInt128>(this.mapEntry);
-//   }
-
-//   eq(other: Allowance): bool {
-//     return this.mapEntry == other.mapEntry;
-//   }
-
-//   notEq(other: Allowance): bool {
-//     return !this.eq(other);
-//   }
-// }
-
 @storage
 class ERC20Storage {
   balances: StorableMap<AccountId, UInt128>;
-  allowances: StorableMap<AccountId, SpreadStorableMap<AccountId, UInt128>>;
+  allowances: StorableMap<AccountId, StorableMap<AccountId, UInt128>>;
 
   totalSupply: u128;
   name: string;
@@ -178,6 +134,11 @@ class ERC20 {
     assert(owner.notEq(AccountId0), "ERC20: approve from the zero address");
     assert(spender.notEq(AccountId0), "ERC20: approve to the zero address");
 
+    let list = this.storage.allowances.get(owner);
+    if (list.entryKey == "") {
+      this.storage.allowances.set(owner, new SpreadStorableMap<AccountId, UInt128>(owner.toString()));
+    }
+
     this.storage.allowances.get(owner).set(spender, new UInt128(amount));
     (new Approval(owner, spender, amount)).emit();
   }
@@ -186,10 +147,10 @@ class ERC20 {
     assert(sender.notEq(AccountId0), "ERC20: transfer from the zero address");
     assert(recipient.notEq(AccountId0), "ERC20: transfer to the zero address");
 
-    let senderBanlance = this.storage.balances.get(sender).unwrap();
-    assert(senderBanlance >= amount, "ERC20: transfer amount exceeds balance");
+    let spenderBalance = this.storage.balances.get(sender).unwrap();
+    assert(spenderBalance >= amount, "ERC20: transfer amount exceeds balance");
 
-    let senderLeft = senderBanlance - amount;
+    let senderLeft = spenderBalance - amount;
     this.storage.balances.set(sender, new UInt128(senderLeft));
 
     let recipientLeft = this.storage.balances.get(recipient).unwrap() + amount;

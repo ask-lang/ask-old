@@ -72,6 +72,18 @@ export abstract class StorableArray<T extends Codec> implements Codec {
     return Crypto.blake256s(this.keyPrefix + index.toString());
   }
 
+  get length(): i32 {
+    return this.arrayInner.length;
+  }
+
+  get entryKey(): string {
+    return this.keyPrefix;
+  }
+
+  set entryKey(str: string) {
+    this.keyPrefix = str;
+  }
+
   @operator("[]")
   private __get(index: i32): T {
     return this.at(index);
