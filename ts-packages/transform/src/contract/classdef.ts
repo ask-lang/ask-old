@@ -10,13 +10,13 @@ import {
     EventParamSpec,
     EventSpec,
     TypeSpec
-} from "../../../contract-metadata/src/index";
+} from "contract-metadata/src/index";
 
 import { ElementUtil } from "../utils/utils";
 
 import { Strings } from "../utils/primitiveutil";
 import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFuctionDef, NamedTypeNodeDef } from "./elementdef";
-import { CellLayout, FieldLayout } from "../../../contract-metadata/src/layouts";
+import { CellLayout, FieldLayout } from "contract-metadata/src/layouts";
 
 export class ClassInterpreter {
     protected classPrototype: ClassPrototype;
@@ -38,7 +38,7 @@ export class ClassInterpreter {
         this.instanceName = this.variousPrefix + this.className.toLowerCase();
     }
 
-    resolveFieldsMembers(): void {
+    resolveFieldMembers(): void {
         this.classPrototype.instanceMembers &&
             this.classPrototype.instanceMembers.forEach((element, _) => {
                 if (element.kind == ElementKind.FIELD_PROTOTYPE) {
@@ -117,14 +117,14 @@ export class ContractInterpreter extends ClassInterpreter {
 export class EventInterpreter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.resolveFieldsMembers();
+        this.resolveFieldMembers();
     }
 
     createMetadata(): EventSpec {
         let eventParams: EventParamSpec[] = [];
         this.fields.forEach(item => {
             let type = new TypeSpec(item.type.index, item.type.plainType);
-            let param = new EventParamSpec(item.decorators.isTopic, type, [], item.name);
+            let param = new EventParamSpec(item.decorators.isTopic, type.toMetadata(), item.doc, item.name);
             eventParams.push(param);
         });
         return new EventSpec(this.className, eventParams, []);
@@ -135,7 +135,7 @@ export class StorageInterpreter extends ClassInterpreter {
     // layouts: FieldLayout[] = [];
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.resolveFieldsMembers();
+        this.resolveFieldMembers();
     }
 
     createMetadata(): FieldLayout[] {
@@ -149,7 +149,7 @@ export class StorageInterpreter extends ClassInterpreter {
 export class DynamicIntercepter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.resolveFieldsMembers();
+        this.resolveFieldMembers();
         this.resolveFunctionMembers();
     }
 }

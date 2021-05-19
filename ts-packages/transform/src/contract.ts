@@ -33,7 +33,7 @@ export class ContractProgram {
 
     constructor(program: Program) {
         this.program = program;
-        this.resolve();
+        this.resolveContract();
         this.metatdata = this.createMetadata();
     }
 
@@ -96,7 +96,7 @@ export class ContractProgram {
         return new ContractMetadata(source, contract, contractSpec, types, layout);
     }
 
-    private resolve(): void {
+    private resolveContract(): void {
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isTopContractClass(element)) {
                 this.contract = new ContractInterpreter(<ClassPrototype>element);

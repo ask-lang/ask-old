@@ -18,8 +18,7 @@ import {
 
 import { AstUtil, ElementUtil } from "../utils/utils";
 import { Strings } from "../utils/primitiveutil";
-import { LayoutDef } from "./storage";
-import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "../../../contract-metadata/src";
+import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "contract-metadata/src";
 import { KeySelector } from "../preprocess/selector";
 import { MetadataUtil } from "../utils/metadatautil";
 import { ContractDecoratorKind } from "../enums/decorator";
@@ -58,10 +57,8 @@ export class DecoratorsInfo {
 }
 export class FieldDef {
     protected fieldPrototype: FieldPrototype;
-    layout: LayoutDef = new LayoutDef();
     name: string;
     type!: NamedTypeNodeDef;
-    storeKey: string;
     selector: KeySelector;
     varName: string;
     doc: string[];
@@ -72,9 +69,9 @@ export class FieldDef {
         this.name = field.name;
         this.doc = DecoratorUtil.getDoc(field.declaration);
         this.varName = "_" + this.name;
-        this.storeKey = this.fieldPrototype.parent.name + this.name;
-        this.selector = new KeySelector(this.storeKey);
         this.decorators = new DecoratorsInfo(this.fieldPrototype.declaration.decorators);
+        let storeKey = this.fieldPrototype.parent.name + this.name;
+        this.selector = new KeySelector(storeKey);
         this.resolveField();
     }
 
