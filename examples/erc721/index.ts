@@ -62,7 +62,7 @@ class ERC721 {
   }
 
   @constructor
-  default(name: string = "", symbol: string = "") {
+  default(name: string = "", symbol: string = ""): void {
     this.storage._name = name;
     this.storage._symbol = symbol;
   }
@@ -202,7 +202,7 @@ class ERC721 {
    * @dev See {IERC721-transferFrom}.
    */
   @message
-  transferFrom(from: AccountId, to: AccountId, tokenId: u128) {
+  transferFrom(from: AccountId, to: AccountId, tokenId: u128): void {
     //solhint-disable-next-line max-line-length
     let isApproved = this._isApprovedOrOwner(msg.sender, tokenId);
     assert(isApproved, "ERC721: transfer caller is not owner nor approved");
@@ -222,13 +222,13 @@ class ERC721 {
    * @dev See {IERC721-safeTransferFrom}.
    */
   @message
-  safeTransferFrom(from: AccountId, to: AccountId, tokenId: u128, _data: u8[]): void {
+  safeTransferFrom(from: AccountId, to: AccountId, tokenId: u128, _data: string): void {
     let isApproved = this._isApprovedOrOwner(msg.sender, tokenId);
     assert(isApproved, "ERC721: transfer caller is not owner nor approved");
     this._safeTransfer(from, to, tokenId, _data);
   }
 
-  protected _safeTransfer(from: AccountId, to: AccountId, tokenId: u128, _data: u8[]): void {
+  protected _safeTransfer(from: AccountId, to: AccountId, tokenId: u128, _data: string): void {
     this._transfer(from, to, tokenId);
     // require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
   }
@@ -255,7 +255,7 @@ class ERC721 {
    *
    * Emits a {Transfer} event.
    */
-  protected _safeMint(to: AccountId, tokenId: u128, data: u8[]): void {
+  protected _safeMint(to: AccountId, tokenId: u128, data: string): void {
     this._mint(to, tokenId);
     // require(_checkOnERC721Received(address(0), to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
   }
@@ -272,7 +272,7 @@ class ERC721 {
    *
    * Emits a {Transfer} event.
    */
-  protected _mint(to: AccountId, tokenId: u128) {
+  protected _mint(to: AccountId, tokenId: u128): void {
     assert(to.notEq(AccountId0), "ERC721: mint to the zero address");
     assert(!this._exists(tokenId), "ERC721: token already minted");
 

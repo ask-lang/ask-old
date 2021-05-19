@@ -79,7 +79,7 @@ export class AccountId implements Codec {
         );
     }
 
-    toString() {
+    toString(): string {
         return this._id.join("");
     }
 }
