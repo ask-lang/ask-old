@@ -2,11 +2,11 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
- import { Int8, ScaleString, StorableArray, UInt128 } from "ask-lang";
+ import { AccountId, Bool, Int8, ScaleString, StorableArray, StorableMap, UInt128 } from "ask-lang";
 
  @storage
  class ArrayTypes {
-     @packed(capacity = 100)
+     @packed(capacity=100)
      i8Arr   : StorableArray<Int8>;
      @packed
      strArr   : StorableArray<ScaleString>;

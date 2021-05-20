@@ -64,7 +64,7 @@ class EmbedObj implements Codec {
 
 @storage
 class ArrayTypes {
-  @spread(size = 100)
+  @spread(capacity = 100)
   i8Arr: StorableArray<Int8>;
   strArr: StorableArray<ScaleString>;
   u128Arr: StorableArray<UInt128>;

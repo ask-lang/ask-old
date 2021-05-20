@@ -115,6 +115,7 @@ export class ContractInterpreter extends ClassInterpreter {
     }
 }
 export class EventInterpreter extends ClassInterpreter {
+    index = 0;
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.resolveFieldMembers();

@@ -1,10 +1,13 @@
 let scope = "_lang.";
-export const eventTpl = `class {{className}} extends Event {
+export const eventTpl = `class {{className}} extends ${scope}Event {
   {{#each fields}}
   private {{varName}}: ${scope}{{type.codecType}};
   {{/each}}
 
+  {{{constructor .}}}
+
   prepare(): void {
+    ${scope}Event.Index = {{index}};
     {{#each fields}}
     {{#if decorators.isTopic}}
     this.appendTopic(this.{{varName}});

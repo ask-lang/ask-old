@@ -17,7 +17,7 @@ import { ConstructorDef, MessageFuctionDef, NamedTypeNodeDef } from "./contract/
 import { CONFIG } from "./config/compile";
 import { FieldLayout, Layout, StructLayout } from "../../contract-metadata/src/layouts";
 import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./contract/classdef";
-import { CompositeDef, PrimitiveDef, Type, Field, SequenceDef } from "../../contract-metadata/src/types";
+import { CompositeDef, PrimitiveDef, Type, Field, SequenceDef, ArrayDef } from "../../contract-metadata/src/types";
 import { TypeHelper } from "./utils/typeutil";
 import { TypeKindEnum } from "./enums/customtype";
 
@@ -65,23 +65,29 @@ export class ContractProgram {
             } else if (type.typeKind == TypeKindEnum.USER_CLASS) {
                 let classType: ClassPrototype = <ClassPrototype>type.current;
                 let interpreter = new ClassInterpreter(classType);
-                interpreter.resolveFieldsMembers();
+                interpreter.resolveFieldMembers();
                 let fieldArr = new Array<Field>();
                 interpreter.fields.forEach(classField => {
                     let name = classField.name;
-                    let fieldTypeName = classField.type.codecType;
+                    let fieldTypeName = classField.type.definedCodeType;
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     let fieldType = _definedTypeMap.get(fieldTypeName)!;
-                    let field = new Field(name, fieldType.index, fieldType.plainType);
+                    let field = new Field(name, fieldType?.index, fieldType?.plainType);
                     fieldArr.push(field);
                 });
                 let compositeDef = new CompositeDef(fieldArr);
                 metadataTypes.push(compositeDef);
             } else if (type.typeKind == TypeKindEnum.ARRAY) {
                 let argumentType = type.typeArguments[0];
-                let fieldType = _definedTypeMap.get(argumentType.codecType)!;
-                let sequence = new SequenceDef(fieldType.index);
-                metadataTypes.push(sequence);
+                // TODO
+                let fieldType = _definedTypeMap.get(argumentType.definedCodeType)!;
+                if (fieldType.capacity == 0) {
+                    let sequence = new SequenceDef(fieldType.index);
+                    metadataTypes.push(sequence);
+                } else {
+                    let arr = new ArrayDef(fieldType.capacity, fieldType.index);
+                    metadataTypes.push(arr);
+                }
             }
         });
         return metadataTypes;
@@ -106,6 +112,7 @@ export class ContractProgram {
             }
             if (ElementUtil.isEventClassPrototype(element)) {
                 let eventInterpreter = new EventInterpreter(<ClassPrototype>element);
+                eventInterpreter.index = this.events.length;
                 this.events.push(eventInterpreter);
             }
             if (ElementUtil.isDynamicClassPrototype(element)) {

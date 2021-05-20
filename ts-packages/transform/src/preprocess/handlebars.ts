@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import { EventInterpreter } from "../contract/classdef";
 import { FieldDef, FunctionDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { KeySelector } from "./selector";
@@ -10,8 +11,12 @@ let scope = "_lang.";
 
 Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
     let code: string[] = [];
-    if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
-        code.push(`get ${field.name}(): ${field.type.codecTypeAlias} {`);
+    if (field.type.typeKind == TypeKindEnum.ARRAY) {
+        code.push(`get ${field.name}(): ${field.type.plainTypeNode} {`);
+        code.push(`     if (this.${field.varName} === null) {`);
+        code.push(`       const st = new ${field.type.codecTypeGeneric}("${field.selector.key}", ${field.decorators.storeCapacity});`);
+    } else if (field.type.typeKind == TypeKindEnum.MAP) {
+        code.push(`get ${field.name}(): ${field.type.plainTypeNode} {`);
         code.push(`     if (this.${field.varName} === null) {`);
         code.push(`       const st = new ${field.type.codecTypeGeneric}("${field.selector.key}");`);
     } else {
@@ -52,6 +57,23 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
     return code.join("\n");
 });
 
+/**
+ * Event constructor
+ *
+ */
+Handlebars.registerHelper("constructor", function(event: EventInterpreter) {
+    let code: string[] = [];
+    let fields: string[] = [];
+    event.fields.forEach((val) => {
+        fields.push(`${val.varName}: ${val.type.codecType}`);
+    });
+    code.push(`constructor(${fields.join(",")}) {`);
+    event.fields.forEach((val) => {
+        code.push(`     this.${val.varName} = ${val.varName};`);
+    });
+    code.push(`}`);
+    return code.join(EOL);
+});
 
 /**
  * Register the tag of each.

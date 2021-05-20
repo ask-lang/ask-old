@@ -2,6 +2,7 @@ import { CONFIG } from "../config/compile";
 import { FieldDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { Strings } from "./primitiveutil";
+import { AstUtil } from "./utils";
 
 export class TypeHelper {
 
@@ -62,6 +63,33 @@ export class TypeHelper {
             || type == TypeKindEnum.BIG_NUM
             || type == TypeKindEnum.STRING;
     }
+
+    /**
+     * Get type by name
+     * @param typeName 
+     * @returns 
+     */
+    static getTypeByName(typeName: string): TypeKindEnum {
+        if (typeName == "void") {
+            return TypeKindEnum.VOID;
+        }
+        if (Strings.isString(typeName)) {
+            return TypeKindEnum.STRING;
+        }
+        if (AstUtil.isArrayType(typeName)) {
+            return TypeKindEnum.ARRAY;
+        }
+        if (AstUtil.isMapType(typeName)) {
+            return TypeKindEnum.MAP;
+        }
+        if (TypeHelper.nativeType.includes(typeName)) {
+            return TypeKindEnum.NUMBER;
+        }
+        if (TypeHelper.bigNumType.includes(typeName)) {
+            return TypeKindEnum.BIG_NUM;
+        }
+        return TypeKindEnum.USER_CLASS;
+    }
 }
 
 
@@ -73,10 +101,10 @@ export class FieldDefHelper {
      * @returns 
      */
     static getConcreteStorable(field: FieldDef): string {
-        let typeArgs = field.type.typeArguments.map(item => item.codecType).join(",");
+        // let typeArgs = field.type.typeArguments.map(item => item.codecType).join(",");
         let plainType = field.type.plainType;
-        let arrayType = (field.decorators.isPacked ? "Packed" : "Spread") + plainType;
-        let plainVarious = `${CONFIG.namespace}${arrayType}<${typeArgs}>`;
+        let arrayType = field.decorators.isPacked ? "Packed" : "Spread" ;
+        let plainVarious = `${CONFIG.namespace}${arrayType}${field.type.plainTypeNode}`;
         return plainVarious;
     }
 
