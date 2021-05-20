@@ -15,8 +15,9 @@ import {
 import { ElementUtil } from "../utils/utils";
 
 import { Strings } from "../utils/primitiveutil";
-import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFuctionDef, NamedTypeNodeDef } from "./elementdef";
+import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFuctionDef} from "./elementdef";
 import { CellLayout, FieldLayout } from "contract-metadata/src/layouts";
+import { NamedTypeNodeDef } from "./typedef";
 
 export class ClassInterpreter {
     protected classPrototype: ClassPrototype;
@@ -51,7 +52,10 @@ export class ClassInterpreter {
         this.classPrototype.instanceMembers &&
             this.classPrototype.instanceMembers.forEach((element, _) => {
                 if (element.kind == ElementKind.FUNCTION_PROTOTYPE) {
-                    this.functions.push(new FunctionDef(<FunctionPrototype>element));
+                    let func = new FunctionDef(<FunctionPrototype>element);
+                    if (!func.isConstructor) {
+                        this.functions.push(func);
+                    }
                 }
             });
     }

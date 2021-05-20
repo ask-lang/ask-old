@@ -13,13 +13,14 @@ import {
 import { ElementUtil } from "./utils/utils";
 
 import { ProgramAnalyzar } from "./analyzer";
-import { ConstructorDef, MessageFuctionDef, NamedTypeNodeDef } from "./contract/elementdef";
+import { ConstructorDef, MessageFuctionDef } from "./contract/elementdef";
 import { CONFIG } from "./config/compile";
 import { FieldLayout, Layout, StructLayout } from "../../contract-metadata/src/layouts";
 import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./contract/classdef";
 import { CompositeDef, PrimitiveDef, Type, Field, SequenceDef, ArrayDef } from "../../contract-metadata/src/types";
 import { TypeHelper } from "./utils/typeutil";
 import { TypeKindEnum } from "./enums/customtype";
+import { NamedTypeNodeDef } from "./contract/typedef";
 
 export class ContractProgram {
     program: Program;
@@ -80,7 +81,7 @@ export class ContractProgram {
             } else if (type.typeKind == TypeKindEnum.ARRAY) {
                 let argumentType = type.typeArguments[0];
                 // TODO
-                let fieldType = _definedTypeMap.get(argumentType.definedCodeType)!;
+                let fieldType = _definedTypeMap.get(argumentType.getTypeKey())!;
                 if (fieldType.capacity == 0) {
                     let sequence = new SequenceDef(fieldType.index);
                     metadataTypes.push(sequence);

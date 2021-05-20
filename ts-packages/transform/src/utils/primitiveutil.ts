@@ -2,6 +2,8 @@ export class Strings {
 
     static EMPTY = '';
 
+    static VOID = "void";
+
     /**
        * Judge the string whetehr aroud by qutation or not.
        * The charcode of '"' is 0x22

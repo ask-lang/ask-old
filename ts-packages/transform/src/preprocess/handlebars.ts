@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
 import { EventInterpreter } from "../contract/classdef";
 import { FieldDef, FunctionDef } from "../contract/elementdef";
+import { NamedTypeNodeDef } from "../contract/typedef";
 import { TypeKindEnum } from "../enums/customtype";
 import { KeySelector } from "./selector";
 
@@ -9,16 +10,27 @@ const EOL = WIN ? "\r\n" : "\n";
 
 let scope = "_lang.";
 
+function convertBytesToType(typeNode: NamedTypeNodeDef | null) {
+    if (!typeNode) {
+        return "";
+    }
+    let code: string[] = [];
+    if (!typeNode.isCodec && typeNode.typeKind == TypeKindEnum.NUMBER) {
+        code.push(`return ${scope}BytesReader.decodeInto<${scope}${typeNode.codecType}>(rs);`);
+    }
+    return code.join(EOL);
+}
+
 Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
     let code: string[] = [];
     if (field.type.typeKind == TypeKindEnum.ARRAY) {
         code.push(`get ${field.name}(): ${field.type.plainTypeNode} {`);
         code.push(`     if (this.${field.varName} === null) {`);
-        code.push(`       const st = new ${field.type.codecTypeGeneric}("${field.selector.key}", ${field.decorators.storeCapacity});`);
+        code.push(`       const st = new ${field.type.instanceType}("${field.selector.key}", ${field.decorators.capacity});`);
     } else if (field.type.typeKind == TypeKindEnum.MAP) {
         code.push(`get ${field.name}(): ${field.type.plainTypeNode} {`);
         code.push(`     if (this.${field.varName} === null) {`);
-        code.push(`       const st = new ${field.type.codecTypeGeneric}("${field.selector.key}");`);
+        code.push(`       const st = new ${field.type.instanceType}("${field.selector.key}");`);
     } else {
         code.push(`get ${field.name}(): ${field.type.plainType} {`);
         code.push(`     if (this.${field.varName} === null) {`);
@@ -150,7 +162,7 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
     }
     let func = `${fn.methodName}(${funParams.join(",")}): ${fn.isReturnable ? fn.returnType?.plainType : "void"} {
         ${fn.isReturnable ? "let rs = " : ""}_lang.Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);
-        ${fn.isReturnable ? "return rs;" : ""}
+        ${convertBytesToType(fn.returnType)}
     }`;
     return func;
 });
