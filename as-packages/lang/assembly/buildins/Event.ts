@@ -15,60 +15,60 @@ export abstract class Event {
   private _data: Codec[];
 
   constructor() {
-    this._topics = new Array<Codec>();
-    this._data = new Array<Codec>();
+      this._topics = new Array<Codec>();
+      this._data = new Array<Codec>();
   }
 
   static Index: u8 = 0;
 
   appendTopic<T extends Codec>(t: T): void {
-    this._topics.push(t);
+      this._topics.push(t);
   }
 
   appendData<T extends Codec>(d: T): void {
-    this._data.push(d);
+      this._data.push(d);
   }
 
   emit(): void {
-    this.prepare();
+      this.prepare();
 
-    assert(this._topics.length <= MAX_EVENT_TOPICS, "too many topics defined.");
+      assert(this._topics.length <= MAX_EVENT_TOPICS, "too many topics defined.");
 
-    let topicsData = new Array<u8>();
-    topicsData = topicsData.concat(new CompactInt(i64(this._topics.length)).toU8a());
-    for (let i = 0; i < this._topics.length; i++) {
-      let hash = Crypto.blake256(this._topics[i]).toU8a();
-      topicsData = topicsData.concat(hash);
-    }
+      let topicsData = new Array<u8>();
+      topicsData = topicsData.concat(new CompactInt(i64(this._topics.length)).toU8a());
+      for (let i = 0; i < this._topics.length; i++) {
+          let hash = Crypto.blake256(this._topics[i]).toU8a();
+          topicsData = topicsData.concat(hash);
+      }
 
-    let datas = new Array<u8>();
-    datas.push(Event.Index);
+      let datas = new Array<u8>();
+      datas.push(Event.Index);
 
-    for (let i = 0; i < this._data.length; i++) {
-      let d = this._data[i].toU8a();
-      datas = datas.concat(d);
-    }
+      for (let i = 0; i < this._data.length; i++) {
+          let d = this._data[i].toU8a();
+          datas = datas.concat(d);
+      }
 
-    assert(this._data.length !== 0, "invalid event defined.");
+      assert(this._data.length !== 0, "invalid event defined.");
 
-        const topicBuf = new WriteBuffer(topicsData.buffer);
-        const dataBuf = new WriteBuffer(datas.buffer);
+      const topicBuf = new WriteBuffer(topicsData.buffer);
+      const dataBuf = new WriteBuffer(datas.buffer);
 
-        seal_deposit_event(
-            topicBuf.buffer,
-            topicBuf.size,
-            dataBuf.buffer,
-            dataBuf.size
-        );
-    // // to release allocated memory
-    // Event.reset();
+      seal_deposit_event(
+          topicBuf.buffer,
+          topicBuf.size,
+          dataBuf.buffer,
+          dataBuf.size
+      );
+      // // to release allocated memory
+      // Event.reset();
   }
   // add another way to send an event,
   // besides `Event.emit(e)`,
   // you can also use `e.send()` while `e` is initialized.
   public send(): void {
-    this.prepare();
-    this.emit();
+      this.prepare();
+      this.emit();
   }
 
     abstract prepare(): void;

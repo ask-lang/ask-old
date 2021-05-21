@@ -4,10 +4,10 @@
  */
 
 import {
-  seal_clear_storage,
-  seal_get_storage,
-  seal_set_storage,
-  ReturnCode,
+    seal_clear_storage,
+    seal_get_storage,
+    seal_set_storage,
+    ReturnCode,
 } from "as-contract-runtime";
 
 import { Codec, Hash, PackableCodec, ScaleString } from "as-scale-codec";
@@ -24,133 +24,133 @@ export class Storage {
   // store mode, to limit store value to native in `mutates = false`
   private static sStoreMode: StoreMode = StoreMode.WR;
   static set mode(mode: StoreMode) {
-    Storage.sStoreMode = mode;
+      Storage.sStoreMode = mode;
   }
 
   private key: Hash;
 
   constructor(_key: Hash = NullHash) {
-    this.key = _key;
+      this.key = _key;
   }
 
   updateKey(key: Hash): void {
-    this.key = key;
+      this.key = key;
   }
 
   store<T extends Codec>(value: T): ReturnCode {
-    assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
+      assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
 
-    const valueBytes = value.toU8a();
-    const buf = new WriteBuffer(valueBytes.buffer);
-    // FIXME(liangqin.fan) if value.length == 0 , should `clear` this storage??
-    seal_set_storage(
-      this.hashKey(),
-      buf.buffer,
-      buf.size
-    );
-    return ReturnCode.Success;
+      const valueBytes = value.toU8a();
+      const buf = new WriteBuffer(valueBytes.buffer);
+      // FIXME(liangqin.fan) if value.length == 0 , should `clear` this storage??
+      seal_set_storage(
+          this.hashKey(),
+          buf.buffer,
+          buf.size
+      );
+      return ReturnCode.Success;
   }
 
   storePacked<U extends PackableCodec>(value: U): ReturnCode {
-    assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
+      assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
 
-    const valueBytes = value.toU8aPacked();
-    const buf = new WriteBuffer(valueBytes.buffer);
-    // FIXME(liangqin.fan) if value.length == 0 , should `clear` this storage??
-    seal_set_storage(
-      this.hashKey(),
-      buf.buffer,
-      buf.size
-    );
-    return ReturnCode.Success;
+      const valueBytes = value.toU8aPacked();
+      const buf = new WriteBuffer(valueBytes.buffer);
+      // FIXME(liangqin.fan) if value.length == 0 , should `clear` this storage??
+      seal_set_storage(
+          this.hashKey(),
+          buf.buffer,
+          buf.size
+      );
+      return ReturnCode.Success;
   }
 
   load<T extends Codec>(): T | null {
-    const value = instantiate<T>();
+      const value = instantiate<T>();
 
-    // FIXME(liangqin.fan) It is innecessory to read by MasStorageSize,
-    // but has no way to detect the real buffer size need.
+      // FIXME(liangqin.fan) It is innecessory to read by MasStorageSize,
+      // but has no way to detect the real buffer size need.
 
-    // let len = value.encodedLength();
-    // if (len == 0 || (value instanceof ScaleString)) {
-    //   len = MaxStorageSize;
-    // }
+      // let len = value.encodedLength();
+      // if (len == 0 || (value instanceof ScaleString)) {
+      //   len = MaxStorageSize;
+      // }
 
-    const readBuf = new ReadBuffer(MaxStorageSize);
-    const status = seal_get_storage(
-      this.hashKey(),
-      readBuf.valueBuffer,
-      readBuf.sizeBuffer
-    );
-    // if read storage from native successfully, then populate it.
-    // otherwise let it alon with default constructed value.
-    if (status == ReturnCode.Success/* && readBuf.readSize <= len*/) {
-      value.populateFromBytes(readBuf.valueBytes, 0);
-      return value;
-    }
+      const readBuf = new ReadBuffer(MaxStorageSize);
+      const status = seal_get_storage(
+          this.hashKey(),
+          readBuf.valueBuffer,
+          readBuf.sizeBuffer
+      );
+      // if read storage from native successfully, then populate it.
+      // otherwise let it alon with default constructed value.
+      if (status == ReturnCode.Success/* && readBuf.readSize <= len*/) {
+          value.populateFromBytes(readBuf.valueBytes, 0);
+          return value;
+      }
 
-    return null;
+      return null;
   }
 
   loadPacked<U extends PackableCodec>(): U | null {
-    const value = instantiate<U>();
+      const value = instantiate<U>();
 
-    let len = value.encodedLengthPacked();
-    if (len == 0 || value instanceof ScaleString) len = MaxStorageSize;
+      let len = value.encodedLengthPacked();
+      if (len == 0 || value instanceof ScaleString) len = MaxStorageSize;
 
-    const readBuf = new ReadBuffer(len);
-    const status = seal_get_storage(
-      this.hashKey(),
-      readBuf.valueBuffer,
-      readBuf.sizeBuffer
-    );
-    // if read storage from native successfully, then populate it.
-    // otherwise let it alon with default constructed value.
-    if (status == ReturnCode.Success && readBuf.readSize <= len) {
-      value.populateFromPackedBytes(readBuf.valueBytes, 0);
-      return value;
-    }
+      const readBuf = new ReadBuffer(len);
+      const status = seal_get_storage(
+          this.hashKey(),
+          readBuf.valueBuffer,
+          readBuf.sizeBuffer
+      );
+      // if read storage from native successfully, then populate it.
+      // otherwise let it alon with default constructed value.
+      if (status == ReturnCode.Success && readBuf.readSize <= len) {
+          value.populateFromPackedBytes(readBuf.valueBytes, 0);
+          return value;
+      }
 
-    return null;
+      return null;
   }
 
-   // to store raw bytes at `key`.
-   storeRaw(data: Array<u8>): void {
-    assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
+  // to store raw bytes at `key`.
+  storeRaw(data: Array<u8>): void {
+      assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
 
-    const buf = new WriteBuffer(data.buffer);
-    seal_set_storage(
-      this.hashKey(),
-      buf.buffer,
-      buf.size
-    );
+      const buf = new WriteBuffer(data.buffer);
+      seal_set_storage(
+          this.hashKey(),
+          buf.buffer,
+          buf.size
+      );
   }
   // to load raw bytes at `key`
   loadRaw(size: i32): u8[] {
-    let readBuf = new ReadBuffer(size);
+      let readBuf = new ReadBuffer(size);
 
-    const status = seal_get_storage(
-      this.hashKey(),
-      readBuf.valueBuffer,
-      readBuf.sizeBuffer
-    );
-    // if read storage from native successfully, then populate it.
-    // otherwise let it alon with default constructed value.
-    if (status == ReturnCode.Success && readBuf.readSize <= size) {
-      return readBuf.valueBytes;
-    }
+      const status = seal_get_storage(
+          this.hashKey(),
+          readBuf.valueBuffer,
+          readBuf.sizeBuffer
+      );
+      // if read storage from native successfully, then populate it.
+      // otherwise let it alon with default constructed value.
+      if (status == ReturnCode.Success && readBuf.readSize <= size) {
+          return readBuf.valueBytes;
+      }
 
-    return [];
+      return [];
   }
 
 
   clear(): void {
-    seal_clear_storage(this.hashKey());
+      seal_clear_storage(this.hashKey());
   }
 
   private hashKey(): ArrayBuffer {
-    // const hash = Crypto.blake256s(this.key);
-    // return hash.toU8a().buffer;
-    return this.key.toU8a().buffer;
+      // const hash = Crypto.blake256s(this.key);
+      // return hash.toU8a().buffer;
+      return this.key.toU8a().buffer;
   }
 }
