@@ -7,7 +7,7 @@
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "dependencies": {
     "as-contract-runtime": "0.1.1",
-    "as-bignum": "^0.2.14",
+    "as-bignum": "^0.2.16",
     "as-scale-codec": "0.2.1"
   },
   "devDependencies": {

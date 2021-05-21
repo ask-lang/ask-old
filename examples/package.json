@@ -2,7 +2,6 @@
   "name": "ask-examples",
   "version": "0.1.0",
   "dependencies": {
-    "as-bignum": "^0.2.14",
     "as-scale-codec": "0.2.1",
     "ask-lang": "0.1.0"
   }
