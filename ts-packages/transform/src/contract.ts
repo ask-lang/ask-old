@@ -8,7 +8,7 @@ import {
     ContractMetadata,
     ContractSpec,
     Source
-} from "../../contract-metadata/src/index";
+} from "contract-metadata/src/index";
 
 import { ElementUtil } from "./utils/utils";
 
