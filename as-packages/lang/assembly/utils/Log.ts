@@ -25,78 +25,78 @@ const HexChar = [
 ];
 
 class Logger {
-  println(message: string): Logger {
-    const outbuf = new WriteBuffer(String.UTF8.encode(message));
+    println(message: string): Logger {
+        const outbuf = new WriteBuffer(String.UTF8.encode(message));
 
-    seal_println(
-      outbuf.buffer,
-      outbuf.size
-    );
+        seal_println(
+            outbuf.buffer,
+            outbuf.size
+        );
 
-    return this;
-  }
-
-  printu32(v: u32): Logger {
-    let num = "";
-    let y = v % 10;
-    let d = v / 10;
-
-    while (d != 0) {
-      num = HexChar[y] + num;
-      y = d % 10;
-      d = d / 10;
+        return this;
     }
 
-    num = HexChar[y] + num;
+    printu32(v: u32): Logger {
+        let num = "";
+        let y = v % 10;
+        let d = v / 10;
 
-    this.println(num);
-    return this;
-  }
+        while (d != 0) {
+            num = HexChar[y] + num;
+            y = d % 10;
+            d = d / 10;
+        }
 
-  printdec(ds: u8[]): Logger {
-    let s: string = '[ '
-    for (let i = 0; i < ds.length; i++) {
-      let num = "";
-      let y = ds[i] % 10;
-      let d = ds[i] / 10;
-
-      while (d != 0) {
         num = HexChar[y] + num;
-        y = d % 10;
-        d = d / 10;
-      }
 
-      num = HexChar[y] + num;
-      s += num;
-
-      if (i != ds.length - 1) s += ", ";
+        this.println(num);
+        return this;
     }
-    s += " ]"
 
-    this.println(s);
+    printdec(ds: u8[]): Logger {
+        let s: string = '[ ';
+        for (let i = 0; i < ds.length; i++) {
+            let num = "";
+            let y = ds[i] % 10;
+            let d = ds[i] / 10;
 
-    return this;
-  }
+            while (d != 0) {
+                num = HexChar[y] + num;
+                y = d % 10;
+                d = d / 10;
+            }
 
-  private encodehex(ds: u8[], sep: string = ","): string {
-    let s: string = '['
-    for (let i = 0; i < ds.length; i++) {
-      let hsb = ((ds[i] & 0xf0) >> 4);
-      let lsb = (ds[i] & 0x0f);
-      s += HexChar[hsb];
-      s += HexChar[lsb];
+            num = HexChar[y] + num;
+            s += num;
 
-      if (i != ds.length - 1)
-        s += sep;
+            if (i != ds.length - 1) s += ", ";
+        }
+        s += " ]";
+
+        this.println(s);
+
+        return this;
     }
-    s += "]"
-    return s;
-  }
 
-  printhex(ds: u8[]): Logger {
-    this.println(this.encodehex(ds));
-    return this;
-  }
+    private encodehex(ds: u8[], sep: string = ","): string {
+        let s: string = '[';
+        for (let i = 0; i < ds.length; i++) {
+            let hsb = ((ds[i] & 0xf0) >> 4);
+            let lsb = (ds[i] & 0x0f);
+            s += HexChar[hsb];
+            s += HexChar[lsb];
+
+            if (i != ds.length - 1)
+                s += sep;
+        }
+        s += "]";
+        return s;
+    }
+
+    printhex(ds: u8[]): Logger {
+        this.println(this.encodehex(ds));
+        return this;
+    }
 }
 
 export const Log = new Logger();

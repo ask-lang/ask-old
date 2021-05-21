@@ -151,41 +151,11 @@ module.exports = {
 
                 // Utilized to achieve portability in some cases
                 "@typescript-eslint/no-non-null-assertion": "off",
+
+                "@typescript-eslint/no-inferrable-types": "off",
             }
         },
 
-        // === Standard Library rules (extends AssemblyScript rules) ===============
-
-        {
-            files: [
-                "assembly/codegen/std/assembly/**/*.ts"
-            ],
-            rules: {
-                // We are implementing with --noLib, so we shadow all the time
-                "no-shadow-restricted-names": "off",
-
-                // Similarly, sometimes we need the return type to be String, not string
-                "@typescript-eslint/ban-types": "off"
-            }
-        },
-
-        // === Standard Definition rules (extends TypeScript rules) ================
-
-        {
-            files: [
-                "assembly/codegen/std/**/*.d.ts"
-            ],
-            rules: {
-                // Often required to achieve compatibility with TypeScript
-                "@typescript-eslint/no-explicit-any": "off",
-
-                // Interfaces can be stubs here, i.e. not yet fully implemented
-                "@typescript-eslint/no-empty-interface": "off",
-
-                // Definitions make use of `object` to model rather unusual constraints
-                "@typescript-eslint/ban-types": "off"
-            }
-        },
 
         // === Test rules (extends TypeScript rules) ===============================
 
