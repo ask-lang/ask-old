@@ -18,11 +18,14 @@ class Approved extends Event {
     this.from = _from;
     this.to = _to;
     this.success = _success;
+
+    // this.prepare();
+    this.emit();
   }
 
   // as-preprocessor should generate this method for @Event
   prepare(): void {
-    Event.Index = 0;
+    this.index = 0;
     this.appendTopic(new UInt8(this.from));
     this.appendTopic(new UInt8(this.to));
 
@@ -39,7 +42,7 @@ class EventEmitter {
 
   @message
   fireEvent(): void {
-    new Approved(9, 10, false).emit();
+    new Approved(9, 10, false);
   }
 
 }

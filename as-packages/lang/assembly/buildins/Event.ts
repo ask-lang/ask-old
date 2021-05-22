@@ -14,12 +14,14 @@ export abstract class Event {
   private _topics: Codec[];
   private _data: Codec[];
 
+  protected index: u8;
+
   constructor() {
       this._topics = new Array<Codec>();
       this._data = new Array<Codec>();
-  }
 
-  protected index: u8 = 0;
+      this.index = 0;
+  }
 
   appendTopic<T extends Codec>(t: T): void {
       this._topics.push(t);
@@ -71,5 +73,5 @@ export abstract class Event {
       this.emit();
   }
 
-    abstract prepare(): void;
+  abstract prepare(): void;
 }

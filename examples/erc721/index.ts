@@ -1,4 +1,4 @@
-import { AccountId, AccountId0, Bool, ScaleString, SpreadStorableArray, SpreadStorableMap, StorableArray, StorableMap, u128, UInt128 } from "ask-lang";
+import { AccountId, AccountId0, Bool, Event, ScaleString, SpreadStorableArray, SpreadStorableMap, StorableArray, StorableMap, u128, UInt128 } from "ask-lang";
 
 @storage
 class ERC721Storage {
@@ -24,9 +24,15 @@ class ERC721Storage {
   * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
   */
 @event class Transfer {
-  @topic from: AccountId;
-  @topic to: AccountId;
-  @topic tokenId: u128
+  @topic from: AccountId = AccountId0;
+  @topic to: AccountId = AccountId0;
+  @topic tokenId: u128 = u128.Zero;
+
+  constructor(from: AccountId, to: AccountId, tokenId: u128) {
+    this.from = from;
+    this.to = to;
+    this.tokenId = tokenId;
+  }
 };
 
 /**
@@ -36,6 +42,12 @@ class ERC721Storage {
   @topic owner: AccountId;
   @topic approved: AccountId;
   @topic tokenId: u128;
+
+  constructor(owner: AccountId, approved: AccountId, tokenId: u128) {
+    this.owner = owner;
+    this.approved = approved;
+    this.tokenId = tokenId;
+  }
 }
 
 /**
@@ -187,7 +199,7 @@ class ERC721 {
       this.storage._operatorApprovals.set(msg.sender, new SpreadStorableMap<AccountId, Bool>(msg.sender.toString()));
     }
     this.storage._operatorApprovals.get(msg.sender).set(operator, new Bool(approved));
-    (new ApprovalForAll(msg.sender, operator, approved)).emit();
+    (new ApprovalForAll(msg.sender, operator, approved));
   }
 
   /**
@@ -285,7 +297,7 @@ class ERC721 {
 
     this.storage._tokenOwners.set(new UInt128(tokenId), to);
 
-    (new Transfer(AccountId0, to, tokenId)).emit();
+    (new Transfer(AccountId0, to, tokenId));
   }
 
   /**
@@ -321,7 +333,7 @@ class ERC721 {
 
     this.storage._tokenOwners.delete(tid);
 
-    (new Transfer(owner, AccountId0, tokenId)).emit();
+    (new Transfer(owner, AccountId0, tokenId));
   }
 
 
@@ -361,7 +373,7 @@ class ERC721 {
 
     this.storage._tokenOwners.set(tid, to);
 
-    (new Transfer(from, to, tokenId)).emit();
+    (new Transfer(from, to, tokenId));
   }
 
   /**
@@ -387,6 +399,6 @@ class ERC721 {
 
   protected _approve(to: AccountId, tokenId: u128): void {
     this.storage._tokenApprovals.set(new UInt128(tokenId), to);
-    (new Approval(this.ownerOf(tokenId), to, tokenId)).emit();
+    (new Approval(this.ownerOf(tokenId), to, tokenId));
   }
 }
