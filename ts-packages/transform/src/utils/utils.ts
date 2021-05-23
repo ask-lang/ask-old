@@ -239,7 +239,7 @@ export class AstUtil {
        * @param declareType the declare type
        */
     static isMapType(declareType: string): boolean {
-        return declareType == "Map" || declareType == "StorableMap";
+        return declareType == "Map" || declareType == "SpreadStorableMap" || declareType == "PackedStorableMap";
     }
 
     static isClassPrototype(element: Element): boolean {

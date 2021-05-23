@@ -19,7 +19,7 @@ export abstract class Event {
       this._data = new Array<Codec>();
   }
 
-  static Index: u8 = 0;
+  protected index: u8 = 0;
 
   appendTopic<T extends Codec>(t: T): void {
       this._topics.push(t);
@@ -42,7 +42,7 @@ export abstract class Event {
       }
 
       let datas = new Array<u8>();
-      datas.push(Event.Index);
+      datas.push(this.index);
 
       for (let i = 0; i < this._data.length; i++) {
           let d = this._data[i].toU8a();

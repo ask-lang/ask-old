@@ -29,6 +29,7 @@ export class ClassInterpreter {
     fields: FieldDef[] = [];
     functions: FunctionDef[] = [];
     variousPrefix = "_";
+    constructorFun: FunctionDef | null;
 
     constructor(clzPrototype: ClassPrototype) {
         this.classPrototype = clzPrototype;
@@ -37,6 +38,7 @@ export class ClassInterpreter {
         this.className = clzPrototype.name;
         this.camelName = Strings.lowerFirstCase(this.className);
         this.instanceName = this.variousPrefix + this.className.toLowerCase();
+        this.constructorFun = null;
     }
 
     resolveFieldMembers(): void {
@@ -55,6 +57,8 @@ export class ClassInterpreter {
                     let func = new FunctionDef(<FunctionPrototype>element);
                     if (!func.isConstructor) {
                         this.functions.push(func);
+                    } else {
+                        this.constructorFun = func;
                     }
                 }
             });
@@ -123,6 +127,7 @@ export class EventInterpreter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.resolveFieldMembers();
+        this.resolveFunctionMembers();
     }
 
     createMetadata(): EventSpec {

@@ -1,6 +1,6 @@
 import Handlebars from "./handlebars";
 import { Range } from "assemblyscript";
-import { ContractProgram } from "../contract";
+import { ContractProgram } from "../contract/contract";
 import { mainTpl, storeTpl, eventTpl, dynamicTpl} from "../tpl";
 
 export class ModifyPoint {

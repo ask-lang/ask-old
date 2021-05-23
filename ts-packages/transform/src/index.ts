@@ -1,6 +1,6 @@
 import { Transform } from "assemblyscript/cli/transform";
 import * as preprocess from "./preprocess";
-import { getContractInfo } from "./contract";
+import { getContractInfo } from "./contract/contract";
 import { Program } from "assemblyscript";
 import * as path from "path";
 

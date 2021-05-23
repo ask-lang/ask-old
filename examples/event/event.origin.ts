@@ -3,17 +3,39 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Bool, UInt8 } from "as-scale-codec";
-import { Event } from "../../assembly/buildins/Event";
+import { Bool, Event, u128, UInt8 } from "ask-lang";
+
 
 @event
 class Approved {
+    @topic
+    from: u128;
+    @topic
+    to: UInt8;
+
+    success: bool;
+
+    constructor(from: u128, to: UInt8, success: bool) {
+        this.from = from;
+        this.to = to;
+        this.success = success;
+    }
+}
+
+@event
+class Approved2 {
     @topic
     from: UInt8;
     @topic
     to: UInt8;
 
-    success: Bool;
+    success: bool;
+
+    constructor(from: UInt8, to: UInt8, success: bool) {
+        this.from = from;
+        this.to = to;
+        this.success = success;
+    }
 }
 
 @contract
@@ -25,11 +47,6 @@ class EventEmitter {
 
     @message
     fire(): void {
-        let e: Approved = {
-            from: new UInt8(9),
-            to: new UInt8(10),
-            success: new Bool(false),
-        };
-        Event.emit(e);
+        let e: Approved = new Approved(u128.from(9), new UInt8(10), false);
     }
 }

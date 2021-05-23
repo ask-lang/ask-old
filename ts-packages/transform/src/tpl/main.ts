@@ -32,7 +32,8 @@ export function call(): i32 {
     {{/each}}
     {{#if isReturnable}}
     let rs = {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}});
-    ${scope}ReturnData.set<{{returnType.codecTypeAlias}}>(new {{returnType.codecTypeAlias}}(rs));
+
+    ${scope}ReturnData.set<{{returnType.codecTypeAlias}}>({{{wrapResult returnType}}});
     {{/if}}
     {{#unless isReturnable}}
     {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}});

@@ -18,6 +18,7 @@ export class NameTyper {
 
     protected parent: Element;
     protected typeNode: NamedTypeNode;
+    current!: Element;
     typeKind: TypeKindEnum;
     constructor(parent: Element, typeNode: NamedTypeNode) {
         this.parent = parent;
@@ -38,20 +39,19 @@ export class NameTyper {
      */
     getTypeKind(): TypeKindEnum {
         let plainType = this.typeNode.name.range.toString();
-        console.log(`plainType ${plainType}`);
         let element = this.parent.lookup(plainType)!;
+        this.current = element;
         let buildinElement: Element = this.findBuildinElement(element);
         if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
             return TypeKindEnum.NUMBER;
         } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
-            if (buildinElement.name == "void") {
+            if (buildinElement.name == Strings.VOID) {
                 return TypeKindEnum.VOID;
             } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
                 return TypeKindEnum.NUMBER;
             }
             let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
             let definitionNode = <NamedTypeNode>declaration.type;
-            // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
             let name = definitionNode.name.range.toString();
             return TypeHelper.getTypeByName(name);
         } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
@@ -89,7 +89,7 @@ export class NamedTypeNodeDef {
     current!: Element;
     typeKind: TypeKindEnum;
     typeArguments: NamedTypeNodeDef[] = [];
-    isCodec = false;
+    isCodec = true;
     plainType: string;
     plainTypeNode: string; // that with argument
     codecType: string;
@@ -118,7 +118,14 @@ export class NamedTypeNodeDef {
         this.resolveArguments();
     }
 
+    /**
+     * Export all codec type
+     * @returns 
+     */
     getTypeKey(): string {
+        if (TypeHelper.isPrimitiveType(this.typeKind)) {
+            return this.codecType;
+        }
         return this.definedCodeType + this.capacity;
     }
 
@@ -168,8 +175,10 @@ export class NamedTypeNodeDef {
             return TypeKindEnum.NUMBER;
         } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
             if (buildinElement.name == Strings.VOID) {
+                this.isCodec = false;
                 return TypeKindEnum.VOID;
             } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
+                this.isCodec = false;
                 return TypeKindEnum.NUMBER;
             }
             let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
@@ -178,8 +187,14 @@ export class NamedTypeNodeDef {
             let name = definitionNode.name.range.toString();
             return TypeHelper.getTypeByName(name);
         } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
+            let type = TypeHelper.getUnCodecTypeKind(buildinElement.name);
+            if (type) {
+                this.isCodec = false;
+                return type;
+            }
             return TypeHelper.getTypeByName(buildinElement.name);
         }
+        this.isCodec = true;
         return TypeKindEnum.USER_CLASS;
     }
 
@@ -203,13 +218,16 @@ export class NamedTypeNodeDef {
         return element;
     }
 
+    /**
+     * Argument maybe also generic.
+     */
     private resolveArguments(): void {
         var args = this.typeNode.typeArguments;
         if (args) {
             for (let arg of args) {
                 if (arg.kind == NodeKind.NAMEDTYPE) {
-                    let typeAnalyzer: NamedTypeNodeDef = new NamedTypeNodeDef(this.parent, <NamedTypeNode>arg);
-                    this.typeArguments.push(typeAnalyzer);
+                    let argumentTypeNode: NamedTypeNodeDef = new NamedTypeNodeDef(this.parent, <NamedTypeNode>arg);
+                    this.typeArguments.push(argumentTypeNode);
                 }
             }
         }

@@ -3,16 +3,14 @@ import {
     NamedTypeNode,
     NodeKind,
     ParameterNode,
-    TypeDeclaration,
     TypeNode,
     Element,
-    ElementKind,
     FieldPrototype,
     FunctionPrototype,
-    TypeDefinition,
     Range,
     DecoratorNode,
-    DeclarationStatement
+    DeclarationStatement,
+    FunctionDeclaration
 } from "assemblyscript";
 
 import { AstUtil, ElementUtil } from "../utils/utils";
@@ -179,8 +177,9 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
 
 export class FunctionDef {
     protected funcProto: FunctionPrototype;
-    methodName = "";
+    declaration: FunctionDeclaration;
     parameters: ParameterNodeDef[] = [];
+    methodName: string;
     isReturnable = false;
     isConstructor = false;
     returnType: NamedTypeNodeDef | null = null;
@@ -188,6 +187,7 @@ export class FunctionDef {
     defaultVals: string[] = [];
 
     constructor(funcPrototype: FunctionPrototype) {
+        this.declaration = <FunctionDeclaration>funcPrototype.declaration;
         this.doc = DecoratorUtil.getDoc(funcPrototype.declaration);
         this.funcProto = funcPrototype;
         this.methodName = this.funcProto.name;
@@ -240,7 +240,7 @@ export class ConstructorDef extends FunctionDef {
         });
         return new ConstructorSpec([this.methodName],
             new KeySelector(this.methodName).short,
-            args, []);
+            args, this.doc);
     }
 }
 

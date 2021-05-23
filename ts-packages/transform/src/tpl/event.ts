@@ -1,21 +1,21 @@
 let scope = "_lang.";
 export const eventTpl = `class {{className}} extends ${scope}Event {
   {{#each fields}}
-  private {{varName}}: ${scope}{{type.codecType}};
+  private {{name}}: {{type.plainType}};
   {{/each}}
 
   {{{constructor .}}}
 
   prepare(): void {
-    ${scope}Event.Index = {{index}};
+    this.index = {{index}};
     {{#each fields}}
     {{#if decorators.isTopic}}
-    this.appendTopic(this.{{varName}});
+    this.appendTopic({{toCodec .}});
     {{/if}}
     {{/each}}
 
     {{#each fields}}
-    this.appendData(this.{{varName}});
+    this.appendData({{toCodec .}});
     {{/each}}
   }
 }`;
