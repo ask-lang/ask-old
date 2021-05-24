@@ -26,8 +26,9 @@ var APIOptionImpl = /** @class */ (function () {
         try {
             var text_1 = fs.readFileSync(name, "utf8");
             var sourceModifier = process.sourceModifier ? process.sourceModifier : new preprocess_1.SourceModifier();
-            if (sourceModifier.fileExtMap.has(filename)) {
-                var extCodes = sourceModifier.fileExtMap.get(filename);
+            let relativePath = path.relative(baseDir, name);
+            if (sourceModifier.fileExtMap.has(relativePath)) {
+                var extCodes = sourceModifier.fileExtMap.get(relativePath);
                 extCodes.sort((a, b) => {
                     if (a.mode != b.mode) return a.mode - b.mode;
                     return (b.range.end - a.range.end); 

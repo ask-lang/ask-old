@@ -14,8 +14,8 @@ if (~tailArgs) {
 
 try { require("source-map-support").install(); } catch (e) { }
 
-const asc = module.exports = require("../../src/asc/asc.js");
-// const asc = module.exports = require("../../../../node_modules/assemblyscript/cli/asc.js");
+const asc = module.exports = require("ask-transform/src/asc/asc.js");
+// const asc = module.exports = require("assemblyscript/cli/asc.js");
 const path = require("path");
 const ARGS = [
     "--importMemory",
@@ -29,7 +29,7 @@ const ARGS = [
     "abort= ",
     "-O2",
     "--transform",
-    "./index.ts"
+    "ask-transform/index.ts"
 ]
 
 if (/\bask$/.test(process.argv[1])) {
@@ -45,9 +45,8 @@ if (/\bask$/.test(process.argv[1])) {
                 let dirname = path.dirname(sourcePath);
                 let wasmPath = path.join(dirname, "target", "target.wasm");
                 args.push("-b", wasmPath)
-                const ascOption = require("../../src/ascOption.js");
+                const ascOption = require("ask-transform/src/ascOption.js");
                 let apiOption = new ascOption.APIOptionImpl();
-                console.log(`args: ${args}`);
                 asc.main(args, apiOption);
                 console.log("Build Done. Targets generated");
             }        

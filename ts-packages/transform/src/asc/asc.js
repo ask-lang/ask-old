@@ -1054,7 +1054,7 @@ exports.main = function main(argv, options, callback) {
                         crash("emitText", e);
                     }
                 });
-                writeStdout(out);
+                // writeStdout(out);
             }
         }
 
