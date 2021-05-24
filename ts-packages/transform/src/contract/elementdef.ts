@@ -268,7 +268,7 @@ export class DecoratorUtil {
 export class MessageFuctionDef extends FunctionDef {
     messageDecorator: MessageDecoratorNodeDef;
     bodyRange: Range;
-    havingMutates = false;
+    mutatable = true;
     metadata: MessageSpec;
 
     constructor(funcPrototype: FunctionPrototype) {
@@ -279,7 +279,7 @@ export class MessageFuctionDef extends FunctionDef {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.bodyRange = this.funcProto.bodyNode!.range;
         if (this.messageDecorator.mutates == "false") {
-            this.havingMutates = true;
+            this.mutatable = false;
         }
         this.metadata = this.createMetadata();
     }
@@ -289,9 +289,12 @@ export class MessageFuctionDef extends FunctionDef {
             let type = MetadataUtil.createTypeSpec(item.type);
             return new ArgumentSpec(type!, item.name);
         });
-        return  new MessageSpec([this.methodName],
+        let msgSpec = new MessageSpec([this.methodName],
             new KeySelector(this.methodName).short,
             args,
             MetadataUtil.createTypeSpec(this.returnType), this.doc);
+        msgSpec.setMutates(this.mutatable);
+        msgSpec.setPayable(this.messageDecorator.payable);
+        return msgSpec;
     }
 }

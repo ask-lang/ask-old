@@ -2,20 +2,22 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
- import { AccountId, Bool, Int8, ScaleString, StorableArray, StorableMap, UInt128 } from "ask-lang";
+ import { AccountId, Bool, Int8, PackedStorableArray, ScaleString, SpreadStorableMap, StorableArray, StorableMap, UInt128 } from "ask-lang";
 
  @storage
  class ArrayTypes {
      @packed(capacity=100)
-     i8Arr   : StorableArray<Int8>;
-     @packed
-     strArr   : StorableArray<ScaleString>;
-     @packed
-     u128Arr   : StorableArray<UInt128>;
+     i8Arr   : PackedStorableArray<Int8>;
+    //  @packed
+    //  strArr: PackedStorableArray<ScaleString>;
+    //  @packed
+    //  u128Arr: PackedStorableArray<UInt128>;
+    //  _operatorApprovals: StorableMap<AccountId, StorableMap<AccountId, Bool>>;
+
  }
 
  @contract
- class MapUsages {
+ export class MapUsages {
      protected arr: ArrayTypes;
 
      constructor() {
@@ -40,5 +42,11 @@
      @message
      push(value: i8): i32 {
        return this.arr.i8Arr.push(new Int8(value));
+     }
+     
+     @message
+     pushAccountId(account: AccountId): void {
+         let map = new SpreadStorableMap<AccountId, Bool>();
+        //  this.arr._operatorApprovals.set(account, map);
      }
  }

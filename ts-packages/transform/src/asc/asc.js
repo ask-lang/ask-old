@@ -34,7 +34,7 @@ const fs = require("fs");
 const path = require("path");
 const process = require("process"); // ensure shim
 const utf8 = require("assemblyscript/cli/util/utf8");
-const colorsUtil = require("assemblyscript/cli//util/colors");
+const colorsUtil = require("assemblyscript/cli/util/colors");
 const optionsUtil = require("assemblyscript/cli/util/options");
 const mkdirp = require("assemblyscript/cli/util/mkdirp");
 const find = require("assemblyscript/cli//util/find");
@@ -997,9 +997,9 @@ exports.main = function main(argv, options, callback) {
             });
 
             if (opts.binaryFile.length) {
-                writeFile(opts.binaryFile, wasm.binary, baseDir);
+                // writeFile(opts.binaryFile, wasm.binary, baseDir);
             } else {
-                writeStdout(wasm.binary);
+                // writeStdout(wasm.binary);
                 hasStdout = true;
             }
 

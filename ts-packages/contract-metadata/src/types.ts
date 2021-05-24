@@ -18,9 +18,7 @@ export enum TypeKind {
     Sequence,
     Composite,
     Variant,
-    // TODO:
     Compact,
-    // TODO:
     Phantom,
 }
 

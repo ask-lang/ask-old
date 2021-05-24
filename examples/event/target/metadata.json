@@ -3,47 +3,160 @@
   "source": {
     "hash": "",
     "language": "ask v0.1",
-    "compiler": "ask v0.1, asc v0.18.9"
+    "compiler": "ask v0.1"
   },
   "contract": {
     "name": "eventEmitter",
     "version": "1.0",
-    "authors": [
-      "[your_name] <[your_email]>"
-    ]
+    "authors": [],
+    "description": null,
+    "documentation": null,
+    "repository": null,
+    "homepage": null,
+    "license": null
   },
   "spec": {
     "constructors": [
       {
-        "args": [ ],
-        "docs": [ "" ],
-        "name": [ "new" ],
-        "selector": "0x9bae9d5e"
+        "args": [],
+        "docs": [
+          ""
+        ],
+        "name": [
+          "onDeploy"
+        ],
+        "selector": "0x228bb157"
       }
     ],
-    "docs": [ "" ],
-    "events": [],
     "messages": [
       {
-        "args": [
-        ],
-        "docs": [ "" ],
-        "mutates": true,
-        "name": [
-          "fireEvent"
-        ],
+        "mutates": false,
         "payable": false,
+        "args": [],
         "returnType": null,
-        "selector": "0x29ac97fd"
+        "docs": [
+          ""
+        ],
+        "name": [
+          "fire"
+        ],
+        "selector": "0xe11b8f07"
       }
-    ]
-  },
-  "storage": {
-    "struct": {
-      "fields": [
-      ]
-    }
+    ],
+    "events": [
+      {
+        "name": "Approved",
+        "args": [
+          {
+            "indexed": true,
+            "type": {
+              "type": 1,
+              "displayName": [
+                "u128"
+              ]
+            },
+            "docs": [
+              ""
+            ],
+            "name": "from"
+          },
+          {
+            "indexed": true,
+            "type": {
+              "type": 2,
+              "displayName": [
+                "UInt8"
+              ]
+            },
+            "docs": [
+              ""
+            ],
+            "name": "to"
+          },
+          {
+            "indexed": false,
+            "type": {
+              "type": 3,
+              "displayName": [
+                "bool"
+              ]
+            },
+            "docs": [
+              ""
+            ],
+            "name": "success"
+          }
+        ],
+        "docs": []
+      },
+      {
+        "name": "Approved2",
+        "args": [
+          {
+            "indexed": true,
+            "type": {
+              "type": 2,
+              "displayName": [
+                "UInt8"
+              ]
+            },
+            "docs": [
+              ""
+            ],
+            "name": "from"
+          },
+          {
+            "indexed": true,
+            "type": {
+              "type": 2,
+              "displayName": [
+                "UInt8"
+              ]
+            },
+            "docs": [
+              ""
+            ],
+            "name": "to"
+          },
+          {
+            "indexed": false,
+            "type": {
+              "type": 3,
+              "displayName": [
+                "bool"
+              ]
+            },
+            "docs": [
+              ""
+            ],
+            "name": "success"
+          }
+        ],
+        "docs": []
+      }
+    ],
+    "docs": []
   },
   "types": [
-  ]
+    {
+      "def": {
+        "primitive": "u128"
+      }
+    },
+    {
+      "def": {
+        "primitive": "u8"
+      }
+    },
+    {
+      "def": {
+        "primitive": "bool"
+      }
+    }
+  ],
+  "storage": {
+    "struct": {
+      "fields": []
+    }
+  }
 }

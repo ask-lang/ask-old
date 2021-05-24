@@ -197,7 +197,6 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
  * Register the tag of equal
  */
 Handlebars.registerHelper("eq", function (v1, v2, options) {
-    console.log(`eq`, v1, v2);
     if (v1 == v2) {
         return options.fn(this);
     } else {

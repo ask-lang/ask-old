@@ -4,7 +4,6 @@ import {
     Node,
     ClassDeclaration,
     DecoratorNode,
-    Range,
     ClassPrototype,
     Element,
     ElementKind,
@@ -231,7 +230,10 @@ export class AstUtil {
        * @param declareType The declare type
        */
     static isArrayType(declareType: string): boolean {
-        return declareType == "[]" || declareType == "Array" || declareType == "StorableArray";
+        return declareType == "[]"
+            || declareType == "Array"
+            || declareType == "SpreadStorableArray"
+            || declareType == "PackedStorableArray";
     }
 
     /**
@@ -239,7 +241,9 @@ export class AstUtil {
        * @param declareType the declare type
        */
     static isMapType(declareType: string): boolean {
-        return declareType == "Map" || declareType == "SpreadStorableMap" || declareType == "PackedStorableMap";
+        return declareType == "Map"
+            || declareType == "SpreadStorableMap"
+            || declareType == "PackedStorableMap";
     }
 
     static isClassPrototype(element: Element): boolean {
@@ -267,12 +271,5 @@ export class AstUtil {
             tempClz = tempClz.basePrototype;
         }
         return interfaces;
-    }
-
-    static location(range: Range): string {
-        // TODO
-        return range.source.normalizedPath + ":"
-            + range.start.toString(10) + ":"
-            + range.end.toString(10);
     }
 }

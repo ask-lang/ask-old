@@ -53,9 +53,9 @@ export class NameTyper {
             let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
             let definitionNode = <NamedTypeNode>declaration.type;
             let name = definitionNode.name.range.toString();
-            return TypeHelper.getTypeByName(name);
+            return TypeHelper.getTypeKindByName(name);
         } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-            return TypeHelper.getTypeByName(buildinElement.name);
+            return TypeHelper.getTypeKindByName(buildinElement.name);
         }
         return TypeKindEnum.USER_CLASS;
     }
@@ -67,7 +67,6 @@ export class NameTyper {
     * @param typeName typename without type arguments
     */
     private findBuildinElement(element: Element): Element {
-        // console.log(`element: ${element.name}, ${ElementKind[element.kind]}`);
         if (element && element.kind == ElementKind.TYPEDEFINITION) {
             let defineElement = <TypeDefinition>element;
             let aliasTypeName = defineElement.typeNode.range.toString();
@@ -168,8 +167,9 @@ export class NamedTypeNodeDef {
         let element = this.parent.lookup(this.plainType)!;
         let buildinElement: Element = this.findBuildinElement(element);
         this.current = buildinElement;
-        console.log(`this.plainType: ${this.plainType}`);
-        console.log(`Element ${ElementKind[buildinElement.kind]}, ${buildinElement.name}, ${this.plainType}`);
+        // console.log(`this.current: ${element.name}`);
+        // console.log(`this.plainType: ${this.plainType}`);
+        // console.log(`Element ${ElementKind[buildinElement.kind]}, ${buildinElement.name}, ${this.plainType}`);
         if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
             this.isCodec = false;
             return TypeKindEnum.NUMBER;
@@ -185,14 +185,14 @@ export class NamedTypeNodeDef {
             let definitionNode = <NamedTypeNode>declaration.type;
             // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
             let name = definitionNode.name.range.toString();
-            return TypeHelper.getTypeByName(name);
+            return TypeHelper.getTypeKindByName(name);
         } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-            let type = TypeHelper.getUnCodecTypeKind(buildinElement.name);
+            let type = TypeHelper.getTypeKindFromUnCodec(buildinElement.name);
             if (type) {
                 this.isCodec = false;
                 return type;
             }
-            return TypeHelper.getTypeByName(buildinElement.name);
+            return TypeHelper.getTypeKindByName(buildinElement.name);
         }
         this.isCodec = true;
         return TypeKindEnum.USER_CLASS;

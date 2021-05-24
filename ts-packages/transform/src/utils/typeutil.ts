@@ -1,4 +1,3 @@
-import { type } from "node:os";
 import { CONFIG } from "../config/compile";
 import { FieldDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
@@ -83,8 +82,13 @@ export class TypeHelper {
         return type == undefined ? Strings.EMPTY : type;
     }
 
+    /**
+     * Is primitive type
+     * @param type 
+     * @returns 
+     */
     static isPrimitiveType(type: TypeKindEnum): boolean {
-        return type == TypeKindEnum.NUMBER 
+        return type == TypeKindEnum.NUMBER
             || type == TypeKindEnum.BIG_NUM
             || type == TypeKindEnum.STRING;
     }
@@ -94,7 +98,7 @@ export class TypeHelper {
      * @param typeName 
      * @returns 
      */
-    static getUnCodecTypeKind(typeName: string): TypeKindEnum | null {
+    static getTypeKindFromUnCodec(typeName: string): TypeKindEnum | null {
         if (typeName == "void") {
             return TypeKindEnum.VOID;
         }
@@ -116,7 +120,7 @@ export class TypeHelper {
      * @param typeName 
      * @returns 
      */
-    static getTypeByName(typeName: string): TypeKindEnum {
+    static getTypeKindByName(typeName: string): TypeKindEnum {
         if (typeName == "void") {
             return TypeKindEnum.VOID;
         }

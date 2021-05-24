@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const tailArgs = process.argv.indexOf("--");
+if (~tailArgs) {
+    require("child_process").spawnSync(
+        process.argv[0],
+        process.argv.slice(tailArgs + 1).concat(
+            process.argv.slice(1, tailArgs)
+        ),
+        { stdio: "inherit" }
+    );
+    return;
+}
+
+try { require("source-map-support").install(); } catch (e) { }
+
+const asc = module.exports = require("../../src/asc/asc.js");
+// const asc = module.exports = require("../../../../node_modules/assemblyscript/cli/asc.js");
+const path = require("path");
+const ARGS = [
+    "--importMemory",
+    "--initialMemory",
+    "2",
+    "--maximumMemory",
+    "16",
+    "--noExportMemory",
+    "--runtime",
+    "--use",
+    "abort= ",
+    "-O2",
+    "--transform",
+    "./index.ts"
+]
+
+if (/\bask$/.test(process.argv[1])) {
+    console.log("Building Start ····")
+    asc.ready.then(() => {
+        let args = process.argv.slice(2).concat(ARGS);
+        process.exitCode = asc.main(args);
+        asc.ready.then(()=> {
+            args.pop(), args.pop();
+            let sourcePath = process.argv[2];
+            if (sourcePath) {
+                console.log("Building Inprogress. Generating wasm file.")
+                let dirname = path.dirname(sourcePath);
+                let wasmPath = path.join(dirname, "target", "target.wasm");
+                args.push("-b", wasmPath)
+                const ascOption = require("../../src/ascOption.js");
+                let apiOption = new ascOption.APIOptionImpl();
+                console.log(`args: ${args}`);
+                asc.main(args, apiOption);
+                console.log("Build Done. Targets generated");
+            }        
+        });
+        return process.exitCode
+    });
+}
+
+
