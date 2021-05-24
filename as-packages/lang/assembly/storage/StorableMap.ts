@@ -81,7 +81,7 @@ export abstract class StorableMap<K extends Codec, V extends Codec> implements C
   // so we should find the inner key storage to retrieve the stored value.
   has(key: K): bool {
       let innerKey = this.hasKey(key);
-      return !!innerKey;
+      return innerKey != null;
   }
 
   @operator("[]=")

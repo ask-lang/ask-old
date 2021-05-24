@@ -2,26 +2,124 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Codec, Hash } from "as-scale-codec";
+import { ReturnCode } from "as-contract-runtime";
+import { Codec, Hash, ScaleString } from "as-scale-codec";
 import { Storage } from ".";
 import { Crypto } from "../primitives/crypto";
 import { DoubleLinkKVStore } from "./DoubleLinkKVStore";
-import { StorableMap } from "./StorableMap";
+import { MapEntry } from "./MapEntry";
 import { NullHash } from "./storage";
 
-export class SpreadStorableMap<K extends Codec, V extends Codec> extends StorableMap<K, V> {
+export class SpreadStorableMap<K extends Codec, V extends Codec> implements Codec {
   private synced: bool;
 
   constructor(ep: string = "") {
-      super(ep);
+      this.keyPrefix = ep;
+      this.mapInner = new Map<K, V>();
       this.synced = false;
   }
 
+  protected keyPrefix: string;
+  protected mapInner: Map<K, V>;
+
+  protected findKeyInner(key: K): K | null {
+      let keysInner = this.mapInner.keys();
+      for (let i = 0; i < keysInner.length; i++) {
+          if (keysInner[i].eq(key)) return keysInner[i];
+      }
+      return null;
+  }
+
+  protected loadMapEntry(): MapEntry | null {
+      let strg = new Storage(Crypto.blake256s(this.keyPrefix));
+      let entry = strg.load<MapEntry>();
+      return entry;
+  }
+
+  protected storeMapEntry(entries: Hash, size: i32): void {
+      let strg = new Storage(Crypto.blake256s(this.keyPrefix));
+      let entry = new MapEntry(entries, size);
+      let r = strg.store(entry);
+      assert(r == ReturnCode.Success, "store entry point of map failed.");
+  }
+
+  get entryKey(): string {
+      return this.keyPrefix;
+  }
+
+  set entryKey(str: string) {
+      this.keyPrefix = str;
+  }
+
+
+  toU8a(): u8[] {
+      return (new ScaleString(this.keyPrefix)).toU8a();
+  }
+
+  encodedLength(): i32 {
+      return (new ScaleString(this.keyPrefix)).encodedLength();
+  }
+
+  populateFromBytes(bytes: u8[], index: i32 = 0): void {
+      let s = new ScaleString();
+      s.populateFromBytes(bytes, index);
+      this.keyPrefix = s.toString();
+  }
+
+  eq(other: SpreadStorableMap<K, V>): bool {
+      return this.keyPrefix == other.keyPrefix;
+  }
+
+  notEq(other: SpreadStorableMap<K, V>): bool {
+      return !this.eq(other);
+  }
+
+  // FIXME(liangqin.fan)
+  // Map<K, V> use reference as the key storage,
+  // so we should find the inner key storage to retrieve the stored value.
+  has(key: K): bool {
+      let innerKey = this.hasKey(key);
+      return innerKey != null;
+  }
+
+  @operator("[]=")
+  set(key: K, value: V): this {
+      this.setKeyValuePair(key, value);
+      return this;
+  }
+
+  @operator("[]")
+  get(key: K): V {
+      let innerkey = this.hasKey(key);
+      if (!innerkey) return instantiate<V>();
+      return this.mapInner.get(innerkey);
+  }
+
+  delete(key: K): bool {
+      let innerkey = this.hasKey(key);
+      if (!innerkey) return false;
+
+      this.deleteKey(innerkey);
+      return true;
+  }
+
+  clear(): void {
+      this.clearAll();
+  }
+
+  keys(): K[] {
+      return this.allKeys();
+  }
+
+  values(): V[] {
+      return this.allValues();
+  }
+
   hasKey(key: K): K | null {
-      let kv = this.load_kvstore_node(Crypto.blake256(key));
+      let kv = this.loadKVStoreNode(Crypto.blake256(key));
       if (!kv) return null;
 
-      let k = this.find_key_inner(key);
+      let k = this.findKeyInner(key);
       if (!k) {
           k = kv.key;
           this.mapInner.set(k, kv.value);
@@ -30,51 +128,51 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> extends Storabl
   }
 
   setKeyValuePair(key: K, value: V): void {
-      let isNew = this.store_an_item(key, value);
+      let isNew = this.storeAnItem(key, value);
       if (!isNew) { // to update existed k/v in map inner.
-          let k = this.find_key_inner(key);
+          let k = this.findKeyInner(key);
           if (k) key = k;
       }
       this.mapInner.set(key, value);
   }
 
   deleteKey(key: K): void {
-      let k = this.find_key_inner(key);
+      let k = this.findKeyInner(key);
       if (k) {
           this.mapInner.delete(k);
       }
-      this.remove_an_item(key);
+      this.removeAnItem(key);
   }
 
   clearAll(): void {
-      this.load_all_items();
+      this.loadAllItems();
       let keys = this.mapInner.keys();
       for (let i = 0; i < keys.length; ++i) {
-          this.remove_an_item(keys[i]);
+          this.removeAnItem(keys[i]);
       }
       this.mapInner.clear();
-      this.store_entry_point(NullHash, 0);
+      this.storeMapEntry(NullHash, 0);
   }
 
   allKeys(): K[] {
-      this.load_all_items();
+      this.loadAllItems();
       return this.mapInner.keys();
   }
 
   allValues(): V[] {
-      this.load_all_items();
+      this.loadAllItems();
       return this.mapInner.values();
   }
 
-  private load_kvstore_node(keyHash: Hash): DoubleLinkKVStore<K, V> | null {
+  private loadKVStoreNode(keyHash: Hash): DoubleLinkKVStore<K, V> | null {
       let strg = new Storage(keyHash);
       let v = strg.load<DoubleLinkKVStore<K, V>>();
       return v;
   }
 
-  private remove_an_item(key: K): bool {
+  private removeAnItem(key: K): bool {
       let keyHash = Crypto.blake256(key);
-      let item = this.load_kvstore_node(keyHash);
+      let item = this.loadKVStoreNode(keyHash);
       if (item != null) {
           if (item.prevkey == NullHash) { // the head node
               if (item.nextkey != NullHash) {
@@ -111,14 +209,14 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> extends Storabl
       return false;
   }
 
-  private store_an_item(key: K, value: V): bool {
+  private storeAnItem(key: K, value: V): bool {
       let isNewItem = true;
       let strg = new Storage(Crypto.blake256(key));
       let item = strg.load<DoubleLinkKVStore<K, V>>();
       if (item == null) { // new item, shift to head.
           let newHead: DoubleLinkKVStore<K, V>;
           let size: i32 = 0;
-          let entryInfo = this.load_entry_point();
+          let entryInfo = this.loadMapEntry();
           if (entryInfo == null) {
               newHead = new DoubleLinkKVStore<K, V>(key, value, NullHash, NullHash);
               size++;
@@ -138,7 +236,7 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> extends Storabl
           // store new head
           strg.store(newHead);
 
-          this.store_entry_point(Crypto.blake256(key), size);
+          this.storeMapEntry(Crypto.blake256(key), size);
       } else { // just update the exist item.
           item.value = value;
           strg.store(item as DoubleLinkKVStore<K, V>);
@@ -148,10 +246,10 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> extends Storabl
       return isNewItem;
   }
 
-  private load_all_items(): void {
+  private loadAllItems(): void {
       if (this.synced) return;
 
-      let entryInfo = this.load_entry_point();
+      let entryInfo = this.loadMapEntry();
 
       if (entryInfo == null) return;
 

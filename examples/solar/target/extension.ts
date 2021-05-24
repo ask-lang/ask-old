@@ -1,4 +1,4 @@
-import { FnParameters, Msg, Storage, ReturnData, StoreMode, ScaleString, UInt32, Bool, UInt128} from "ask-lang";
+import { FnParameters, Msg, Storage, ReturnData, StoreMode, ScaleString, UInt32, Bool, UInt128, Crypto} from "ask-lang";
 /**
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
@@ -13,40 +13,40 @@ class Planets {
 
   get name(): string {
     if (this._name === null) {
-      const st = new Storage<ScaleString>("Planetsname");
-      this._name = st.load();
+      const st = new Storage(Crypto.sha256s("Planetsname"));
+      this._name = st.load<ScaleString>();
     }
     return this._name!.toString();
   }
   set name(v: string) {
     this._name = new ScaleString(v);
-    const st = new Storage<ScaleString>("Planetsname");
+    const st = new Storage("Planetsname");
     st.store(this._name!);
   }
 
   get radius(): u32 {
     if (this._radius === null) {
-      const st = new Storage<UInt32>("Planetsradius");
-      this._radius = st.load();
+      const st = new Storage("Planetsradius");
+      this._radius = st.load<UInt32>();
     }
       return this._radius!.unwrap();
   }
   set radius(v: u32) {
     this._radius = new UInt32(v);
-    const st = new Storage<UInt32>("Planetsradius");
+    const st = new Storage("Planetsradius");
     st.store(this._radius!);
   }
 
-  get isdwarf(): boolean {
+  get isdwarf(): bool {
     if (this._isdwarf === null) {
-      const st = new Storage<Bool>("Planetsisdwarf");
-      this._isdwarf = st.load();
+      const st = new Storage(Crypto.blake256s("Planetsisdwarf"));
+      this._isdwarf = st.load<Bool>();
     }
       return this._isdwarf!.unwrap();
   }
   set isdwarf(v: boolean) {
     this._isdwarf = new Bool(v);
-    const st = new Storage<Bool>("Planetsisdwarf");
+    const st = new Storage(Crypto."Planetsisdwarf");
     st.store(this._isdwarf!);
   }
 
@@ -117,7 +117,7 @@ class SolarSystem {
     Storage.mode = StoreMode.R;
         this.stored.radius = 100;
         return this.stored.radius;
-    }  
+    }
 }
 var msg: Msg = new Msg();
 
