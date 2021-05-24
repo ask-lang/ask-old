@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { AccountType, BalanceType, TransferBalance } from "../env";
+import { BalanceType, TransferBalance } from "../env";
 import { Callable } from "./Callable";
 import { u128 } from "as-bignum";
 import { Codec } from "as-scale-codec";

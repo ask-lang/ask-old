@@ -57,8 +57,11 @@ Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
     } else {
         code.push(`get ${field.name}(): ${field.type.plainType} {`);
         code.push(`     if (this.${field.varName} === null) {`);
-        code.push(`    const st = new ${scope}Storage(new ${scope}Hash(${field.selector.u8Arr}));`);
-        code.push(`    this.${field.varName} = st.load<${scope}${field.type.codecType}>();`);
+        code.push(`    const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
+        code.push(`    let val = st.load<${scope}${field.type.codecType}>();`);
+        code.push(`    if (!val) this.${field.varName} = new ${scope}${field.type.codecType}(); `);
+        code.push(`    else this.${field.varName} = val;`);
+
     }
     code.push(`     }`);
     if (field.type.typeKind == TypeKindEnum.STRING) {
@@ -87,7 +90,7 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
     }
     code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
     code.push(` this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
-    code.push(` const st = new ${scope}Storage(new ${scope}Hash(${field.selector.u8Arr}));`);
+    code.push(` const st = new ${scope}Storage(new ${scope}Hash(${field.selector.shortArr}));`);
     code.push(` st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
     code.push(` }`);
     return code.join("\n");
@@ -150,7 +153,7 @@ Handlebars.registerHelper("existSelector", function (key, existSelector, options
             selectorArr.push("0x" + existSelector.substring(index * 2 + 2, index * 2 + 4));
         }
         data.short = `${existSelector}`;
-        data.u8Arr = `[${selectorArr.join(",")}]`;
+        data.shortArr = `[${selectorArr.join(",")}]`;
     } else {
         data = new KeySelector(key);
     }

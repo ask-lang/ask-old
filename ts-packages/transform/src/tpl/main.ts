@@ -5,7 +5,7 @@ export function deploy(): i32 {
   let {{contract.instanceName}} = new {{contract.className}}();
 
   {{#each contract.cntrFuncDefs}}
-  const {{methodName}}Selector: u8[] = {{#selector methodName}}{{u8Arr}}{{/selector}};
+  const {{methodName}}Selector: u8[] = {{#selector methodName}}{{shortArr}}{{/selector}};
   if (msg.isSelector({{methodName}}Selector)) {
     {{#neq parameters.length 0}}
     const fnParameters = new ${scope}FnParameters(msg.data);
@@ -22,7 +22,7 @@ export function deploy(): i32 {
 export function call(): i32 {
   const {{contract.instanceName}} = new {{contract.className}}();
   {{#each contract.msgFuncDefs}}
-  const {{methodName}}Selector: u8[] = {{#existSelector methodName messageDecorator.selector}}{{u8Arr}}{{/existSelector}};
+  const {{methodName}}Selector: u8[] = {{#existSelector methodName messageDecorator.selector}}{{shortArr}}{{/existSelector}};
   if (msg.isSelector({{methodName}}Selector)) {
     {{#neq parameters.length 0}}
     const fnParameters = new ${scope}FnParameters(msg.data);
