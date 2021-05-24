@@ -997,7 +997,7 @@ exports.main = function main(argv, options, callback) {
             });
 
             if (opts.binaryFile.length) {
-                // writeFile(opts.binaryFile, wasm.binary, baseDir);
+                writeFile(opts.binaryFile, wasm.binary, baseDir);
             } else {
                 // writeStdout(wasm.binary);
                 hasStdout = true;
