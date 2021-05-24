@@ -27,15 +27,15 @@ export class NameTyper {
     }
 
     /**
-     * 
+     *
      * declare U8Array = Array<u8>
      * declare u8Arr = u8Array
-     * 
+     *
      * FUNCTION_PROTOTYPE, u8
      * TYPEDEFINITION, void
      * CLASS_PROTOTYPE, string
      * CLASS_PROTOTYPE, u128
-     * @returns 
+     * @returns
      */
     getTypeKind(): TypeKindEnum {
         let plainType = this.typeNode.name.range.toString();
@@ -114,12 +114,12 @@ export class NamedTypeNodeDef {
             this.plainTypeNode = this.codecTypeAlias;
             this.definedCodeType = this.codecType;
         }
-        this.resolveArguments();
+        // this.resolveArguments();
     }
 
     /**
      * Export all codec type
-     * @returns 
+     * @returns
      */
     getTypeKey(): string {
         if (TypeHelper.isPrimitiveType(this.typeKind)) {
@@ -133,7 +133,7 @@ export class NamedTypeNodeDef {
         return this.typeKind == TypeKindEnum.USER_CLASS || this.typeKind == TypeKindEnum.ARRAY ? "" : "_lang.";
     }
 
-    // TODO 
+    // TODO
     public genTypeSequence(definedTypeMap: Map<string, NamedTypeNodeDef>): void {
         let typeName = this.getTypeKey();
         if (definedTypeMap.has(typeName)) {
@@ -153,15 +153,15 @@ export class NamedTypeNodeDef {
     }
 
     /**
-     * 
+     *
      * declare U8Array = Array<u8>
      * declare u8Arr = u8Array
-     * 
+     *
      * FUNCTION_PROTOTYPE, u8
      * TYPEDEFINITION, void
      * CLASS_PROTOTYPE, string
      * CLASS_PROTOTYPE, u128
-     * @returns 
+     * @returns
      */
     getTypeKind(): TypeKindEnum {
         let element = this.parent.lookup(this.plainType)!;

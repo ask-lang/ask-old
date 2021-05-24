@@ -53,7 +53,8 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
 
 
   toU8a(): u8[] {
-      return (new ScaleString(this.keyPrefix)).toU8a();
+      let t = new ScaleString(this.keyPrefix);
+      return t.toU8a();
   }
 
   encodedLength(): i32 {
@@ -116,7 +117,8 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   }
 
   hasKey(key: K): K | null {
-      let kv = this.loadKVStoreNode(Crypto.blake256(key));
+      let keyHash = this.itemStoredPosition(key);
+      let kv = this.loadKVStoreNode(keyHash);
       if (!kv) return null;
 
       let k = this.findKeyInner(key);
@@ -164,6 +166,11 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
       return this.mapInner.values();
   }
 
+  private itemStoredPosition(key: K): Hash {
+      let pos = this.keyPrefix + String.UTF8.decode(key.toU8a().buffer);
+      return Crypto.blake256s(pos);
+  }
+
   private loadKVStoreNode(keyHash: Hash): DoubleLinkKVStore<K, V> | null {
       let strg = new Storage(keyHash);
       let v = strg.load<DoubleLinkKVStore<K, V>>();
@@ -171,22 +178,22 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   }
 
   private removeAnItem(key: K): bool {
-      let keyHash = Crypto.blake256(key);
+      let keyHash = this.itemStoredPosition(key);
       let item = this.loadKVStoreNode(keyHash);
       if (item != null) {
           if (item.prevkey == NullHash) { // the head node
               if (item.nextkey != NullHash) {
                   let strg = new Storage(item.nextkey);
                   let newhead = strg.load<DoubleLinkKVStore<K, V>>();
-          newhead!.prevkey = NullHash;
-          strg.store(newhead!);
+                  newhead!.prevkey = NullHash;
+                  strg.store(newhead!);
               }
           } else if (item.nextkey == NullHash) { // the tail node
               if (item.prevkey != NullHash) {
                   let strg = new Storage(item.prevkey);
                   let newtail = strg.load<DoubleLinkKVStore<K, V>>();
-          newtail!.nextkey = NullHash;
-          strg.store(newtail!);
+                  newtail!.nextkey = NullHash;
+                  strg.store(newtail!);
               }
           } else { // the middle node
               let prevstrg = new Storage(item.prevkey);
@@ -200,7 +207,7 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
               nextstrg.store(nextitem);
           }
           // remove this key/value from native storage.
-          let thisstrg = new Storage(Crypto.blake256(key));
+          let thisstrg = new Storage(keyHash);
           thisstrg.clear();
 
           return true;
@@ -211,7 +218,8 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
 
   private storeAnItem(key: K, value: V): bool {
       let isNewItem = true;
-      let strg = new Storage(Crypto.blake256(key));
+      let keyHash = this.itemStoredPosition(key);
+      let strg = new Storage(keyHash);
       let item = strg.load<DoubleLinkKVStore<K, V>>();
       if (item == null) { // new item, shift to head.
           let newHead: DoubleLinkKVStore<K, V>;
@@ -227,8 +235,8 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
                   let strg = new Storage(keyHash);
                   let oldHead = strg.load<DoubleLinkKVStore<K, V>>();
                   assert(oldHead != null, "head item must be stored.");
-          oldHead!.prevkey = Crypto.blake256(key);
-          strg.store(oldHead!);
+                  oldHead!.prevkey = keyHash;
+                  strg.store(oldHead!);
               }
               newHead = new DoubleLinkKVStore<K, V>(key, value, entryInfo.entries, NullHash);
               size = entryInfo.size.unwrap() + 1;
@@ -236,7 +244,7 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
           // store new head
           strg.store(newHead);
 
-          this.storeMapEntry(Crypto.blake256(key), size);
+          this.storeMapEntry(keyHash, size);
       } else { // just update the exist item.
           item.value = value;
           strg.store(item as DoubleLinkKVStore<K, V>);

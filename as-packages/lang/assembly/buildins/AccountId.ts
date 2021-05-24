@@ -16,7 +16,7 @@ import { ReturnCode } from "as-contract-runtime";
 const BytesCount = 32;
 
 export class AccountId implements Codec {
-    private _id: AccountType;
+    private _id: Array<u8>;
 
     constructor(bytes: u8[] = []) {
         this._id = new Array<u8>(BytesCount);
