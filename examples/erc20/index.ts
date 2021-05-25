@@ -2,13 +2,8 @@ import { AccountId, Codec, AccountId0, SpreadStorableMap, StorableMap, u128, UIn
 
 @storage
 class ERC20Storage {
-<<<<<<< HEAD
     balances: SpreadStorableMap<AccountId, UInt128>;
     allowances: SpreadStorableMap<AccountId, SpreadStorableMap<AccountId, UInt128>>;
-=======
-  balances: SpreadStorableMap<AccountId, UInt128>;
-  allowances: SpreadStorableMap<AccountId, SpreadStorableMap<AccountId, UInt128>>;
->>>>>>> 179ac51 (example contract erc20 works)
 
     totalSupply: u128;
     name: string;
