@@ -5,7 +5,8 @@ import {
     Element,
     ElementKind,
     TypeDefinition,
-    ClassPrototype
+    ClassPrototype,
+    Type
 } from "assemblyscript";
 
 
@@ -14,70 +15,6 @@ import { TypeKindEnum } from "../enums/customtype";
 import { ClassInterpreter } from "./classdef";
 import { Strings } from "../utils/primitiveutil";
 
-export class NameTyper {
-
-    protected parent: Element;
-    protected typeNode: NamedTypeNode;
-    current!: Element;
-    typeKind: TypeKindEnum;
-    constructor(parent: Element, typeNode: NamedTypeNode) {
-        this.parent = parent;
-        this.typeNode = typeNode;
-        this.typeKind = this.getTypeKind();
-    }
-
-    /**
-     *
-     * declare U8Array = Array<u8>
-     * declare u8Arr = u8Array
-     *
-     * FUNCTION_PROTOTYPE, u8
-     * TYPEDEFINITION, void
-     * CLASS_PROTOTYPE, string
-     * CLASS_PROTOTYPE, u128
-     * @returns
-     */
-    getTypeKind(): TypeKindEnum {
-        let plainType = this.typeNode.name.range.toString();
-        let element = this.parent.lookup(plainType)!;
-        this.current = element;
-        let buildinElement: Element = this.findBuildinElement(element);
-        if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
-            return TypeKindEnum.NUMBER;
-        } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
-            if (buildinElement.name == Strings.VOID) {
-                return TypeKindEnum.VOID;
-            } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
-                return TypeKindEnum.NUMBER;
-            }
-            let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
-            let definitionNode = <NamedTypeNode>declaration.type;
-            let name = definitionNode.name.range.toString();
-            return TypeHelper.getTypeKindByName(name);
-        } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-            return TypeHelper.getTypeKindByName(buildinElement.name);
-        }
-        return TypeKindEnum.USER_CLASS;
-    }
-
-    /**
-    * the typename maybe global scope or local scope.
-    * So search the local first, then search the global scope.
-    *
-    * @param typeName typename without type arguments
-    */
-    private findBuildinElement(element: Element): Element {
-        if (element && element.kind == ElementKind.TYPEDEFINITION) {
-            let defineElement = <TypeDefinition>element;
-            let aliasTypeName = defineElement.typeNode.range.toString();
-            let defineType = this.parent.lookup(aliasTypeName);
-            if (defineType) {
-                return this.findBuildinElement(defineType);
-            }
-        }
-        return element;
-    }
-}
 
 /**
  * Type node description
@@ -114,7 +51,7 @@ export class NamedTypeNodeDef {
             this.plainTypeNode = this.codecTypeAlias;
             this.definedCodeType = this.codecType;
         }
-        // this.resolveArguments();
+        this.resolveArguments();
     }
 
     /**
@@ -124,6 +61,8 @@ export class NamedTypeNodeDef {
     getTypeKey(): string {
         if (TypeHelper.isPrimitiveType(this.typeKind)) {
             return this.codecType;
+        } else if (this.typeKind == TypeKindEnum.ARRAY) {
+            return this.isCodec + this.definedCodeType + this.capacity;
         }
         return this.definedCodeType + this.capacity;
     }
@@ -146,6 +85,7 @@ export class NamedTypeNodeDef {
         if (this.typeKind == TypeKindEnum.USER_CLASS) {
             let clzPrototype = <ClassPrototype>this.current;
             let classInter = new ClassInterpreter(clzPrototype);
+            classInter.resolveFieldMembers();
             classInter.fields.forEach(item => item.type.genTypeSequence(definedTypeMap));
         } else if (this.typeKind == TypeKindEnum.ARRAY) {
             this.typeArguments.forEach(item => item.genTypeSequence(definedTypeMap));

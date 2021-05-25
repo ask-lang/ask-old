@@ -1,4 +1,4 @@
-import { AccountId, Codec, AccountId0, SpreadStorableMap, StorableMap, u128, UInt128 } from "ask-lang";
+import { AccountId, Codec, AccountId0, SpreadStorableMap, Log, u128, UInt128 } from "ask-lang";
 
 @storage
 class ERC20Storage {

@@ -56,12 +56,24 @@ export class MetadataGenerator {
                 let interpreter = new ClassInterpreter(classType);
                 interpreter.resolveFieldMembers();
                 let fieldArr = new Array<Field>();
+                if (interpreter.className === "AccountId") {
+                    interpreter.fields.forEach(classField => {
+                        let fieldTypeName = classField.type.getTypeKey();
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        let fieldType = exportedTypeMap.get(fieldTypeName)!;
+                        let field = new Field(null, fieldType.index);
+                        fieldArr.push(field);
+                    });
+                    let compositeDef = new CompositeDef(fieldArr);
+                    metadataTypes.push(compositeDef);
+                    return ;
+                } 
                 interpreter.fields.forEach(classField => {
                     let name = classField.name;
-                    let fieldTypeName = classField.type.definedCodeType;
+                    let fieldTypeName = classField.type.getTypeKey();
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     let fieldType = exportedTypeMap.get(fieldTypeName)!;
-                    let field = new Field(name, fieldType?.index, fieldType?.plainType);
+                    let field = new Field(name, fieldType.index);
                     fieldArr.push(field);
                 });
                 let compositeDef = new CompositeDef(fieldArr);

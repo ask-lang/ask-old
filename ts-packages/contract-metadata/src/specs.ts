@@ -104,9 +104,8 @@ export interface IVariant {
 }
 
 export interface IField {
-    readonly name: string | null;
+    readonly name?: string | null;
     readonly type: number;
-    readonly typeName: string;
 }
 
 export interface IContract {

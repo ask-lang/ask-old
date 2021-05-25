@@ -13,13 +13,7 @@ import {
 import { ElementUtil } from "../utils/utils";
 
 import { ProgramAnalyzar } from "./analyzer";
-import { ConstructorDef, MessageFuctionDef } from "./elementdef";
-import { CONFIG } from "../config/compile";
-import { FieldLayout, Layout, StructLayout } from "contract-metadata/src/layouts";
-import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./classdef";
-import { CompositeDef, PrimitiveDef, Type, Field, SequenceDef, ArrayDef } from "contract-metadata/src/types";
-import { TypeHelper } from "../utils/typeutil";
-import { TypeKindEnum } from "../enums/customtype";
+import { ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./classdef";
 import { NamedTypeNodeDef } from "./typedef";
 import { MetadataGenerator } from "../metadata/generator";
 

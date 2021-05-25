@@ -171,11 +171,10 @@ export class Variant implements ToMetadata {
 export class Field implements ToMetadata {
     constructor(
         public readonly name: string | null,
-        public readonly type: number,
-        public readonly typeName: string
+        public readonly type: number
     ) {}
 
     toMetadata(): IField {
-        return this;
+        return this.name == null ? {type: this.type} : this;
     }
 }
