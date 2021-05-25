@@ -1,3 +1,13 @@
 {
-    "extends": "ask-transform/asconfig.json"
+    "extends": "ask-transform/asconfig.json",
+    "targets": {
+        "debug": {
+            "binaryFile": "build/untouched.wasm",
+            "textFile": "build/untouched.wat"
+        },
+        "release": {
+            "binaryFile": "build/optimized.wasm",
+            "textFile": "build/optimized.wat"
+        }
+    }
 }

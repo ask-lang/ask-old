@@ -3,7 +3,7 @@
   "version": "0.0.10",
   "description": "Build tool for building AssemblyScript projects",
   "license": "MIT",
-  "main": "index.js",
+  "main": "index.ts",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "scripts": {
     "checks": "tsc -p tsconfig.json --noEmit",
