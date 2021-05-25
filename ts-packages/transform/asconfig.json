@@ -1,0 +1,24 @@
+{
+    "targets": {
+        "debug": {
+            "sourceMap": true,
+            "debug": true
+        },
+        "release": {
+            "sourceMap": true,
+            "optimizeLevel": 3,
+            "shrinkLevel": 1,
+            "converge": false,
+            "noAssert": false
+        }
+    },
+    "options": {
+        "transform": ["ask-transform"],
+        "importMemory": true,
+        "initialMemory": 2,
+        "maximumMemory": 16,
+        "noExportMemory": true,
+        "runtime": "stub",
+        "use": "abort="
+    }
+}
