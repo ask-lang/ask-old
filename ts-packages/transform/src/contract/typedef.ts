@@ -6,7 +6,6 @@ import {
     ElementKind,
     TypeDefinition,
     ClassPrototype,
-    Type
 } from "assemblyscript";
 
 
@@ -83,13 +82,35 @@ export class NamedTypeNodeDef {
             definedTypeMap.set(typeName, this);
         }
         if (this.typeKind == TypeKindEnum.USER_CLASS) {
-            let clzPrototype = <ClassPrototype>this.current;
-            let classInter = new ClassInterpreter(clzPrototype);
-            classInter.resolveFieldMembers();
-            classInter.fields.forEach(item => item.type.genTypeSequence(definedTypeMap));
+            this.resolveClassType(<ClassPrototype>this.current, definedTypeMap);
         } else if (this.typeKind == TypeKindEnum.ARRAY) {
             this.typeArguments.forEach(item => item.genTypeSequence(definedTypeMap));
         }
+    }
+
+    /**
+     * Resolve the class type
+     * @param clzPrototype 
+     * @param typeMap 
+     * @returns 
+     */
+    private resolveClassType(clzPrototype: ClassPrototype, typeMap: Map<string, NamedTypeNodeDef>): boolean {
+        let interpreter = new ClassInterpreter(clzPrototype);
+        interpreter.resolveFieldMembers();
+        if (clzPrototype.name === 'AccountId') {
+            interpreter.fields.forEach(item => {
+                if (item.type.typeKind == TypeKindEnum.ARRAY) {
+                    item.type.capacity = 32;
+                }
+                item.type.genTypeSequence(typeMap);
+            });
+            return true;
+        } else {
+            interpreter.fields.forEach(item => {
+                item.type.genTypeSequence(typeMap);
+            });
+        }
+        return false;
     }
 
     /**
