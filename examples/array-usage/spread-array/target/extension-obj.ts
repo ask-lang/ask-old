@@ -2,7 +2,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
- import { FnParameters, Msg, Storage, ReturnData, StoreMode, Int8, StorableArray, Int32, SpreadStorableArray, Bool, Codec, ScaleString, u128, UInt128} from "ask-lang";
+ import { FnParameters, msg, Storage, ReturnData, StoreMode, Int8, StorableArray, Int32, SpreadStorableArray, Bool, Codec, ScaleString, u128, UInt128} from "ask-lang";
 
  class EmbedObj implements Codec {
 
@@ -63,9 +63,9 @@
 }
 
  class ArrayTypes {
-   _objArr   : StorableArray<EmbedObj> | null = null;
+   _objArr   : SpreadStorableArray<EmbedObj> | null = null;
 
-   get objArr(): StorableArray<EmbedObj> {
+   get objArr(): SpreadStorableArray<EmbedObj> {
      if (this._objArr == null) {
        this._objArr = new SpreadStorableArray<EmbedObj>("StorableArray.I8.0", 0);
      }
@@ -103,8 +103,6 @@
      return this.arr.objArr[index].a;
    }
  }
-
- var msg: Msg = new Msg();
 
  export function deploy(): i32 {
    let mspUsages = new ArrayUsages();

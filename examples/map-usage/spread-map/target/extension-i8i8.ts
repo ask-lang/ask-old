@@ -1,14 +1,13 @@
-import { FnParameters, Msg, Storage, ReturnData, StoreMode, ScaleString, Bool, UInt128, Int8, SpreadStorableMap} from "ask-lang";
+import { FnParameters, msg, Storage, ReturnData, StoreMode, ScaleString, Bool, UInt128, Int8, SpreadStorableMap} from "ask-lang";
 /**
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { StorableMap } from "ask-lang";
 
 class MapTypes {
-  _i8i8Map   : StorableMap<Int8, Int8> | null = null;
+  _i8i8Map   : SpreadStorableMap<Int8, Int8> | null = null;
 
-  get i8i8Map(): StorableMap<Int8, Int8> {
+  get i8i8Map(): SpreadStorableMap<Int8, Int8> {
     if (this._i8i8Map === null) {
       this._i8i8Map = new SpreadStorableMap<Int8, Int8>("StorableMap.I8I8.0");
     }
@@ -46,8 +45,6 @@ class MapUsages {
     return this.map.i8i8Map.get(new Int8(key)).unwrap();
   }
 }
-
-var msg: Msg = new Msg();
 
 export function deploy(): i32 {
   let mspUsages = new MapUsages();

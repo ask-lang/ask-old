@@ -1,14 +1,13 @@
-import { FnParameters, Msg, Storage, ReturnData, StoreMode, Bool, UInt128, u128, SpreadStorableMap} from "ask-lang";
+import { FnParameters, msg, Storage, ReturnData, StoreMode, Bool, UInt128, u128, SpreadStorableMap} from "ask-lang";
 /**
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { StorableMap } from "ask-lang";
 
 class MapTypes {
-  _i8i8Map   : StorableMap<UInt128, UInt128> | null = null;
+  _i8i8Map   : SpreadStorableMap<UInt128, UInt128> | null = null;
 
-  get i8i8Map(): StorableMap<UInt128, UInt128> {
+  get i8i8Map(): SpreadStorableMap<UInt128, UInt128> {
     if (this._i8i8Map === null) {
       this._i8i8Map = new SpreadStorableMap<UInt128, UInt128>("StorableMap.I8I8.0");
     }
@@ -46,8 +45,6 @@ class MapUsages {
     return this.map.i8i8Map.get(new UInt128(key)).unwrap();
   }
 }
-
-var msg: Msg = new Msg();
 
 export function deploy(): i32 {
   let mspUsages = new MapUsages();

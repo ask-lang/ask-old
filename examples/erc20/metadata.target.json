@@ -544,7 +544,7 @@
       "def": {
         "array": {
           "len": 32,
-          "type": 3
+          "type": 2
         }
       }
     }

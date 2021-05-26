@@ -2,14 +2,14 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
- import { Int8, ScaleString, StorableMap, UInt128 } from "ask-lang";
+ import { Int8, ScaleString, SpreadStorableMap, UInt128 } from "ask-lang";
 
  @storage
  class MapTypes {
-     i8i8Map   : StorableMap<Int8, Int8>;
-     strstrMap : StorableMap<ScaleString, ScaleString>;
-     stru128Map: StorableMap<ScaleString, UInt128>;
-     u128strMap: StorableMap<UInt128, ScaleString>;
+     i8i8Map   : SpreadStorableMap<Int8, Int8>;
+     strstrMap : SpreadStorableMap<ScaleString, ScaleString>;
+     stru128Map: SpreadStorableMap<ScaleString, UInt128>;
+     u128strMap: SpreadStorableMap<UInt128, ScaleString>;
  }
 
  @contract

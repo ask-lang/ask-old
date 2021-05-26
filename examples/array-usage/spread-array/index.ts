@@ -2,7 +2,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Codec, Int8, ScaleString, StorableArray, u128, UInt128 } from "ask-lang";
+import { Codec, Int8, ScaleString, SpreadStorableArray, u128, UInt128 } from "ask-lang";
 
 class EmbedObj implements Codec {
 
@@ -65,11 +65,11 @@ class EmbedObj implements Codec {
 @storage
 class ArrayTypes {
   @spread(capacity = 100)
-  i8Arr: StorableArray<Int8>;
-  strArr: StorableArray<ScaleString>;
-  u128Arr: StorableArray<UInt128>;
+  i8Arr: SpreadStorableArray<Int8>;
+  strArr: SpreadStorableArray<ScaleString>;
+  u128Arr: SpreadStorableArray<UInt128>;
 
-  objArr: StorableArray<EmbedObj>;
+  objArr: SpreadStorableArray<EmbedObj>;
 }
 
 @contract

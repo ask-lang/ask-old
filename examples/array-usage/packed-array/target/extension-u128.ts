@@ -2,13 +2,13 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
- import { FnParameters, Msg, Storage, ReturnData, StoreMode, UInt32, Bool, UInt128, StorableArray, Int32, PackedStorableArray} from "ask-lang";
+ import { FnParameters, Storage, ReturnData, StoreMode, UInt32, Bool, UInt128, StorableArray, Int32, PackedStorableArray, msg} from "ask-lang";
  import {u128} from "ask-lang";
 
  class ArrayTypes {
-   _i8Arr   : StorableArray<UInt128> | null = null;
+   _i8Arr   : PackedStorableArray<UInt128> | null = null;
 
-   get i8Arr(): StorableArray<UInt128> {
+   get i8Arr(): PackedStorableArray<UInt128> {
      if (this._i8Arr == null) {
        this._i8Arr = new PackedStorableArray<UInt128>("StorableArray.I8.0", 0);
      }
@@ -46,7 +46,6 @@
    }
  }
 
- var msg: Msg = new Msg();
 
  export function deploy(): i32 {
    let mspUsages = new ArrayUsages();
