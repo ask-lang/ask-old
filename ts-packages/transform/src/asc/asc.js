@@ -63,6 +63,12 @@ function setupExtension(ext) {
 
 const defaultExtension = setupExtension(".ts");
 
+function readJson(fileName) {
+    let filePath = path.join(path.dirname(require.resolve(`assemblyscript`)), fileName);
+    let jsonStr = fs.readFileSync(filePath);
+    return JSON.parse(jsonStr);
+}
+
 // Proxy Binaryen's ready event
 Object.defineProperty(exports, "ready", {
     get() { return binaryen.ready; }
@@ -159,10 +165,12 @@ loadAssemblyScript();
 exports.isBundle = typeof BUNDLE_VERSION === "string";
 
 /** AssemblyScript version. */
-exports.version = exports.isBundle ? BUNDLE_VERSION : dynrequire("assemblyscript/package.json").version;
+exports.version = exports.isBundle ? BUNDLE_VERSION : readJson("package.json").version;
+// exports.version = exports.isBundle ? BUNDLE_VERSION : dynrequire("assemblyscript/package.json").version;
 
 /** Available CLI options. */
-exports.options = require("assemblyscript/cli/asc.json");
+exports.options = readJson("cli/asc.json");
+// exports.options = require("assemblyscript/cli/asc.json");
 
 /** Prefix used for library files. */
 exports.libraryPrefix = __getString(assemblyscript.LIBRARY_PREFIX.valueOf());
