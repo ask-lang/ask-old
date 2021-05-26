@@ -10,7 +10,7 @@ import { MessageInputReader } from "../primitives/inputdata";
 import { UInt128 } from "as-scale-codec";
 import { AccountId } from "./AccountId";
 
-export class Msg {
+class Msg {
     private _sender: AccountId | null = null;
     private _value: UInt128 | null = null;
     private _sig: u8[] | null = null;
@@ -102,3 +102,5 @@ export class Msg {
         }
     }
 }
+
+export const msg: Msg = new Msg();
