@@ -39,7 +39,7 @@ class Approved2 {
 }
 
 @contract
-class EventEmitter {
+export class EventEmitter {
     constructor() {}
 
     @constructor

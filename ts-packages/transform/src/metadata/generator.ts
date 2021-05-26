@@ -5,7 +5,7 @@ import { ArrayDef, CompositeDef, Field, PrimitiveDef, SequenceDef, Type } from "
 import { CONFIG } from "../config/compile";
 import { ContractProgram } from "../contract/contract";
 import { ClassInterpreter } from "../contract/classdef";
-import { ConstructorDef, MessageFuctionDef } from "../contract/elementdef";
+import { ConstructorDef, MessageFunctionDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { TypeHelper } from "../utils/typeutil";
 
@@ -29,7 +29,7 @@ export class MetadataGenerator {
     private getContractSpec(): ContractSpec {
         let events = this.contractInfo.events.map(item => item.createMetadata());
         let message = this.contractInfo.contract.msgFuncDefs.map(item => {
-            let msg = <MessageFuctionDef>item;
+            let msg = <MessageFunctionDef>item;
             return msg.createMetadata();
         });
         let contract = this.contractInfo.contract.cntrFuncDefs.map(item => {
@@ -62,7 +62,7 @@ export class MetadataGenerator {
                             classField.type.capacity = 32;
                         }
                         let fieldTypeName = classField.type.getTypeKey();
-                        console.log(`fieldTypeName: ${fieldTypeName}`);
+                        // console.log(`fieldTypeName: ${fieldTypeName}`);
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         let fieldType = exportedTypeMap.get(fieldTypeName)!;
                         let field = new Field(null, fieldType.index);

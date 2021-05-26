@@ -1,6 +1,8 @@
 import Handlebars from "./handlebars";
 import { Range } from "assemblyscript";
-import { ContractProgram } from "../contract/contract";
+import { ContractProgram} from "../contract/contract";
+import { MessageFunctionDef } from "../contract/elementdef";
+
 import { mainTpl, storeTpl, eventTpl, dynamicTpl} from "../tpl";
 
 export class ModifyPoint {
@@ -19,6 +21,7 @@ export enum ModifyType {
     REPLACE,
     INSERT,
     TOP,
+    DELETE,
     APPEND
 }
 export class SourceModifier {
@@ -52,13 +55,17 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     const exportMain = render(contractInfo);
 
     contractInfo.contract.msgFuncDefs.forEach(item => {
-        if (item.messageDecorator.mutates == "false") {
-            let body = item.bodyRange.toString();
+        let msgFun = <MessageFunctionDef>item;
+        if (msgFun.messageDecorator.mutates == "false") {
+            let body = msgFun.bodyRange.toString();
             body = body.replace(/{/i, "{\n  _lang.Storage.mode = _lang.StoreMode.R;");
-            sourceModifier.addModifyPoint(new ModifyPoint(item.bodyRange, ModifyType.REPLACE, body));
-           
+            sourceModifier.addModifyPoint(new ModifyPoint(msgFun.bodyRange, ModifyType.REPLACE, body));
         }
     });
+
+    if (contractInfo.contract.isExport) {
+        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.DELETE, 'export'));
+    }
 
     for (let index = 0; index < contractInfo.storages.length; index++) {
         let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);

@@ -1,14 +1,14 @@
 const scope = "_lang.";
 
-export const mainTpl = `var msg: ${scope}Msg = new ${scope}Msg();
+export const mainTpl = `var _msg: ${scope}Msg = new ${scope}Msg();
 export function deploy(): i32 {
   let {{contract.instanceName}} = new {{contract.className}}();
 
   {{#each contract.cntrFuncDefs}}
   const {{methodName}}Selector: u8[] = {{#selector methodName}}{{shortArr}}{{/selector}};
-  if (msg.isSelector({{methodName}}Selector)) {
+  if (_msg.isSelector({{methodName}}Selector)) {
     {{#neq parameters.length 0}}
-    const fnParameters = new ${scope}FnParameters(msg.data);
+    const fnParameters = new ${scope}FnParameters(_msg.data);
     {{/neq}}
     {{#each parameters}}
     let p{{_index}} = fnParameters.get<{{type.codecTypeAlias}}>();
@@ -23,9 +23,9 @@ export function call(): i32 {
   const {{contract.instanceName}} = new {{contract.className}}();
   {{#each contract.msgFuncDefs}}
   const {{methodName}}Selector: u8[] = {{#existSelector methodName messageDecorator.selector}}{{shortArr}}{{/existSelector}};
-  if (msg.isSelector({{methodName}}Selector)) {
+  if (_msg.isSelector({{methodName}}Selector)) {
     {{#neq parameters.length 0}}
-    const fnParameters = new ${scope}FnParameters(msg.data);
+    const fnParameters = new ${scope}FnParameters(_msg.data);
     {{/neq}}
     {{#each parameters}}
     let p{{_index}} = fnParameters.get<{{type.codecTypeAlias}}>();

@@ -265,7 +265,7 @@ export class DecoratorUtil {
     }
 }
 
-export class MessageFuctionDef extends FunctionDef {
+export class MessageFunctionDef extends FunctionDef {
     messageDecorator: MessageDecoratorNodeDef;
     bodyRange: Range;
     mutatable = true;

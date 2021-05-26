@@ -14,6 +14,11 @@ function modifySource(sourceText, point) {
         return sourceText + point.code;
     } else if (point.mode == preprocess_1.ModifyType.TOP) {
         return point.code + sourceText;
+    } else if (point.mode == preprocess_1.ModifyType.DELETE) {
+        var prefix = sourceText.substring(0, point.range.start);
+        var suffix = sourceText.substring(point.range.start, sourceText.length);
+        suffix = suffix.replace(/export/i, "");
+        return prefix + suffix;
     }
     return sourceText;
 };

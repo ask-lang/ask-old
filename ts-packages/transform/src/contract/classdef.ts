@@ -3,7 +3,10 @@ import {
     ClassPrototype,
     FunctionPrototype,
     FieldPrototype,
-    Range
+    Range,
+    CommonFlags,
+    DeclarationStatement,
+    ClassDeclaration
 } from "assemblyscript";
 
 import {
@@ -15,12 +18,13 @@ import {
 import { ElementUtil } from "../utils/utils";
 
 import { Strings } from "../utils/primitiveutil";
-import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFuctionDef} from "./elementdef";
+import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
 import { CellLayout, FieldLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
 
 export class ClassInterpreter {
     protected classPrototype: ClassPrototype;
+    declaration: ClassDeclaration;
     camelName: string;
     className: string;
     instanceName: string;
@@ -33,8 +37,9 @@ export class ClassInterpreter {
 
     constructor(clzPrototype: ClassPrototype) {
         this.classPrototype = clzPrototype;
-        this.range = this.classPrototype.declaration.range;
-        this.doc = DecoratorUtil.getDoc(clzPrototype.declaration);
+        this.declaration = <ClassDeclaration>this.classPrototype.declaration;
+        this.range = this.declaration.range;
+        this.doc = DecoratorUtil.getDoc(this.declaration);
         this.className = clzPrototype.name;
         this.camelName = Strings.lowerFirstCase(this.className);
         this.instanceName = this.variousPrefix + this.className.toLowerCase();
@@ -78,10 +83,12 @@ export class ContractInterpreter extends ClassInterpreter {
     version: string;
     cntrFuncDefs: FunctionDef[] = [];
     msgFuncDefs: FunctionDef[] = [];
+    isExport = false;
 
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.version = "1.0";
+        this.isExport = this.declaration.isAny(CommonFlags.EXPORT);
         this.resolveContractClass();
     }
 
@@ -92,7 +99,7 @@ export class ContractInterpreter extends ClassInterpreter {
                     this.cntrFuncDefs.push(new ConstructorDef(<FunctionPrototype>instance));
                 }
                 if (ElementUtil.isMessageFuncPrototype(instance)) {
-                    let msgFunc = new MessageFuctionDef(<FunctionPrototype>instance);
+                    let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                     this.msgFuncDefs.push(msgFunc);
                 }
             });
@@ -105,7 +112,7 @@ export class ContractInterpreter extends ClassInterpreter {
             basePrototype.instanceMembers &&
                 basePrototype.instanceMembers.forEach((instance, _) => {
                     if (ElementUtil.isMessageFuncPrototype(instance)) {
-                        let msgFunc = new MessageFuctionDef(<FunctionPrototype>instance);
+                        let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                         this.msgFuncDefs.push(msgFunc);
                     }
                 });
