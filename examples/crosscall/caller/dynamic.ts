@@ -1,38 +1,26 @@
-import { AccountId } from "ask-lang";
+import { AccountId, u128 } from "ask-lang";
 
 @dynamic
-class Original {
-    
+class Erc20 {
     constructor(account: AccountId) {
-
     }
-
-    createVoid(): void {
-    }
-
-    createA(i: u8): void {
-    }
-
-    createB(i: u8): u8 {
-        return i;
-    }
-    createC(i: u8, b: bool): bool {
-        return b;
+    transfer(recipient: AccountId, amount: u128): bool {
+        return true;
     }
 }
 
 @contract
 class Contract {
 
-    private original: Original;
+    private erc20: Erc20;
 
     constructor() {
-        this.original = new Original(new AccountId());
+        this.erc20 = new Erc20(new AccountId());
     }
 
     @message
-    public callOriginal(): void {
-        this.original.createVoid();
+    public callOriginal(recipient: AccountId, amount: u128): void {
+        this.erc20.transfer(recipient, amount);
     }
 
 }

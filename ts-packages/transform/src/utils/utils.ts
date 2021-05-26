@@ -110,7 +110,7 @@ export class ElementUtil {
 
     static isTopicField(element: Element): boolean {
         if (element.kind == ElementKind.FIELD_PROTOTYPE) {
-            return AstUtil.hasSpecifyDecorator((<FieldPrototype>element).declaration, ContractDecoratorKind.CONSTRUCTOR);
+            return AstUtil.hasSpecifyDecorator((<FieldPrototype>element).declaration, ContractDecoratorKind.TOPIC);
         }
         return false;
     }

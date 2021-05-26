@@ -183,11 +183,7 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
     for (let i = 0; i < fn.parameters.length; i++) {
         let param = fn.parameters[i];
         funParams.push(`p${i}: ${param.type.plainType}`);
-        if (param.type.typeKind == TypeKindEnum.NUMBER) {
-            funVarious.push(`new ${param.type.codecTypeAlias}(p${i})`);
-        } else {
-            funVarious.push(`p${i})`);
-        }
+        funVarious.push(convertToCodec(param.type, `p${i}`));
     }
     let func = `${fn.methodName}(${funParams.join(",")}): ${fn.isReturnable ? fn.returnType?.plainType : "void"} {
         ${fn.isReturnable ? "let rs = " : ""}_lang.Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);
