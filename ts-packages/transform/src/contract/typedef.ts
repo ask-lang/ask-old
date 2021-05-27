@@ -86,6 +86,8 @@ export class NamedTypeNodeDef {
             this.resolveClassType(<ClassPrototype>this.current, definedTypeMap);
         } else if (this.typeKind == TypeKindEnum.ARRAY) {
             this.typeArguments.forEach(item => item.genTypeSequence(definedTypeMap));
+        } else if (this.typeKind == TypeKindEnum.MAP) {
+            this.typeArguments.forEach(item => item.genTypeSequence(definedTypeMap));
         }
     }
 

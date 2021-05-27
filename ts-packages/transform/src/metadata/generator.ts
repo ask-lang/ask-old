@@ -94,6 +94,14 @@ export class MetadataGenerator {
                     let arr = new ArrayDef(fieldType.capacity, fieldType.index);
                     metadataTypes.push(arr);
                 }
+            } else if (type.typeKind == TypeKindEnum.MAP) {
+                let keyArgu = exportedTypeMap.get(type.typeArguments[0].getTypeKey())!;
+                let valArgu = exportedTypeMap.get(type.typeArguments[1].getTypeKey())!;
+
+                let keyField = new Field("key_index", keyArgu.index);
+                let valField = new Field("value", valArgu.index);
+                let compositeDef = new CompositeDef([keyField, valField]);
+                metadataTypes.push(compositeDef);
             }
         });
         return metadataTypes;

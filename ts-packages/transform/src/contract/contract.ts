@@ -42,10 +42,6 @@ export class ContractProgram {
                 countContract ++;
                 this.contract = new ContractInterpreter(<ClassPrototype>element);
             }
-            if (countContract != 1) {
-                throw new Error("The entry file contain multiply 1@contract'");
-            }
-
             if (ElementUtil.isStoreClassPrototype(element)) {
                 this.storages.push(new StorageInterpreter(<ClassPrototype>element));
             }
@@ -59,6 +55,9 @@ export class ContractProgram {
                 this.dynamics.push(dynamicInterpreter);
             }
         });
+        if (countContract != 1) {
+            throw new Error("The entry file contain multiply 1@contract'");
+        }
         this.setTypeSequence();
     }
 
