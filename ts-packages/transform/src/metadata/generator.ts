@@ -8,6 +8,7 @@ import { ClassInterpreter } from "../contract/classdef";
 import { ConstructorDef, MessageFunctionDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { TypeHelper } from "../utils/typeutil";
+import { MetadataUtil } from "../utils/metadatautil";
 
 export class MetadataGenerator {
 
@@ -33,9 +34,10 @@ export class MetadataGenerator {
             return msg.createMetadata();
         });
         let contract = this.contractInfo.contract.cntrFuncDefs.map(item => {
-            let msg = <ConstructorDef>item;
-            return msg.createMetadata();
+            let cntr = <ConstructorDef>item;
+            return cntr.createMetadata();
         });
+        contract.push(MetadataUtil.createDefaultCntr());
         return new ContractSpec(contract, message, events, []);
     }
 

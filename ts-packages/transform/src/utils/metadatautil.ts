@@ -1,5 +1,6 @@
-import { TypeSpec } from "../../../contract-metadata/src";
+import { ConstructorSpec, TypeSpec } from "contract-metadata/src";
 import { NamedTypeNodeDef } from "../contract/typedef";
+import { KeySelector } from "../preprocess/selector";
 
 export class MetadataUtil {
 
@@ -9,5 +10,10 @@ export class MetadataUtil {
         } else {
             return null;
         }
+    }
+
+    static createDefaultCntr(): ConstructorSpec {
+        let selector = new KeySelector("new");
+        return new ConstructorSpec([selector.key], selector.short, [], [""]);
     }
 }
