@@ -4,10 +4,7 @@ import {
 } from "assemblyscript";
 
 import {
-    Contract,
     ContractMetadata,
-    ContractSpec,
-    Source
 } from "contract-metadata/src/index";
 
 import { ElementUtil } from "../utils/utils";
@@ -38,10 +35,17 @@ export class ContractProgram {
     }
     
     private resolveContract(): void {
+        let countContract = 0;
+
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isTopContractClass(element)) {
+                countContract ++;
                 this.contract = new ContractInterpreter(<ClassPrototype>element);
             }
+            if (countContract != 1) {
+                throw new Error("The entry file contain multiply 1@contract'");
+            }
+
             if (ElementUtil.isStoreClassPrototype(element)) {
                 this.storages.push(new StorageInterpreter(<ClassPrototype>element));
             }

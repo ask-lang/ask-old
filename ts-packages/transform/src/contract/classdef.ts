@@ -5,7 +5,6 @@ import {
     FieldPrototype,
     Range,
     CommonFlags,
-    DeclarationStatement,
     ClassDeclaration
 } from "assemblyscript";
 
