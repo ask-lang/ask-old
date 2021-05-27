@@ -13,6 +13,7 @@ import { TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
 import { ClassInterpreter } from "./classdef";
 import { Strings } from "../utils/primitiveutil";
+import { CONFIG } from "../config/compile";
 
 
 /**
@@ -68,7 +69,7 @@ export class NamedTypeNodeDef {
 
 
     public getNameSpace(): string {
-        return this.typeKind == TypeKindEnum.USER_CLASS || this.typeKind == TypeKindEnum.ARRAY ? "" : "_lang.";
+        return this.typeKind == TypeKindEnum.USER_CLASS || this.typeKind == TypeKindEnum.ARRAY ? "" : CONFIG.scope;
     }
 
     // TODO

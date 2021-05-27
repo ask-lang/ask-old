@@ -4,6 +4,7 @@ import { ContractProgram} from "../contract/contract";
 import { MessageFunctionDef } from "../contract/elementdef";
 
 import { mainTpl, storeTpl, eventTpl, dynamicTpl} from "../tpl";
+import { CONFIG } from "../config/compile";
 
 export class ModifyPoint {
     range: Range;
@@ -58,7 +59,7 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
         let msgFun = <MessageFunctionDef>item;
         if (msgFun.messageDecorator.mutates == "false") {
             let body = msgFun.bodyRange.toString();
-            body = body.replace(/{/i, "{\n  _lang.Storage.mode = _lang.StoreMode.R;");
+            body = body.replace(/{/i, `{\n  ${CONFIG.scope}Storage.mode = ${CONFIG.scope}StoreMode.R;`);
             sourceModifier.addModifyPoint(new ModifyPoint(msgFun.bodyRange, ModifyType.REPLACE, body));
         }
     });

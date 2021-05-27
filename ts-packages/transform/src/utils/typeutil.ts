@@ -166,7 +166,7 @@ export class FieldDefHelper {
         // let plainType = field.type.plainType;
         // let arrayType = field.decorators.isPacked ? "Packed" : "Spread" ;
         // let arrayType = "";
-        let plainVarious = `${CONFIG.namespace}${field.type.plainTypeNode}`;
+        let plainVarious = `${CONFIG.scope}${field.type.plainTypeNode}`;
         return plainVarious;
     }
 

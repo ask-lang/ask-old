@@ -1,4 +1,6 @@
-const scope = "_lang.";
+import { CONFIG } from "../config/compile";
+
+let scope = CONFIG.scope;
 
 export const mainTpl = `
 export function deploy(): i32 {

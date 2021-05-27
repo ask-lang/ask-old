@@ -4,6 +4,7 @@ exports.APIOptionImpl = void 0;
 var preprocess_1 = require("./preprocess");
 var path = require("path");
 var fs = require("fs");
+const { CONFIG } = require("./config/compile");
 
 function modifySource(sourceText, point) {
     if (point.mode == preprocess_1.ModifyType.REPLACE) {
@@ -40,7 +41,7 @@ var APIOptionImpl = /** @class */ (function () {
                 }).forEach(function (item) {
                     text_1 = modifySource(text_1, item);
                 });
-                let importLang = `import * as _lang from "ask-lang";\n`;
+                let importLang = `import * as ${CONFIG.module} from "ask-lang";\n`;
                 text_1 = importLang + text_1;
                 console.log(`Extension path: ${path} extension after: ${text_1}`);
             }

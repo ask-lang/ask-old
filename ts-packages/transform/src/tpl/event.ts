@@ -1,4 +1,7 @@
-let scope = "_lang.";
+import { CONFIG } from "../config/compile";
+
+let scope = CONFIG.scope;
+
 export const eventTpl = `class {{className}} extends ${scope}Event {
   {{#each fields}}
   private {{name}}: {{type.plainType}};

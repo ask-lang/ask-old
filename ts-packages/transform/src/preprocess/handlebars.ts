@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import { CONFIG } from "../config/compile";
 import { EventInterpreter } from "../contract/classdef";
 import { FieldDef, FunctionDef } from "../contract/elementdef";
 import { NamedTypeNodeDef } from "../contract/typedef";
@@ -8,7 +9,7 @@ import { KeySelector } from "./selector";
 const WIN = process.platform === "win32";
 const EOL = WIN ? "\r\n" : "\n";
 
-let scope = "_lang.";
+let scope = CONFIG.scope;
 
 function convertToCodec(typeNode: NamedTypeNodeDef, varname: string): string {
     if (!typeNode.isCodec && typeNode.typeKind == TypeKindEnum.NUMBER) {
@@ -186,7 +187,7 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
         funVarious.push(convertToCodec(param.type, `p${i}`));
     }
     let func = `${fn.methodName}(${funParams.join(",")}): ${fn.isReturnable ? fn.returnType?.plainType : "void"} {
-        ${fn.isReturnable ? "let rs = " : ""}_lang.Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);
+        ${fn.isReturnable ? "let rs = " : ""}${CONFIG.scope}Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);
         ${convertBytesToType(fn.returnType)}
     }`;
     return func;
