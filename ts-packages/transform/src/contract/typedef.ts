@@ -14,6 +14,8 @@ import { TypeKindEnum } from "../enums/customtype";
 import { ClassInterpreter } from "./classdef";
 import { Strings } from "../utils/primitiveutil";
 import { CONFIG } from "../config/compile";
+import { ElementUtil } from "../utils/utils";
+import { Collections } from "../utils/collectionutil";
 
 
 /**
@@ -129,10 +131,16 @@ export class NamedTypeNodeDef {
      */
     getTypeKind(): TypeKindEnum {
         let element = this.parent.lookup(this.plainType)!;
+        if (!element) {
+            return TypeHelper.getTypeKindByName(this.plainType);
+        }
         let buildinElement: Element = this.findBuildinElement(element);
         this.current = buildinElement;
-        // console.log(`this.current: ${element.name}`);
         // console.log(`this.plainType: ${this.plainType}`);
+        // if (this.plainType == "[]") {
+        //     console.log(`element: ${element}`);
+        // }
+        // console.log(`buildinElement: ${buildinElement.name}`);
         // console.log(`Element ${ElementKind[buildinElement.kind]}, ${buildinElement.name}, ${this.plainType}`);
         if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
             this.isCodec = false;
@@ -156,7 +164,11 @@ export class NamedTypeNodeDef {
                 this.isCodec = false;
                 return type;
             }
-            return TypeHelper.getTypeKindByName(buildinElement.name);
+            let classTypeKind = TypeHelper.getTypeKindByName(buildinElement.name);
+            if (classTypeKind == TypeKindEnum.USER_CLASS) {
+                this.isCodec = ElementUtil.isExtendCodec(buildinElement);
+            }
+            return classTypeKind;
         }
         this.isCodec = true;
         return TypeKindEnum.USER_CLASS;

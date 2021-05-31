@@ -48,6 +48,7 @@ if (/\bask$/.test(process.argv[1])) {
                 const ascOption = require("ask-transform/src/ascOption.js");
                 let apiOption = new ascOption.APIOptionImpl();
                 asc.main(args, apiOption);
+                apiOption.writeExtensionFile();
                 console.log("Build Done. Targets generated");
             }        
         });

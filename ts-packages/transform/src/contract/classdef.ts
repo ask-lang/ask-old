@@ -11,7 +11,8 @@ import {
 import {
     EventParamSpec,
     EventSpec,
-    TypeSpec
+    TypeSpec,
+    ToMetadata
 } from "contract-metadata/src/index";
 
 import { ElementUtil } from "../utils/utils";
@@ -20,6 +21,13 @@ import { Strings } from "../utils/primitiveutil";
 import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
 import { CellLayout, FieldLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
+
+export interface Matadata {
+    /**
+     * Create metadata
+     */
+    createMetadata(): ToMetadata;
+}
 
 export class ClassInterpreter {
     protected classPrototype: ClassPrototype;
@@ -32,7 +40,7 @@ export class ClassInterpreter {
     fields: FieldDef[] = [];
     functions: FunctionDef[] = [];
     variousPrefix = "_";
-    constructorFun: FunctionDef | null;
+    constructorFun: FunctionDef | null = null;
 
     constructor(clzPrototype: ClassPrototype) {
         this.classPrototype = clzPrototype;
@@ -42,7 +50,9 @@ export class ClassInterpreter {
         this.className = clzPrototype.name;
         this.camelName = Strings.lowerFirstCase(this.className);
         this.instanceName = this.variousPrefix + this.className.toLowerCase();
-        this.constructorFun = null;
+        if (this.classPrototype.constructorPrototype != null) {
+            this.constructorFun = new FunctionDef(this.classPrototype.constructorPrototype);
+        }
     }
 
     resolveFieldMembers(): void {
@@ -128,7 +138,7 @@ export class ContractInterpreter extends ClassInterpreter {
         });
     }
 }
-export class EventInterpreter extends ClassInterpreter {
+export class EventInterpreter extends ClassInterpreter implements Matadata {
     index = 0;
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
@@ -147,8 +157,7 @@ export class EventInterpreter extends ClassInterpreter {
     }
 }
 
-export class StorageInterpreter extends ClassInterpreter {
-    // layouts: FieldLayout[] = [];
+export class StorageInterpreter extends ClassInterpreter  {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.resolveFieldMembers();

@@ -858,7 +858,7 @@ exports.main = function main(argv, options, callback) {
             };
         }
     });
-    var numErrors = checkDiagnostics(program, stderr, options.reportDiagnostic);
+    var numErrors = checkDiagnostics(program, stderr, options.reportDiagnostic, options.checkAll);
     if (numErrors) {
         if (module) module.dispose();
         const err = Error(numErrors + " compile error(s)");
@@ -1260,12 +1260,12 @@ function getAsconfig(file, baseDir, readFile) {
 exports.getAsconfig = getAsconfig;
 
 /** Checks diagnostics emitted so far for errors. */
-function checkDiagnostics(program, stderr, reportDiagnostic) {
+function checkDiagnostics(program, stderr, reportDiagnostic, checkAll) {
     var numErrors = 0;
     do {
         let diagnosticPtr = assemblyscript.nextDiagnostic(program);
         if (!diagnosticPtr) break;
-        if (diagnosticPtr.code == 2564) {
+        if (diagnosticPtr.code == 2564 && !checkAll) {
             continue;
         }
         __pin(diagnosticPtr);

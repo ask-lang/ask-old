@@ -21,11 +21,12 @@ export class AskTransform extends Transform {
             }
         }
         const info = getContractInfo(program);
-        const out = preprocess.getExtCodeInfo(info);
         const abi = preprocess.getAbiInfo(info);
+        const out = preprocess.getExtCodeInfo(info);
+        const baseDir = path.dirname(source.normalizedPath);
+        out.entryDir = baseDir;
         process.sourceModifier = out;
         const abiPath = path.join("target", "metadata.json");
-        const baseDir = path.dirname(source.normalizedPath);
         this.writeFile(abiPath, abi, baseDir);
     }
 }

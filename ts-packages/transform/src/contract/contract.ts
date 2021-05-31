@@ -10,9 +10,11 @@ import {
 import { ElementUtil } from "../utils/utils";
 
 import { ProgramAnalyzar } from "./analyzer";
-import { ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./classdef";
+import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./classdef";
 import { NamedTypeNodeDef } from "./typedef";
 import { MetadataGenerator } from "../metadata/generator";
+import { ProgramDiagnostic } from "../diagnostic/diagnostic";
+import { TypeKindEnum } from "../enums/customtype";
 
 export class ContractProgram {
     program: Program;
@@ -21,13 +23,25 @@ export class ContractProgram {
     events: EventInterpreter[] = [];
     storages: StorageInterpreter[] = [];
     dynamics: DynamicIntercepter[] = [];
+    codecs: ClassInterpreter[]  = [];
     
     public definedTypeMap: Map<string, NamedTypeNodeDef> = new Map<string, NamedTypeNodeDef>();
 
     constructor(program: Program) {
         this.program = program;
         this.resolveContract();
+        this.getToGenCodecClass();
         this.metatdata = this.createMetadata();
+    }
+
+    private getToGenCodecClass(): void {
+        this.definedTypeMap.forEach((item, key) => {
+            if (item.typeKind == TypeKindEnum.USER_CLASS && !item.isCodec) {
+                let classInterpreter = new ClassInterpreter(<ClassPrototype>item.current);
+                classInterpreter.resolveFieldMembers();
+                this.codecs.push(classInterpreter);
+            }
+        });
     }
 
     private createMetadata(): ContractMetadata {
@@ -56,7 +70,7 @@ export class ContractProgram {
             }
         });
         if (countContract != 1) {
-            throw new Error("The entry file contain multiply 1@contract'");
+            throw new Error(`The entry file should contain only one '@contract', in fact it has ${countContract}`);
         }
         this.setTypeSequence();
     }
@@ -74,8 +88,9 @@ export class ContractProgram {
     }
 }
 
-export function 
-getContractInfo(program: Program): ContractProgram {
+export function getContractInfo(program: Program): ContractProgram {
     new ProgramAnalyzar(program);
-    return new ContractProgram(program);
+    let contract = new ContractProgram(program);
+    new ProgramDiagnostic(contract);
+    return contract;
 }

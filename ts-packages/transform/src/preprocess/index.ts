@@ -3,7 +3,7 @@ import { Range } from "assemblyscript";
 import { ContractProgram} from "../contract/contract";
 import { MessageFunctionDef } from "../contract/elementdef";
 
-import { mainTpl, storeTpl, eventTpl, dynamicTpl} from "../tpl";
+import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl} from "../tpl";
 import { CONFIG } from "../config/compile";
 
 export class ModifyPoint {
@@ -21,13 +21,15 @@ export class ModifyPoint {
 export enum ModifyType {
     REPLACE,
     INSERT,
-    TOP,
     DELETE,
+    TOP,
     APPEND
 }
 export class SourceModifier {
     modifyPoints: ModifyPoint[] = [];
+    fileExtension: Map<string, string> = new Map();
     fileExtMap: Map<string, ModifyPoint[]> = new Map();
+    entryDir = "";
 
     public addModifyPoint(point: ModifyPoint): void {
         this.modifyPoints.push(point);
@@ -63,11 +65,7 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
             sourceModifier.addModifyPoint(new ModifyPoint(msgFun.bodyRange, ModifyType.REPLACE, body));
         }
     });
-
-    if (contractInfo.contract.isExport) {
-        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.DELETE, 'export'));
-    }
-
+    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range.source.range, ModifyType.DELETE, 'export'));
     for (let index = 0; index < contractInfo.storages.length; index++) {
         let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
         sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.storages[index].range, ModifyType.REPLACE, store));
@@ -75,6 +73,11 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     contractInfo.events.forEach(event => {
         let code = Handlebars.compile(eventTpl)(event);
         sourceModifier.addModifyPoint(new ModifyPoint(event.range, ModifyType.REPLACE, code));
+    });
+    
+    contractInfo.codecs.forEach(codec => {
+        let code = Handlebars.compile(codecTpl)(codec);
+        sourceModifier.addModifyPoint(new ModifyPoint(codec.range, ModifyType.REPLACE, code));
     });
 
     contractInfo.dynamics.forEach(dynamic => {

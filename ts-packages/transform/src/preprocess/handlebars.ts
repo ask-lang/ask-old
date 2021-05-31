@@ -1,9 +1,10 @@
 import Handlebars from "handlebars";
 import { CONFIG } from "../config/compile";
-import { EventInterpreter } from "../contract/classdef";
+import { ClassInterpreter, EventInterpreter } from "../contract/classdef";
 import { FieldDef, FunctionDef } from "../contract/elementdef";
 import { NamedTypeNodeDef } from "../contract/typedef";
 import { TypeKindEnum } from "../enums/customtype";
+import { TypeHelper } from "../utils/typeutil";
 import { KeySelector } from "./selector";
 
 const WIN = process.platform === "win32";
@@ -23,6 +24,32 @@ function convertToCodec(typeNode: NamedTypeNodeDef, varname: string): string {
     }
 }
 
+function createDefaultCodec(typeNode: NamedTypeNodeDef): string {
+    if (typeNode.typeKind == TypeKindEnum.NUMBER) {
+        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+    } else if (typeNode.typeKind == TypeKindEnum.STRING) {
+        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+    } else if (typeNode.typeKind == TypeKindEnum.BIG_NUM) {
+        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+    } else {
+        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+    }
+}
+
+function toTypeValue(type: NamedTypeNodeDef, varname: string): string {
+    if (type.isCodec) {
+        return varname;
+    }
+    if (type.typeKind == TypeKindEnum.NUMBER || type.typeKind == TypeKindEnum.BIG_NUM) {
+        return `${varname}.unwrap();`;
+    } else if (type.typeKind == TypeKindEnum.STRING) {
+        return `${varname}.toString();`;
+    } else {
+        return `${varname}`;
+    }
+}
+
+
 function convertBytesToType(typeNode: NamedTypeNodeDef | null) {
     if (!typeNode) {
         return "";
@@ -36,6 +63,59 @@ function convertBytesToType(typeNode: NamedTypeNodeDef | null) {
     }
     return code.join(EOL);
 }
+
+Handlebars.registerHelper("genClassToU8", function (classDef: ClassInterpreter) {
+    let code: string[] = [];
+    code.push(`   let bytes = new Array<u8>();`);
+    for (let index = 0; index < classDef.fields.length; index ++) {
+        let codecObj = convertToCodec(classDef.fields[index].type, `this.${classDef.fields[index].name}`);
+        code.push(`  bytes = bytes.conact(${codecObj}.toU8a())`);
+    }
+    code.push(`     return bytes;`);
+    return code.join(EOL);
+});
+
+
+Handlebars.registerHelper("genEncodedLength", function (classDef: ClassInterpreter) {
+    let code: string[] = [];
+    code.push(`   let length: i32 = 0;`);
+    for (let index = 0; index < classDef.fields.length; index++) {
+        let codecObj = convertToCodec(classDef.fields[index].type, `this.${classDef.fields[index].name}`);
+        code.push(`  length += ${codecObj}.encodedLength();`);
+    }
+    code.push(`     return length;`);
+    return code.join(EOL);
+});
+
+
+Handlebars.registerHelper("genPopulateFromBytes", function (classDef: ClassInterpreter) {
+    let code: string[] = [];
+    for (let index = 0; index < classDef.fields.length; index++) {
+        let field = classDef.fields[index];
+        code.push(`  let p${index} = ${createDefaultCodec(field.type)};`);
+        code.push(`  p${index}.populateFromBytes(bytes, index);` );
+        code.push(`  this.${field.name} = ${toTypeValue(field.type, `p${index}`)} ;`);
+        code.push(`  index += p${index}.encodedLength();`);
+
+    }
+    return code.join(EOL);
+});
+
+
+Handlebars.registerHelper("genCodeEq", function (classDef: ClassInterpreter) {
+    let code: string[] = [];
+    let fields: string[] = [];
+    code.push(` eq(other: ${classDef.className}): bool {`);
+
+    for (let index = 0; index < classDef.fields.length; index++) {
+        let field = classDef.fields[index];
+        fields.push(` this.${field.name} == other.${field.name}`);
+    }
+    code.push(` return ${fields.join(" && ")}`);
+    code.push("     }");
+    return code.join(EOL);
+});
+
 
 Handlebars.registerHelper("wrapResult", function (typeNode: NamedTypeNodeDef) {
     return convertToCodec(typeNode, "rs");
@@ -57,20 +137,26 @@ Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
         code.push(`       this.${field.varName} = new ${field.type.instanceType}("${field.selector.key}");`);
     } else {
         code.push(`get ${field.name}(): ${field.type.plainType} {`);
-        code.push(`     if (this.${field.varName} === null) {`);
-        code.push(`    const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
-        code.push(`    let val = st.load<${scope}${field.type.codecType}>();`);
-        code.push(`    if (!val) this.${field.varName} = new ${scope}${field.type.codecType}(); `);
-        code.push(`    else this.${field.varName} = val;`);
-
+        code.push(`    if (this.${field.varName} === null) {`);
+        if (field.decorators.isIgnore) {
+            code.push(`    this.${field.varName} = new ${field.type.getNameSpace()}${field.type.codecType}(); `);
+        } else {
+            code.push(`         const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
+            code.push(`         let val = st.load<${field.type.getNameSpace()}${field.type.codecType}>();`);
+            code.push(`         if (!val) this.${field.varName} = new ${field.type.getNameSpace()}${field.type.codecType}(); `);
+            code.push(`         else this.${field.varName} = val;`);
+        }  
     }
     code.push(`     }`);
+    // return part
     if (field.type.typeKind == TypeKindEnum.STRING) {
         code.push(`     return this.${field.varName}!.toString();`);
     } else if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
         code.push(`     return this.${field.varName}!;`);
-    } else {
+    } else if (TypeHelper.isPrimitiveType(field.type.typeKind)) {
         code.push(`     return this.${field.varName}!.unwrap();`);
+    } else {
+        code.push(`     return this.${field.varName}!;`);
     }
     code.push("  }");
     return code.join(EOL);
@@ -90,10 +176,17 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
         return code.join("\n");
     }
     code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
-    code.push(` this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
-    code.push(` const st = new ${scope}Storage(new ${scope}Hash(${field.selector.shortArr}));`);
-    code.push(` st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
-    code.push(` }`);
+    if (field.decorators.isIgnore) {
+        code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+        code.push(` }`);
+
+    } else {
+        code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+        code.push(`     const st = new ${scope}Storage(new ${scope}Hash(${field.selector.shortArr}));`);
+        code.push(`     st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
+        code.push(` }`);
+    }
+
     return code.join("\n");
 });
 

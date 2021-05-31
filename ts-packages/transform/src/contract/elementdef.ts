@@ -59,11 +59,15 @@ export class FieldDef {
     selector: KeySelector;
     varName: string;
     doc: string[];
+    declaration: FieldDeclaration;
     decorators: DecoratorsInfo;
+    rangeString = "";
 
     constructor(field: FieldPrototype) {
         this.fieldPrototype = field;
         this.name = field.name;
+        this.declaration = <FieldDeclaration>field.declaration;
+        this.rangeString = this.declaration.range.toString();
         this.doc = DecoratorUtil.getDoc(field.declaration);
         this.varName = "_" + this.name;
         this.decorators = new DecoratorsInfo(this.fieldPrototype.declaration.decorators);
@@ -184,6 +188,7 @@ export class FunctionDef {
     isConstructor = false;
     returnType: NamedTypeNodeDef | null = null;
     doc: string[];
+    rangeString = "";
     defaultVals: string[] = [];
 
     constructor(funcPrototype: FunctionPrototype) {
@@ -191,6 +196,7 @@ export class FunctionDef {
         this.doc = DecoratorUtil.getDoc(funcPrototype.declaration);
         this.funcProto = funcPrototype;
         this.methodName = this.funcProto.name;
+        this.rangeString = this.declaration.range.toString();
         this.resolve();
     }
 

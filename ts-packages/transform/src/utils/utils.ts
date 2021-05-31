@@ -84,7 +84,6 @@ export class ElementUtil {
         return false;
     }
 
-
     static isStoreClassPrototype(element: Element): boolean {
         return (element.kind == ElementKind.CLASS_PROTOTYPE)
             ? AstUtil.hasSpecifyDecorator((<ClassPrototype>element).declaration, ContractDecoratorKind.STORAGE)
@@ -113,6 +112,33 @@ export class ElementUtil {
             return AstUtil.hasSpecifyDecorator((<FieldPrototype>element).declaration, ContractDecoratorKind.TOPIC);
         }
         return false;
+    }
+
+    static isExtendCodec(element: Element): boolean {
+        if (element.kind == ElementKind.CLASS_PROTOTYPE) {
+            return ElementUtil.impledInterfaces(<ClassPrototype>element).includes("Codec");
+        }
+        return false;
+    }
+
+
+    /**
+       * Get interfaces that class prototype implements.
+       * @param classPrototype classPrototype
+       */
+    static impledInterfaces(classPrototype: ClassPrototype): string[] {
+        var tempClz: ClassPrototype | null = classPrototype;
+        var interfaces: string[] = new Array<string>();
+        while (tempClz != null) {
+            let implTypes = (<ClassDeclaration>tempClz.declaration).implementsTypes;
+            if (implTypes) {
+                for (let type of implTypes) {
+                    interfaces.push(type.name.range.toString());
+                }
+            }
+            tempClz = tempClz.basePrototype;
+        }
+        return interfaces;
     }
 
 
@@ -254,22 +280,5 @@ export class AstUtil {
         return element.kind == kind;
     }
 
-    /**
-       * Get interfaces that class prototype implements.
-       * @param classPrototype classPrototype
-       */
-    static impledInterfaces(classPrototype: ClassPrototype): string[] {
-        var tempClz: ClassPrototype | null = classPrototype;
-        var interfaces: string[] = new Array<string>();
-        while (tempClz != null) {
-            let implTypes = (<ClassDeclaration>tempClz.declaration).implementsTypes;
-            if (implTypes) {
-                for (let type of implTypes) {
-                    interfaces.push(type.name.range.toString());
-                }
-            }
-            tempClz = tempClz.basePrototype;
-        }
-        return interfaces;
-    }
+    
 }
