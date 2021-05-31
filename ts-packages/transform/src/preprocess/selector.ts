@@ -15,9 +15,9 @@ export class KeySelector {
         for (let index = 0; index < 32; index++) {
             selectorArr.push("0x" + hexStr.substring(index * 2, index * 2 + 2));
         }
-        this.hex = `0x${hexStr}`,
-        this.short = `0x${hexStr.substr(0, 8)}`,
-        this.shortArr = `[${selectorArr.splice(0, 4).join(",")}]`;
+        this.hex = `0x${hexStr}`;
+        this.short = `0x${hexStr.substr(0, 8)}`;
         this.hexArr = `[${selectorArr.join(",")}]`;
+        this.shortArr = `[${selectorArr.splice(0, 4).join(",")}]`;
     }
 }
