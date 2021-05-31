@@ -182,7 +182,7 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
 
     } else {
         code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
-        code.push(`     const st = new ${scope}Storage(new ${scope}Hash(${field.selector.shortArr}));`);
+        code.push(`     const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
         code.push(`     st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
         code.push(` }`);
     }
