@@ -19,8 +19,8 @@ export function SendBalance(
     destination: AccountType,
     value: BalanceType
 ): bool {
-    let destBuffer = new WriteBuffer(destination.buffer);
-    let valBuffer = new WriteBuffer(value.toU8a().buffer);
+    let destBuffer = new WriteBuffer(destination);
+    let valBuffer = new WriteBuffer(value.toU8a());
 
     let ret = seal_transfer(
         destBuffer.buffer,

@@ -53,8 +53,8 @@ export abstract class Event {
 
       assert(this._data.length !== 0, "invalid event defined.");
 
-      const topicBuf = new WriteBuffer(topicsData.buffer);
-      const dataBuf = new WriteBuffer(datas.buffer);
+      const topicBuf = new WriteBuffer(topicsData);
+      const dataBuf = new WriteBuffer(datas);
 
       seal_deposit_event(
           topicBuf.buffer,

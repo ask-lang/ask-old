@@ -5,6 +5,7 @@
 
 import { seal_println } from "as-contract-runtime";
 import { WriteBuffer } from "../primitives/writebuffer";
+import { toU8Array } from "./ArrayUtils";
 const HexChar = [
     "0",
     "1",
@@ -26,7 +27,7 @@ const HexChar = [
 
 class Logger {
     println(message: string): Logger {
-        const outbuf = new WriteBuffer(String.UTF8.encode(message));
+        const outbuf = new WriteBuffer(toU8Array(String.UTF8.encode(message)));
 
         seal_println(
             outbuf.buffer,

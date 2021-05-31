@@ -44,15 +44,15 @@ export class Callable {
         assert(this._callee !== null, "callee not set");
         assert(this._gas !== null, "gas not set");
 
-        const callee = new WriteBuffer(this._callee!.buffer);
+        const callee = new WriteBuffer(this._callee!);
         let value: WriteBuffer | null = null;
         if (this._value === null) {
-            value = new WriteBuffer([0].buffer);
+            value = new WriteBuffer([0]);
         } else {
-            value = new WriteBuffer(this._value!.toU8a().buffer);
+            value = new WriteBuffer(this._value!.toU8a());
         }
 
-        const data = new WriteBuffer(this._data!.buffer);
+        const data = new WriteBuffer(this._data!);
         this._outBuffer = new ReadBuffer();
         const ret = seal_call(
             callee.buffer,

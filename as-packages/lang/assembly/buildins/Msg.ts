@@ -67,8 +67,8 @@ class Msg {
         if (this.sig.length != selector.length) return false;
         return (
             memory.compare(
-                changetype<usize>(this.sig.buffer),
-                changetype<usize>(selector.buffer),
+                this.sig.dataStart,
+                selector.dataStart,
                 4
             ) == 0
         );
@@ -80,8 +80,8 @@ class Msg {
             if (this._sig === null) {
                 this._sig = new Array<u8>(4);
                 memory.copy(
-                    changetype<usize>(this._sig!.buffer),
-                    changetype<usize>(reader.fnSelector.buffer),
+                    this._sig!.dataStart,
+                    reader.fnSelector.dataStart,
                     4
                 );
             }
@@ -91,8 +91,8 @@ class Msg {
                 if (datalen > 0) {
                     this._data = new Array<u8>(datalen);
                     memory.copy(
-                        changetype<usize>(this._data!.buffer),
-                        changetype<usize>(reader.fnParameters.buffer),
+                        this._data!.dataStart,
+                        reader.fnParameters.dataStart,
                         datalen
                     );
                 } else {

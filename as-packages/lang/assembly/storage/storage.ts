@@ -41,7 +41,7 @@ export class Storage {
       assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
 
       const valueBytes = value.toU8a();
-      const buf = new WriteBuffer(valueBytes.buffer);
+      const buf = new WriteBuffer(valueBytes);
       // FIXME(liangqin.fan) if value.length == 0 , should `clear` this storage??
       seal_set_storage(
           this.hashKey(),
@@ -55,7 +55,7 @@ export class Storage {
       assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
 
       const valueBytes = value.toU8aPacked();
-      const buf = new WriteBuffer(valueBytes.buffer);
+      const buf = new WriteBuffer(valueBytes);
       // FIXME(liangqin.fan) if value.length == 0 , should `clear` this storage??
       seal_set_storage(
           this.hashKey(),
@@ -118,7 +118,7 @@ export class Storage {
   storeRaw(data: Array<u8>): void {
       assert(Storage.sStoreMode != StoreMode.R, "Storage: only read allowed");
 
-      const buf = new WriteBuffer(data.buffer);
+      const buf = new WriteBuffer(data);
       seal_set_storage(
           this.hashKey(),
           buf.buffer,
@@ -148,9 +148,9 @@ export class Storage {
       seal_clear_storage(this.hashKey());
   }
 
-  private hashKey(): ArrayBuffer {
+  private hashKey(): usize {
       // const hash = Crypto.blake256s(this.key);
       // return hash.toU8a().buffer;
-      return this.key.toU8a().buffer;
+      return this.key.toU8a().dataStart;
   }
 }

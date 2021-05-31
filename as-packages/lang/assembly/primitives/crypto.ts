@@ -11,41 +11,41 @@ import {
     seal_hash_sha2_256,
     seal_random,
 } from "as-contract-runtime";
-import { typedToArray } from "../utils/ArrayUtils";
+import { toU8Array, typedToArray } from "../utils/ArrayUtils";
 import { ReadBuffer } from "./readbuffer";
 import { WriteBuffer } from "./writebuffer";
 
 function invoke_hash_algo(
-    message: ArrayBuffer,
+    message: Array<u8>,
     outLen: u32,
-    fn: (i: ArrayBuffer, is: u32, o: ArrayBuffer) => void
+    fn: (i: usize, is: u32, o: usize) => void
 ): Hash {
     const wbuf = new WriteBuffer(message);
     const outbuf = new Uint8Array(outLen);
-    fn(wbuf.buffer, wbuf.size, outbuf.buffer);
+    fn(wbuf.buffer, wbuf.size, outbuf.dataStart);
     return Hash.bytesToHash(typedToArray(outbuf));
 }
 
 // Wrapped crypto algorithms as a class for readable.
 export class Crypto {
     static sha256<T extends Codec>(obj: T): Hash {
-        return invoke_hash_algo(obj.toU8a().buffer, 32, seal_hash_sha2_256);
+        return invoke_hash_algo(obj.toU8a(), 32, seal_hash_sha2_256);
     }
 
     static keccak256256<T extends Codec>(obj: T): Hash {
-        return invoke_hash_algo(obj.toU8a().buffer, 32, seal_hash_keccak_256);
+        return invoke_hash_algo(obj.toU8a(), 32, seal_hash_keccak_256);
     }
 
     static blake256<T extends Codec>(obj: T): Hash {
-        return invoke_hash_algo(obj.toU8a().buffer, 32, seal_hash_blake2_256);
+        return invoke_hash_algo(obj.toU8a(), 32, seal_hash_blake2_256);
     }
 
     static blake128<T extends Codec>(obj: T): Hash {
-        return invoke_hash_algo(obj.toU8a().buffer, 16, seal_hash_blake2_128);
+        return invoke_hash_algo(obj.toU8a(), 16, seal_hash_blake2_128);
     }
 
     static random(subject: u8[]): Hash {
-        const wbuf = new WriteBuffer(subject.buffer);
+        const wbuf = new WriteBuffer(subject);
         const outbuf = new ReadBuffer(32);
         seal_random(
             wbuf.buffer,
@@ -62,7 +62,7 @@ export class Crypto {
     // which is not wanted.
     static sha256s(message: string): Hash {
         return invoke_hash_algo(
-            String.UTF8.encode(message),
+            toU8Array(String.UTF8.encode(message)),
             32,
             seal_hash_sha2_256
         );
@@ -70,7 +70,7 @@ export class Crypto {
 
     static keccak256s(message: string): Hash {
         return invoke_hash_algo(
-            String.UTF8.encode(message),
+            toU8Array(String.UTF8.encode(message)),
             32,
             seal_hash_keccak_256
         );
@@ -78,7 +78,7 @@ export class Crypto {
 
     static blake256s(message: string): Hash {
         return invoke_hash_algo(
-            String.UTF8.encode(message),
+            toU8Array(String.UTF8.encode(message)),
             32,
             seal_hash_blake2_256
         );
@@ -86,7 +86,7 @@ export class Crypto {
 
     static blake128s(message: string): Hash {
         return invoke_hash_algo(
-            String.UTF8.encode(message),
+            toU8Array(String.UTF8.encode(message)),
             16,
             seal_hash_blake2_128
         );

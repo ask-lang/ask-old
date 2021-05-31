@@ -1,4 +1,4 @@
-export type Ptr = ArrayBuffer;
+export type Ptr = usize;
 export type SizeT = u32;
 
 /// Every error that can be returned to a contract when it calls any of the host functions.

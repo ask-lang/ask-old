@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 export function arrayToTyped(arr: u8[]): Uint8Array {
-    return Uint8Array.wrap(arr.buffer);
+    return Uint8Array.wrap(changetype<ArrayBuffer>(arr.dataStart));
 }
 
 export function typedToArray(u8a: Uint8Array, length: i32 = -1): u8[] {
@@ -13,10 +13,22 @@ export function typedToArray(u8a: Uint8Array, length: i32 = -1): u8[] {
     //   arr[i] = u8a[i];
     // }
     memory.copy(
-        changetype<usize>(arr.buffer),
-        changetype<usize>(u8a.buffer),
+        arr.dataStart,
+        u8a.dataStart,
         size
     );
+    return arr;
+}
+
+export function toU8Array(ab: ArrayBuffer): Array<u8> {
+    let size = ab.byteLength;
+    let arr = new Array<u8>(size);
+    memory.copy(
+        arr.dataStart,
+        changetype<usize>(ab),
+        size
+    );
+
     return arr;
 }
 

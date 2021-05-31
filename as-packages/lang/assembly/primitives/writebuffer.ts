@@ -4,17 +4,28 @@
  */
 
 export class WriteBuffer {
-    private valueBuf: Uint8Array;
+    private valueBuf: Array<u8>;
 
-    constructor(u8a: ArrayBuffer) {
-        this.valueBuf = Uint8Array.wrap(u8a);
+    constructor(u8a: Array<u8>) {
+        this.valueBuf = u8a;
+    }
+
+    static from(ab: ArrayBuffer): WriteBuffer {
+        let arr = new Array<u8>(ab.byteLength);
+        memory.copy(
+            arr.dataStart,
+            changetype<usize>(ab),
+            ab.byteLength
+            );
+
+        return new WriteBuffer(arr);
     }
 
     get size(): u32 {
         return this.valueBuf.length;
     }
 
-    get buffer(): ArrayBuffer {
-        return this.valueBuf.buffer;
+    get buffer(): usize {
+        return this.valueBuf.dataStart;
     }
 }

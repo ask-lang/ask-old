@@ -12,7 +12,7 @@ export class ReadBuffer {
     private sizeBuf: SizeBuffer;
 
     static readInstance<T extends Codec>(
-        fn: (valueBuf: ArrayBuffer, sizeBuf: ArrayBuffer) => void
+        fn: (valueBuf: usize, sizeBuf: usize) => void
     ): T {
         let v = instantiate<T>();
         let readbuf = new ReadBuffer(v.encodedLength());
@@ -35,11 +35,11 @@ export class ReadBuffer {
         return this.sizeBuf.value as i32;
     }
 
-    get valueBuffer(): ArrayBuffer {
-        return this.valueBuf.buffer;
+    get valueBuffer(): usize {
+        return this.valueBuf.dataStart;
     }
 
-    get sizeBuffer(): ArrayBuffer {
+    get sizeBuffer(): usize {
         return this.sizeBuf.buffer;
     }
 

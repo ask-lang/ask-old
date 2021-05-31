@@ -16,8 +16,8 @@ export class SizeBuffer {
         }
     }
 
-    get buffer(): ArrayBuffer {
-        return this.buf.buffer;
+    get buffer(): usize {
+        return this.buf.dataStart;
     }
 
     get value(): u32 {

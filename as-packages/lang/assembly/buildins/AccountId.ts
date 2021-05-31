@@ -21,8 +21,8 @@ export class AccountId implements Codec {
     constructor(bytes: u8[] = []) {
         this._id = new Array<u8>(BytesCount);
         memory.copy(
-            changetype<usize>(this._id.buffer),
-            changetype<usize>(bytes.buffer),
+            this._id.dataStart,
+            bytes.dataStart,
             BytesCount
         );
     }
@@ -62,8 +62,8 @@ export class AccountId implements Codec {
     eq(other: AccountId): bool {
         return (
             memory.compare(
-                changetype<usize>(this._id.buffer),
-                changetype<usize>(other.toU8a().buffer),
+                this._id.dataStart,
+                other.toU8a().dataStart,
                 BytesCount
             ) == 0
         );
@@ -72,8 +72,8 @@ export class AccountId implements Codec {
     notEq(other: AccountId): bool {
         return (
             memory.compare(
-                changetype<usize>(this._id.buffer),
-                changetype<usize>(other.toU8a().buffer),
+                this._id.dataStart,
+                other.toU8a().dataStart,
                 BytesCount
             ) != 0
         );
