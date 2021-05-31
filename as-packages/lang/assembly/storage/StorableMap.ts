@@ -24,7 +24,7 @@ export abstract class StorableMap<K extends Codec, V extends Codec> implements C
       this.mapInner = new Map<K, V>();
   }
 
-  protected find_key_inner(key: K): K | null {
+  protected findKeyInner(key: K): K | null {
       let keysInner = this.mapInner.keys();
       for (let i = 0; i < keysInner.length; i++) {
           if (keysInner[i].eq(key)) return keysInner[i];
@@ -32,13 +32,13 @@ export abstract class StorableMap<K extends Codec, V extends Codec> implements C
       return null;
   }
 
-  protected load_entry_point(): MapEntry | null {
+  protected loadEntryPoint(): MapEntry | null {
       let strg = new Storage(Crypto.blake256s(this.keyPrefix));
       let entry = strg.load<MapEntry>();
       return entry;
   }
 
-  protected store_entry_point(entries: Hash, size: i32): void {
+  protected storeEntryPoint(entries: Hash, size: i32): void {
       let strg = new Storage(Crypto.blake256s(this.keyPrefix));
       let entry = new MapEntry(entries, size);
       let r = strg.store(entry);

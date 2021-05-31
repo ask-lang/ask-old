@@ -16,13 +16,13 @@ export abstract class StorableArray<T extends Codec> implements Codec {
   protected keyPrefix: string;
   protected arrayInner: Array<T>;
 
-  abstract push_value(value: T): i32;
-  abstract pop_value(): T;
-  abstract set_value_at(index: i32, value: T): void;
-  abstract delete_value_at(index: i32): bool;
-  abstract visit_value_at(index: i32): T;
-  abstract store_items_from(index: i32): void;
-  abstract load_items_from(index: i32): void;
+  abstract pushValue(value: T): i32;
+  abstract popValue(): T;
+  abstract setValueAt(index: i32, value: T): void;
+  abstract deleteValueAt(index: i32): bool;
+  abstract visitValueAt(index: i32): T;
+  abstract storeItemsFrom(index: i32): void;
+  abstract loadItemsFrom(index: i32): void;
 
   constructor(prefix: string = "", capacity: i32 = 0) {
       this.keyPrefix = prefix;
@@ -51,13 +51,13 @@ export abstract class StorableArray<T extends Codec> implements Codec {
       return !this.eq(other);
   }
 
-  protected load_array_entry(): ArrayEntry | null {
+  protected loadArrayEntry(): ArrayEntry | null {
       let strg = new Storage(Crypto.blake256s(this.keyPrefix + ".length"));
       let entryInfo = strg.load<ArrayEntry>();
       return entryInfo;
   }
 
-  protected store_array_entry(storedBytes: i32 = 0): ReturnCode {
+  protected storeArrayEntry(storedBytes: i32 = 0): ReturnCode {
       let entryHash = Crypto.blake256s(this.keyPrefix + ".length");
       let strg = new Storage(entryHash);
       let v: ArrayEntry = new ArrayEntry(
@@ -68,7 +68,7 @@ export abstract class StorableArray<T extends Codec> implements Codec {
       return r;
   }
 
-  protected index_to_hash_key(index: i32): Hash {
+  protected indexToHashKey(index: i32): Hash {
       return Crypto.blake256s(this.keyPrefix + index.toString());
   }
 
@@ -91,30 +91,30 @@ export abstract class StorableArray<T extends Codec> implements Codec {
 
   @operator("[]=")
   private __set(index: i32, value: T): void {
-      this.set_value_at(index, value);
+      this.setValueAt(index, value);
   }
 
 
   push(value: T): i32 {
-      return this.push_value(value);
+      return this.pushValue(value);
   }
 
   pop(): T {
-      return this.pop_value();
+      return this.popValue();
   }
 
   delete(index: i32): bool {
-      return this.delete_value_at(index);
+      return this.deleteValueAt(index);
   }
 
   at(index: i32): T {
       assert(index < this.arrayInner.length, "out of bounds");
-      return this.visit_value_at(index);
+      return this.visitValueAt(index);
   }
 
   fill(value: T, start: i32 = 0, end: i32 = i32.MAX_VALUE): this {
       this.arrayInner.fill(value, start, end);
-      this.store_items_from(start);
+      this.storeItemsFrom(start);
       return this;
   }
 
@@ -172,7 +172,7 @@ export abstract class StorableArray<T extends Codec> implements Codec {
   concat(items: T[]): T[] {
       let oldlen = this.arrayInner.length;
       this.arrayInner = this.arrayInner.concat(items);
-      this.store_items_from(oldlen);
+      this.storeItemsFrom(oldlen);
 
       return this.arrayInner;
   }
@@ -230,16 +230,16 @@ export abstract class StorableArray<T extends Codec> implements Codec {
   }
 
   sort(comparator: (a: T, b: T) => i32): this {
-      this.load_items_from(0);
+      this.loadItemsFrom(0);
       this.arrayInner = this.arrayInner.sort(comparator);
-      this.store_items_from(0);
+      this.storeItemsFrom(0);
       return this;
   }
 
   reverse(): T[] {
-      this.load_items_from(0);
+      this.loadItemsFrom(0);
       this.arrayInner = this.arrayInner.reverse();
-      this.store_items_from(0);
+      this.storeItemsFrom(0);
       return this.arrayInner;
   }
 }
