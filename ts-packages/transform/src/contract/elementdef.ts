@@ -12,7 +12,7 @@ import {
     FunctionDeclaration
 } from "assemblyscript";
 
-import { AstUtil, DecoratorUtil, ElementUtil } from "../utils/utils";
+import { AstUtil, DecoratorUtil, ElementUtil, RangeUtil } from "../utils/utils";
 import { Strings } from "../utils/primitiveutil";
 import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "contract-metadata/src";
 import { KeySelector } from "../preprocess/selector";
@@ -174,9 +174,15 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
                 } else if (identifier == 'selector') {
                     this.selector = Strings.removeQuotation(AstUtil.getBinaryExprRight(expression));
                     DecoratorUtil.checkSelecrot(decorator, this.selector);
+                } else {
+                    DecoratorUtil.throwNoArguException(decorator, identifier);
                 }
             });
         }
+        if (this.payable && this.mutates == 'false') {
+            throw new Error(`Decorator: ${decorator.name.range.toString()} arguments mutates and payable can only exist one. Trace: ${RangeUtil.location(decorator.range)} `);
+        }
+
     }
 }
 

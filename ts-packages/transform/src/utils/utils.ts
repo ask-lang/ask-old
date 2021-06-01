@@ -272,7 +272,7 @@ export class AstUtil {
 }
 export class RangeUtil {
     public static location(range: Range): string {
-        return `content:  ${range.toString()} path:${range.source.normalizedPath}
+        return `content: ${range.toString()} path:${range.source.normalizedPath}
             lineAt: ${range.source.lineAt(range.start)} columnAt: ${range.source.columnAt()}
             range: (${range.start.toString(10)} ${range.end.toString(10)}).`;
     }
@@ -312,9 +312,15 @@ export class DecoratorUtil {
     }
 
     public static checkMutates(decorator: DecoratorNode, val: string): void {
-        let isLegal = (val == 'false') || (val == 'true');
+        let isLegal = (val == 'false');
         if (!isLegal) {
-            throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates should be false/true. Trace: ${RangeUtil.location(decorator.range)} `);
+            throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates should be false. Trace: ${RangeUtil.location(decorator.range)} `);
         }
     }
+
+    public static throwNoArguException(decorator: DecoratorNode, identifier: string): void {
+        throw new Error(`Decorator: ${decorator.name.range.toString()} should not contain argument ${identifier}. Trace: ${RangeUtil.location(decorator.range)} `);
+    }
+
+    
 }
