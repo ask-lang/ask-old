@@ -68,7 +68,7 @@ Handlebars.registerHelper("genClassToU8", function (classDef: ClassInterpreter) 
     code.push(`   let bytes = new Array<u8>();`);
     for (let index = 0; index < classDef.fields.length; index ++) {
         let codecObj = convertToCodec(classDef.fields[index].type, `this.${classDef.fields[index].name}`);
-        code.push(`  bytes = bytes.conact(${codecObj}.toU8a())`);
+        code.push(`  bytes = bytes.concat(${codecObj}.toU8a())`);
     }
     code.push(`     return bytes;`);
     return code.join(EOL);
@@ -91,11 +91,10 @@ Handlebars.registerHelper("genPopulateFromBytes", function (classDef: ClassInter
     let code: string[] = [];
     for (let index = 0; index < classDef.fields.length; index++) {
         let field = classDef.fields[index];
-        code.push(`  let p${index} = ${createDefaultCodec(field.type)};`);
-        code.push(`  p${index}.populateFromBytes(bytes, index);` );
-        code.push(`  this.${field.name} = ${toTypeValue(field.type, `p${index}`)} ;`);
-        code.push(`  index += p${index}.encodedLength();`);
-
+        code.push(`     let p${index} = ${createDefaultCodec(field.type)};`);
+        code.push(`     p${index}.populateFromBytes(bytes, index);` );
+        code.push(`     this.${field.name} = ${toTypeValue(field.type, `p${index}`)} ;`);
+        code.push(`     index += p${index}.encodedLength();`);
     }
     return code.join(EOL);
 });
@@ -110,7 +109,7 @@ Handlebars.registerHelper("genCodeEq", function (classDef: ClassInterpreter) {
         let field = classDef.fields[index];
         fields.push(` this.${field.name} == other.${field.name}`);
     }
-    code.push(` return ${fields.join(" && ")}`);
+    code.push(` return ${fields.join(" && ")};`);
     code.push("     }");
     return code.join(EOL);
 });
@@ -176,11 +175,18 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
     }
     code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
     if (field.decorators.isIgnore) {
-        code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+        if (field.type.isCodec || field.type.typeKind == TypeKindEnum.USER_CLASS) {
+            code.push(`     this.${field.varName} = v;`);
+        } else {
+            code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+        }
         code.push(` }`);
-
     } else {
-        code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+        if (field.type.isCodec || field.type.typeKind == TypeKindEnum.USER_CLASS) {
+            code.push(`     this.${field.varName} = v;`);
+        } else {
+            code.push(`     this.${field.varName} = new ${field.type.codecTypeAlias}(v);`);
+        }
         code.push(`     const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
         code.push(`     st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
         code.push(` }`);
