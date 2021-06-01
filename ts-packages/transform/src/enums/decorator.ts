@@ -1,4 +1,5 @@
 export enum ContractDecoratorKind {
+    INTERNAL,
     OTHER,
     CONTRACT,
     STORAGE,

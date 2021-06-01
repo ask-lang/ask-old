@@ -2,6 +2,7 @@ import { DiagnosticCategory, formatDiagnosticMessage } from "assemblyscript";
 import { DiagnosticMessage, Range } from "assemblyscript/cli/asc";
 import { ContractProgram } from "../contract/contract";
 import { FunctionDef } from "../contract/elementdef";
+import { RangeUtil } from "../utils/utils";
 
 export enum DiagnosticCode {
     INHERIT_OVERRIDE_METHOD,
@@ -69,7 +70,7 @@ export class ProgramDiagnostic {
                 let count = countInstanceMap.get(name) || 0;
                 count ++;
                 if (count > 1) {
-                    throw new Error(`Contract has duplicate storable class: ${item.type.current.name} instance.`);
+                    throw new Error(`Contract has multiple storable class: ${item.type.current.name} instances. please check ${RangeUtil.location(item.declaration.range)}`);
                 }
                 countInstanceMap.set(name, count);
             }

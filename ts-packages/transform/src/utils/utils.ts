@@ -1,7 +1,5 @@
 import {
     DeclarationStatement,
-    DecoratorKind,
-    Node,
     ClassDeclaration,
     DecoratorNode,
     ClassPrototype,
@@ -10,7 +8,6 @@ import {
     FunctionPrototype,
     Expression,
     IdentifierExpression,
-    CharCode,
     NodeKind,
     BinaryExpression,
     SourceKind,
@@ -19,55 +16,10 @@ import {
     Range,
     CommonFlags
 } from "assemblyscript";
-import { DecoratorNodeDef, DocDecoratorNodeDef, MessageDecoratorNodeDef } from "../contract/elementdef";
+import { getCustomDecoratorKind } from "../contract/decorator";
+import { DocDecoratorNodeDef } from "../contract/elementdef";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { Strings } from "./primitiveutil";
-
-export function fromNode(nameNode: Expression): ContractDecoratorKind {
-    if (nameNode.kind == NodeKind.IDENTIFIER) {
-        let nameStr = (<IdentifierExpression>nameNode).text;
-        // assert(nameStr.length);
-        switch (nameStr.charCodeAt(0)) {
-            case CharCode.c: {
-                if (nameStr == "contract") return ContractDecoratorKind.CONTRACT;
-                if (nameStr == "constructor") return ContractDecoratorKind.CONSTRUCTOR;
-                break;
-            }
-            case CharCode.d: {
-                if (nameStr == 'doc') return ContractDecoratorKind.DOC;
-                if (nameStr == "dynamic") return ContractDecoratorKind.DYNAMIC;
-                break;
-            }
-            case CharCode.e: {
-                if (nameStr == "event") return ContractDecoratorKind.EVENT;
-                break;
-            }
-            case CharCode.i: {
-                if (nameStr == "ignore") return ContractDecoratorKind.IGNORE;
-                break;
-            }
-            case CharCode.m: {
-                if (nameStr == "message") return ContractDecoratorKind.MESSAGE;
-                break;
-            }
-            case CharCode.p: {
-                if (nameStr == "packed") return ContractDecoratorKind.PACKED;
-                break;
-            }
-            case CharCode.s: {
-                if (nameStr == "storage") return ContractDecoratorKind.STORAGE;
-                if (nameStr == "spread") return ContractDecoratorKind.SPREAD;
-                break;
-            }
-            case CharCode.t: {
-                if (nameStr == "topic") return ContractDecoratorKind.TOPIC;
-                break;
-            }
-        }
-    }
-    return ContractDecoratorKind.OTHER;
-}
-
 export class ElementUtil {
 
     static isEventClassPrototype(element: Element): boolean {
@@ -158,48 +110,6 @@ export class ElementUtil {
     }
 }
 export class AstUtil {
-
-    static getSpecifyDecorator(statement: DeclarationStatement, kind: ContractDecoratorKind): DecoratorNode | null {
-        if (statement.decorators) {
-            for (let decorator of statement.decorators) {
-                if (AstUtil.isSpecifyCustomDecorator(decorator, kind)) {
-                    return decorator;
-                }
-            }
-        }
-        return null;
-    }
-
-    static isSpecifyCustomDecorator(decorator: DecoratorNode, kind: ContractDecoratorKind): boolean {
-        return  (decorator.decoratorKind == DecoratorKind.CUSTOM && kind == fromNode(decorator.name));
-    }
-
-    static containDecorator(decorators: DecoratorNode[], kind: ContractDecoratorKind): boolean {
-        for (let decorator of decorators) {
-            if (decorator.decoratorKind == DecoratorKind.CUSTOM && kind == fromNode(decorator.name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    /**
-      * Check the statment weather have the specify the decorator
-      * @param statement Ast declaration statement
-      * @param kind The specify decorators
-      */
-    static hasSpecifyDecorator(statement: DeclarationStatement, kind: ContractDecoratorKind): boolean {
-        if (statement.decorators) {
-            for (let decorator of statement.decorators) {
-                if (decorator.decoratorKind == DecoratorKind.CUSTOM && kind == fromNode(decorator.name)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     static isVoid(type: NamedTypeNode): boolean {
         return type.name.range.toString() == "void";
     }
@@ -221,7 +131,30 @@ export class AstUtil {
     }
 
     public static getDocDecorator(statement: DeclarationStatement): DecoratorNode | null {
-        return this.getSpecifyDecorator(statement, ContractDecoratorKind.DOC);
+        return AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.DOC);
+    }
+
+    /**
+      * Check the statment weather have the specify the decorator
+      * @param statement Ast declaration statement
+      * @param kind The specify decorators
+      */
+    static hasSpecifyDecorator(statement: DeclarationStatement, kind: ContractDecoratorKind): boolean {
+        if (statement.decorators) {
+            return DecoratorUtil.containDecorator(statement.decorators, kind);
+        }
+        return false;
+    }
+
+    static getSpecifyDecorator(statement: DeclarationStatement, kind: ContractDecoratorKind): DecoratorNode | null {
+        if (statement.decorators) {
+            for (let decorator of statement.decorators) {
+                if (DecoratorUtil.isDecoratorKind(decorator, kind)) {
+                    return decorator;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -250,6 +183,7 @@ export class AstUtil {
     static isArrayType(declareType: string): boolean {
         return declareType == "[]"
             || declareType == "Array"
+            || declareType == "StorableArray"
             || declareType == "SpreadStorableArray"
             || declareType == "PackedStorableArray";
     }
@@ -260,6 +194,7 @@ export class AstUtil {
        */
     static isMapType(declareType: string): boolean {
         return declareType == "Map"
+            || declareType == "StorableMap"
             || declareType == "SpreadStorableMap"
             || declareType == "PackedStorableMap";
     }
@@ -272,25 +207,23 @@ export class AstUtil {
 }
 export class RangeUtil {
     public static location(range: Range): string {
-        return `content: ${range.toString()} path:${range.source.normalizedPath}
-            lineAt: ${range.source.lineAt(range.start)} columnAt: ${range.source.columnAt()}
-            range: (${range.start.toString(10)} ${range.end.toString(10)}).`;
+        return `source text: ${range.toString()}. Path:${range.source.normalizedPath} lineAt: ${range.source.lineAt(range.start)} columnAt: ${range.source.columnAt()} range: (${range.start.toString(10)} ${range.end.toString(10)}).`;
     }
 }
 
 export class DecoratorUtil {
-    public static parseDeclaration(statement: DeclarationStatement): void {
-        let decoratorDefs: DecoratorNodeDef[] = [];
-        if (statement.decorators) {
-            let decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.MESSAGE);
-            if (decorator) {
-                decoratorDefs.push(new MessageDecoratorNodeDef(decorator));
-            }
-            decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.DOC);
-            if (decorator) {
-                decoratorDefs.push(new DocDecoratorNodeDef(decorator));
+    
+    static isDecoratorKind(decorator: DecoratorNode, kind: ContractDecoratorKind): boolean {
+        return kind == getCustomDecoratorKind(decorator);
+    }
+
+    static containDecorator(decorators: DecoratorNode[], kind: ContractDecoratorKind): boolean {
+        for (let decorator of decorators) {
+            if (getCustomDecoratorKind(decorator) == kind) {
+                return true;
             }
         }
+        return false;
     }
 
     public static getDoc(statement: DeclarationStatement): string[] {
@@ -307,20 +240,18 @@ export class DecoratorUtil {
             }
         }
         if (!isLegal) {
-            throw new Error(`Decorator: ${decorator.name.range.toString()} argument selector should be start with 0x hex string(4 Bytes). Trace: ${RangeUtil.location(decorator.range)} `);
+            throw new Error(`Decorator: ${decorator.name.range.toString()} argument selector value should be start with 0x hex string(4 Bytes). Trace: ${RangeUtil.location(decorator.range)} `);
         }
     }
 
     public static checkMutates(decorator: DecoratorNode, val: string): void {
         let isLegal = (val == 'false');
         if (!isLegal) {
-            throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates should be false. Trace: ${RangeUtil.location(decorator.range)} `);
+            throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(decorator.range)} `);
         }
     }
 
     public static throwNoArguException(decorator: DecoratorNode, identifier: string): void {
         throw new Error(`Decorator: ${decorator.name.range.toString()} should not contain argument ${identifier}. Trace: ${RangeUtil.location(decorator.range)} `);
-    }
-
-    
+    } 
 }

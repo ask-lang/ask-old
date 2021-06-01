@@ -34,13 +34,13 @@ export class DecoratorsInfo {
 
         if (this.decorators) {
             for (let decorator of this.decorators) {
-                if (AstUtil.isSpecifyCustomDecorator(decorator, ContractDecoratorKind.IGNORE)) {
+                if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.IGNORE)) {
                     this.isIgnore = true;
                 }
-                if (AstUtil.isSpecifyCustomDecorator(decorator, ContractDecoratorKind.TOPIC)) {
+                if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
                     this.isTopic = true;
                 }
-                if (AstUtil.isSpecifyCustomDecorator(decorator, ContractDecoratorKind.PACKED)) {
+                if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.PACKED)) {
                     this.isPacked = true;
                     let decratorDef = new DecoratorNodeDef(decorator);
                     if (decratorDef.pairs.has("capacity")) {
