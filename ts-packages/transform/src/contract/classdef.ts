@@ -30,7 +30,7 @@ export interface Matadata {
 }
 
 export class ClassInterpreter {
-    protected classPrototype: ClassPrototype;
+    classPrototype: ClassPrototype;
     declaration: ClassDeclaration;
     camelName: string;
     className: string;
@@ -40,12 +40,16 @@ export class ClassInterpreter {
     fields: FieldDef[] = [];
     functions: FunctionDef[] = [];
     variousPrefix = "_";
+    export = "";
     constructorFun: FunctionDef | null = null;
 
     constructor(clzPrototype: ClassPrototype) {
         this.classPrototype = clzPrototype;
         this.declaration = <ClassDeclaration>this.classPrototype.declaration;
         this.range = this.declaration.range;
+        if (this.declaration.isAny(CommonFlags.EXPORT)) {
+            this.export = "export ";
+        }
         this.doc = DecoratorUtil.getDoc(this.declaration);
         this.className = clzPrototype.name;
         this.camelName = Strings.lowerFirstCase(this.className);
@@ -92,12 +96,11 @@ export class ContractInterpreter extends ClassInterpreter {
     version: string;
     cntrFuncDefs: FunctionDef[] = [];
     msgFuncDefs: FunctionDef[] = [];
-    isExport = false;
 
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.version = "1.0";
-        this.isExport = this.declaration.isAny(CommonFlags.EXPORT);
+        this.resolveFieldMembers();
         this.resolveContractClass();
     }
 

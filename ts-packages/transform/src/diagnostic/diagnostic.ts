@@ -31,10 +31,11 @@ export class ProgramDiagnostic {
 
     constructor(contract: ContractProgram) {
         this.contract = contract;
-        this.resolve();
+        this.checkDuplicateMesssage();
+        this.checkDuplicateStorableInstace();
     }
 
-    private resolve(): void {
+    private checkDuplicateMesssage(): void {
         let messageMap: Map<string, FunctionDef> = new Map();
         let finalMsgFunc: FunctionDef[] = [];
         this.contract.contract.msgFuncDefs.forEach(item => {
@@ -55,4 +56,23 @@ export class ProgramDiagnostic {
         });
     }
 
+    private checkDuplicateStorableInstace(): void {
+        let fields = this.contract.contract.fields;
+        let stores = this.contract.storages;
+        let countInstanceMap = new Map<string, number>();
+        stores.forEach(item => {
+            countInstanceMap.set(item.classPrototype.internalName, 0);
+        });
+        fields.forEach(item => {
+            let name = item.type.current.internalName;
+            if (countInstanceMap.has(name)) {
+                let count = countInstanceMap.get(name) || 0;
+                count ++;
+                if (count > 1) {
+                    throw new Error(`Contract has duplicate storable class: ${item.type.current.name} instance.`);
+                }
+                countInstanceMap.set(name, count);
+            }
+        });
+    }
 }

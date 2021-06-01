@@ -3,7 +3,7 @@ import { CONFIG } from "../config/compile";
 let scope = CONFIG.scope;
 
 export const codecTpl = `
-class {{className}} implements ${scope}Codec {
+{{export}}class {{className}} implements ${scope}Codec {
 
     {{#each fields}}
     {{rangeString}}

@@ -1,4 +1,4 @@
-export const dynamicTpl = `class {{className}} {
+export const dynamicTpl = `{{export}}class {{className}} {
     addr: AccountId;
     constructor(addr: AccountId) {
         this.addr = addr;

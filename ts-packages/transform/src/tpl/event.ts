@@ -2,7 +2,7 @@ import { CONFIG } from "../config/compile";
 
 let scope = CONFIG.scope;
 
-export const eventTpl = `class {{className}} extends ${scope}Event {
+export const eventTpl = `{{export}}class {{className}} extends ${scope}Event {
   {{#each fields}}
   private {{name}}: {{type.plainType}};
   {{/each}}
