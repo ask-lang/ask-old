@@ -9,11 +9,10 @@ import {
     FunctionPrototype,
     Range,
     DecoratorNode,
-    DeclarationStatement,
     FunctionDeclaration
 } from "assemblyscript";
 
-import { AstUtil, ElementUtil } from "../utils/utils";
+import { AstUtil, DecoratorUtil, ElementUtil } from "../utils/utils";
 import { Strings } from "../utils/primitiveutil";
 import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "contract-metadata/src";
 import { KeySelector } from "../preprocess/selector";
@@ -171,8 +170,10 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
                     this.payable = true;
                 } else if (identifier == 'mutates') {
                     this.mutates = AstUtil.getBinaryExprRight(expression);
+                    DecoratorUtil.checkMutates(decorator, this.mutates);
                 } else if (identifier == 'selector') {
                     this.selector = Strings.removeQuotation(AstUtil.getBinaryExprRight(expression));
+                    DecoratorUtil.checkSelecrot(decorator, this.selector);
                 }
             });
         }
@@ -237,9 +238,10 @@ export class ConstructorDef extends FunctionDef {
     
     constructor(funcPrototype: FunctionPrototype) {
         super(funcPrototype);
+        AstUtil.checkPublic(this.declaration);
     }
 
-    public  createMetadata(): ConstructorSpec {
+    public createMetadata(): ConstructorSpec {
         let args: ArgumentSpec[] = this.parameters.map(item => {
             let type = new TypeSpec(item.type.index, item.type.plainType);
             return new ArgumentSpec(type, item.name);
@@ -247,27 +249,6 @@ export class ConstructorDef extends FunctionDef {
         return new ConstructorSpec([this.methodName],
             new KeySelector(this.methodName).short,
             args, this.doc);
-    }
-}
-
-export class DecoratorUtil {
-    public static parseDeclaration(statement: DeclarationStatement): void {
-        let decoratorDefs: DecoratorNodeDef[] = [];
-        if (statement.decorators) {
-            let decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.MESSAGE);
-            if (decorator) {
-                decoratorDefs.push(new MessageDecoratorNodeDef(decorator));
-            }
-            decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.DOC);
-            if (decorator) {
-                decoratorDefs.push(new DocDecoratorNodeDef(decorator));
-            }
-        }
-    }
-
-    public static getDoc(statement: DeclarationStatement): string[] {
-        let decortor = AstUtil.getDocDecorator(statement);
-        return decortor == null ? [Strings.EMPTY] : [new DocDecoratorNodeDef(decortor).doc];
     }
 }
 
@@ -280,6 +261,7 @@ export class MessageFunctionDef extends FunctionDef {
 
     constructor(funcPrototype: FunctionPrototype) {
         super(funcPrototype);
+        AstUtil.checkPublic(this.declaration);
         let msgDecorator = AstUtil.getSpecifyDecorator(funcPrototype.declaration, ContractDecoratorKind.MESSAGE);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.messageDecorator = new MessageDecoratorNodeDef(msgDecorator!);

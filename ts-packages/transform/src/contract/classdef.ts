@@ -15,10 +15,10 @@ import {
     ToMetadata
 } from "contract-metadata/src/index";
 
-import { ElementUtil } from "../utils/utils";
+import { ElementUtil, DecoratorUtil } from "../utils/utils";
 
 import { Strings } from "../utils/primitiveutil";
-import { ConstructorDef, DecoratorUtil, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
+import { ConstructorDef, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
 import { CellLayout, FieldLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
 

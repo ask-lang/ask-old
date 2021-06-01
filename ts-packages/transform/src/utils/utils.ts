@@ -15,8 +15,11 @@ import {
     BinaryExpression,
     SourceKind,
     FieldPrototype,
-    NamedTypeNode
+    NamedTypeNode,
+    Range,
+    CommonFlags
 } from "assemblyscript";
+import { DecoratorNodeDef, DocDecoratorNodeDef, MessageDecoratorNodeDef } from "../contract/elementdef";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { Strings } from "./primitiveutil";
 
@@ -222,17 +225,6 @@ export class AstUtil {
     }
 
     /**
-       * Get the node internal name
-       * @param node The program node
-       */
-    static getInternalName(node: Node): string {
-        var internalPath = node.range.source.internalPath;
-        var name = node.range.toString();
-        var internalName = `${internalPath}/${name}`;
-        return internalName.replace(",", "_");
-    }
-
-    /**
        * Get the basic type name
        * If the type name is string[], so the basic type name is string
        * @param declareType
@@ -272,13 +264,57 @@ export class AstUtil {
             || declareType == "PackedStorableMap";
     }
 
-    static isClassPrototype(element: Element): boolean {
-        return element.kind == ElementKind.CLASS_PROTOTYPE;
+    static checkPublic(declaration: ClassDeclaration): void {
+        if (declaration.isAny(CommonFlags.PRIVATE)) {
+            throw new Error(`Method: ${declaration.name.range.toString()} should be public. Trace: ${RangeUtil.location(declaration.range)}.`);
+        }
+    }
+}
+export class RangeUtil {
+    public static location(range: Range): string {
+        return `content:  ${range.toString()} path:${range.source.normalizedPath}
+            lineAt: ${range.source.lineAt(range.start)} columnAt: ${range.source.columnAt()}
+            range: (${range.start.toString(10)} ${range.end.toString(10)}).`;
+    }
+}
+
+export class DecoratorUtil {
+    public static parseDeclaration(statement: DeclarationStatement): void {
+        let decoratorDefs: DecoratorNodeDef[] = [];
+        if (statement.decorators) {
+            let decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.MESSAGE);
+            if (decorator) {
+                decoratorDefs.push(new MessageDecoratorNodeDef(decorator));
+            }
+            decorator = AstUtil.getSpecifyDecorator(statement, ContractDecoratorKind.DOC);
+            if (decorator) {
+                decoratorDefs.push(new DocDecoratorNodeDef(decorator));
+            }
+        }
     }
 
-    static isSpecifyElement(element: Element, kind: ElementKind): boolean {
-        return element.kind == kind;
+    public static getDoc(statement: DeclarationStatement): string[] {
+        let decortor = AstUtil.getDocDecorator(statement);
+        return decortor == null ? [Strings.EMPTY] : [new DocDecoratorNodeDef(decortor).doc];
     }
 
-    
+    public static checkSelecrot(decorator: DecoratorNode, selector: string): void {
+        let isLegal = false;
+        if (selector) {
+            var re = /0x[0-9A-Fa-f]{8}/g;
+            if (re.test(selector)) {
+                isLegal = true;
+            }
+        }
+        if (!isLegal) {
+            throw new Error(`Decorator: ${decorator.name.range.toString()} argument selector should be start with 0x hex string(4 Bytes). Trace: ${RangeUtil.location(decorator.range)} `);
+        }
+    }
+
+    public static checkMutates(decorator: DecoratorNode, val: string): void {
+        let isLegal = (val == 'false') || (val == 'true');
+        if (!isLegal) {
+            throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates should be false/true. Trace: ${RangeUtil.location(decorator.range)} `);
+        }
+    }
 }
