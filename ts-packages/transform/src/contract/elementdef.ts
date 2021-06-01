@@ -275,6 +275,7 @@ export class MessageFunctionDef extends FunctionDef {
     messageDecorator: MessageDecoratorNodeDef;
     bodyRange: Range;
     mutatable = true;
+    selector: KeySelector;
     metadata: MessageSpec;
 
     constructor(funcPrototype: FunctionPrototype) {
@@ -283,9 +284,13 @@ export class MessageFunctionDef extends FunctionDef {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.messageDecorator = new MessageDecoratorNodeDef(msgDecorator!);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.selector = new KeySelector(this.methodName);
         this.bodyRange = this.funcProto.bodyNode!.range;
         if (this.messageDecorator.mutates == "false") {
             this.mutatable = false;
+        } 
+        if (this.messageDecorator.selector) {
+            this.selector.setShortHex(this.messageDecorator.selector);
         }
         this.metadata = this.createMetadata();
     }
@@ -296,7 +301,7 @@ export class MessageFunctionDef extends FunctionDef {
             return new ArgumentSpec(type!, item.name);
         });
         let msgSpec = new MessageSpec([this.methodName],
-            new KeySelector(this.methodName).short,
+            this.selector.short,
             args,
             MetadataUtil.createTypeSpec(this.returnType), this.doc);
         msgSpec.setMutates(this.mutatable);

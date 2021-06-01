@@ -234,27 +234,6 @@ Handlebars.registerHelper("selector", function (context, options) {
 });
 
 /**
- * Register the tag of selector.
- * if exist the selector using the selector otherwise create the selector 
- * according to the key.
- * 
- */
-Handlebars.registerHelper("existSelector", function (key, existSelector, options) {
-    let data = {};
-    if (existSelector) {
-        let selectorArr = [];
-        for (let index = 0; index < 4; index++) {
-            selectorArr.push("0x" + existSelector.substring(index * 2 + 2, index * 2 + 4));
-        }
-        data.short = `${existSelector}`;
-        data.shortArr = `[${selectorArr.join(",")}]`;
-    } else {
-        data = new KeySelector(key);
-    }
-    return options.fn(data);
-});
-
-/**
  * Register the tag of join.
  */
 Handlebars.registerHelper("joinParams", function (context) {
