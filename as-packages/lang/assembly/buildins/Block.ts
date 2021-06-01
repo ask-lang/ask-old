@@ -20,12 +20,12 @@ class Block {
         return this._timestamp!.unwrap();
     }
 
-    get number(): BlockNumber {
+    get number(): u32 {
         if (this._number === null) {
-            this._number = ReadBuffer.readInstance<UInt32>(seal_block_number).unwrap();
+            this._number = ReadBuffer.readInstance<UInt32>(seal_block_number);
         }
 
-        return this._number!;
+        return this._number!.unwrap();
     }
 }
 

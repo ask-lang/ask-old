@@ -11,15 +11,11 @@ class Primitives {
   vu32: u32;
   vi64: i64;
   vu64: u64;
-  // vi128: i128;
+  vi128: i128;
   vu128: u128;
   vbool: bool;
   vstr:  string;
 }
-
-// FIXME (liangqin.fan)
-// the i128 can not be compiled because of some little pitfalls,
-// there is the detail: https://github.com/MaxGraey/as-bignum/issues/67
 
 @contract
 class PrimitivesTest {
@@ -114,15 +110,15 @@ class PrimitivesTest {
     return this.primitives.vu64;
   }
 
-  // @message
-  // setI128(vi128: i128): void {
-  //   this.primitives.vi128 = vi128;
-  // }
+  @message
+  setI128(vi128: i128): void {
+    this.primitives.vi128 = vi128;
+  }
 
-  // @message(mutates=false)
-  // getI128(): i128 {
-  //   return this.primitives.vi128;
-  // }
+  @message(mutates=false)
+  getI128(): i128 {
+    return this.primitives.vi128;
+  }
 
   @message
   setU128(vu128: u128): void {
