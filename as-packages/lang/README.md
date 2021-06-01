@@ -1,3 +1,3 @@
  # Framework
 
-Framework封装substrate链上的能力, 导出api, 并封装成组件
+Framework seals api for substrate, and provides some functional components.

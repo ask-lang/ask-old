@@ -5,6 +5,7 @@ logs
 *.wasm
 *.wast
 target
+extension
 .vscode
 npm-debug.log*
 yarn-debug.log*

@@ -45,15 +45,14 @@ if (/\bask$/.test(process.argv[1])) {
                 let dirname = path.dirname(sourcePath);
                 let wasmPath = path.join(dirname, "target", "target.wasm");
                 let wastPath = path.join(dirname, "target", "target.wast");
-
                 args.push("-b", wasmPath)
-                args.push("-t", wastPath);
+                args.push("-t", wastPath)
                 const ascOption = require("ask-transform/src/ascOption.js");
                 let apiOption = new ascOption.APIOptionImpl();
                 asc.main(args, apiOption);
                 apiOption.writeExtensionFile();
                 console.log("Build Done. Targets generated");
-            }        
+            }
         });
         return process.exitCode
     });
