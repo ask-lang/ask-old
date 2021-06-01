@@ -1,6 +1,8 @@
+import { CONFIG } from "../config/compile";
+const scope = CONFIG.scope;
 export const dynamicTpl = `{{export}}class {{className}} {
-    addr: AccountId;
-    constructor(addr: AccountId) {
+    addr: ${scope}AccountId;
+    constructor(addr: ${scope}AccountId) {
         this.addr = addr;
     }
     {{#each functions}}

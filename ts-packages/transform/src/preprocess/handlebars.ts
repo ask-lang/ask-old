@@ -49,7 +49,6 @@ function toTypeValue(type: NamedTypeNodeDef, varname: string): string {
     }
 }
 
-
 function convertBytesToType(typeNode: NamedTypeNodeDef | null) {
     if (!typeNode) {
         return "";
@@ -258,11 +257,17 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
         funParams.push(`p${i}: ${param.type.plainType}`);
         funVarious.push(convertToCodec(param.type, `p${i}`));
     }
-    let func = `${fn.methodName}(${funParams.join(",")}): ${fn.isReturnable ? fn.returnType?.plainType : "void"} {
-        ${fn.isReturnable ? "let rs = " : ""}${CONFIG.scope}Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);
-        ${convertBytesToType(fn.returnType)}
-    }`;
-    return func;
+    let code: string[] = [];
+    code.push(`${ fn.methodName }(${ funParams.join(",") }): ${ fn.isReturnable ? fn.returnType?.plainType : "void" } {`);
+    code.push(`     let data = ${CONFIG.scope}Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);`);
+    if (fn.isReturnable) {
+        code.push(`         let rs = this.addr.call(data);`);
+        code.push(`         ${convertBytesToType(fn.returnType)}`);
+    } else {
+        code.push(`         this.addr.call(data);`);
+    }
+    code.push(`     }`);
+    return code.join(EOL);
 });
 
 /**
