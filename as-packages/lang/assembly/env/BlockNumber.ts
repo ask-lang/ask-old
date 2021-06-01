@@ -3,6 +3,5 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt64 } from "as-scale-codec";
 
-export type BlockNumber = UInt64;
+export type BlockNumber = u32;

@@ -3,12 +3,12 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt64 } from "as-scale-codec";
+import { UInt32, UInt64 } from "as-scale-codec";
 import { BlockNumber } from "../env";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_block_number, seal_now } from "as-contract-runtime";
 
-export class Block {
+class Block {
     private _timestamp: UInt64 | null = null;
     private _number: BlockNumber | null = null;
 
@@ -20,11 +20,13 @@ export class Block {
         return this._timestamp!.unwrap();
     }
 
-    get number(): u64 {
+    get number(): BlockNumber {
         if (this._number === null) {
-            this._number = ReadBuffer.readInstance<UInt64>(seal_block_number);
+            this._number = ReadBuffer.readInstance<UInt32>(seal_block_number).unwrap();
         }
 
-        return this._number!.unwrap();
+        return this._number!;
     }
 }
+
+export const block = new Block();
