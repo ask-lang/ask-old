@@ -167,7 +167,7 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   }
 
   private itemStoredPosition(key: K): Hash {
-      let pos = this.keyPrefix + String.UTF8.decode(key.toU8a().buffer);
+      let pos = this.keyPrefix + String.UTF8.decode(changetype<ArrayBuffer>(key.toU8a().dataStart));
       return Crypto.blake256s(pos);
   }
 
@@ -225,7 +225,7 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
           let newHead: DoubleLinkKVStore<K, V>;
           let size: i32 = 0;
           let entryInfo = this.loadMapEntry();
-          if (entryInfo == null) {
+          if (!entryInfo) {
               newHead = new DoubleLinkKVStore<K, V>(key, value, NullHash, NullHash);
               size++;
           } else {

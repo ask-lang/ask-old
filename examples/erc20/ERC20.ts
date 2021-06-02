@@ -145,7 +145,9 @@ export class ERC20 {
 
   protected _burn(account: AccountId, amount: u128): void {
     assert(account.notEq(AccountId0), "ERC20: burn from the zero address");
-    let leftValue = this.storage.balances.get(account).unwrap() - amount;
+    let balanceOfAccount = this.storage.balances.get(account).unwrap();
+    assert(balanceOfAccount >= amount, "ERC20: not enough balance to bure.");
+    let leftValue = balanceOfAccount - amount;
     this.storage.balances.set(account, new UInt128(leftValue));
     this.storage.totalSupply -= amount;
     (new Transfer(account, AccountId0, amount));

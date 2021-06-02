@@ -14,9 +14,8 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
       this.keyPrefix = prefix;
       this.arrayInner = new Array<T>(capacity);
 
-      if (capacity == 0) {
-          let v = this.loadArrayEntry();
-          if (v) { this.arrayInner.length = v.arrayLength; }
+      if (prefix.length != 0 && capacity == 0) {
+          this.initArrayInner();
       }
 
       this.synced = false;
@@ -39,6 +38,7 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
       let s: ScaleString = new ScaleString();
       s.populateFromBytes(bytes, index);
       this.keyPrefix = s.toString();
+      if (this.keyPrefix.length != 0) this.initArrayInner();
   }
 
   eq(other: SpreadStorableArray<T>): bool {
@@ -47,6 +47,11 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
 
   notEq(other: SpreadStorableArray<T>): bool {
       return !this.eq(other);
+  }
+
+  private initArrayInner(): void {
+    let v = this.loadArrayEntry();
+    if (v) { this.arrayInner.length = v.arrayLength; }
   }
 
   protected loadArrayEntry(): ArrayEntry | null {
@@ -71,7 +76,12 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
   }
 
   get length(): i32 {
-      return this.arrayInner.length;
+      let len = this.arrayInner.length;
+      if (len == 0) {
+          let entry = this.loadArrayEntry();
+          if (entry) len = entry.arrayLength;
+      }
+      return len;
   }
 
   get entryKey(): string {
