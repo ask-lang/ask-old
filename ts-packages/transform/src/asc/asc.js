@@ -711,7 +711,9 @@ exports.main = function main(argv, options, callback) {
             }
         }
         // No such file
-        if (sourceText == null) return null;
+        if (sourceText == null) {
+            throw new Error("Source of file '" + internalPath + "' not found.")
+            return null;}
         return { sourceText, sourcePath };
     }
 

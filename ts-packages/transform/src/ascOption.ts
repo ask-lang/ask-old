@@ -24,7 +24,6 @@ export class APIOptionImpl implements APIOptions {
                 extCodes!.sort((a: ModifyPoint, b: ModifyPoint) => (b.range.end - a.range.end)).forEach(item => {
                     text = this.modifySourceText(text, item);
                 });
-                console.log(`extension file text: ${text}`);
             }
             return text;
         } catch (e) {

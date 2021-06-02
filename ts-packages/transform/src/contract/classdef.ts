@@ -19,8 +19,11 @@ import { ElementUtil, DecoratorUtil } from "../utils/utils";
 
 import { Strings } from "../utils/primitiveutil";
 import { ConstructorDef, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
-import { CellLayout, FieldLayout } from "contract-metadata/src/layouts";
+import { ArrayLayout, CellLayout, FieldLayout, StructLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
+import { TypeHelper } from "../utils/typeutil";
+import { TypeKindEnum } from "../enums/customtype";
+import { KeySelector } from "../preprocess/selector";
 
 export interface Matadata {
     /**
@@ -167,10 +170,24 @@ export class StorageInterpreter extends ClassInterpreter  {
     }
 
     createMetadata(): FieldLayout[] {
-        return this.fields.map(item => {
-            let layout = new CellLayout(item.selector.hex, item.type.index);
-            return new FieldLayout(item.name, layout);
-        });    
+        return this.fields.filter(item => item.decorators.isIgnore == false).map(field => {
+            if (TypeHelper.isPrimitiveType(field.type.typeKind)) {
+                let layout = new CellLayout(field.selector.hex, field.type.index);
+                return new FieldLayout(field.name, layout);
+            } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
+                let argu = field.type.typeArguments[0];
+                let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
+                let lenFieldLayout = new FieldLayout("len", lenCellLayout);
+
+                let arrLayout = new ArrayLayout(field.selector.key, field.type.capacity, 1, lenCellLayout);
+                let arrFiledLayout = new FieldLayout("elems", arrLayout);
+
+                let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
+                return new FieldLayout(field.name, arrStruct);
+            } 
+            let layout = new CellLayout(field.selector.hex, field.type.index);
+            return new FieldLayout(field.name, layout);
+        });
     }
 }
 

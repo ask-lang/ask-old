@@ -33,7 +33,7 @@ const ARGS = [
 ]
 
 if (/\bask$/.test(process.argv[1])) {
-    console.log("Build Starting ····")
+    console.log("Build Starting ······")
     asc.ready.then(() => {
         let args = process.argv.slice(2).concat(ARGS);
         process.exitCode = asc.main(args);
@@ -41,7 +41,7 @@ if (/\bask$/.test(process.argv[1])) {
             args.pop(), args.pop();
             let sourcePath = process.argv[2];
             if (sourcePath) {
-                console.log("Build progressing. Generating wasm file.")
+                console.log("Build progressing. Generating target files ······")
                 let dirname = path.dirname(sourcePath);
                 let wasmPath = path.join(dirname, "target", "target.wasm");
                 let wastPath = path.join(dirname, "target", "target.wast");
@@ -51,7 +51,7 @@ if (/\bask$/.test(process.argv[1])) {
                 let apiOption = new ascOption.APIOptionImpl();
                 asc.main(args, apiOption);
                 apiOption.writeExtensionFile();
-                console.log("Build Done. Targets generated");
+                console.log(`Build Done. Targets generated. Target directory: ${path.join(dirname, "target")}.`);
             }
         });
         return process.exitCode

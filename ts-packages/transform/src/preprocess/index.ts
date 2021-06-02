@@ -91,6 +91,5 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
 
 export function getAbiInfo(abiInfo: ContractProgram): string {
     let metadata = JSON.stringify(abiInfo.metatdata.toMetadata(), null, 2);
-    console.log(`metadata: ${metadata}`);
     return metadata;
 }
