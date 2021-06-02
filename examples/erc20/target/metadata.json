@@ -6,7 +6,7 @@
     "compiler": "ask v0.1"
   },
   "contract": {
-    "name": "myToken",
+    "name": "eRC20",
     "version": "1.0",
     "authors": [],
     "description": null,
@@ -45,73 +45,19 @@
           "default"
         ],
         "selector": "0xed4b9d1b"
+      },
+      {
+        "args": [],
+        "docs": [
+          ""
+        ],
+        "name": [
+          "new"
+        ],
+        "selector": "0x9bae9d5e"
       }
     ],
     "messages": [
-      {
-        "mutates": true,
-        "payable": false,
-        "args": [
-          {
-            "type": {
-              "type": 2,
-              "displayName": [
-                "AccountId"
-              ]
-            },
-            "name": "to"
-          },
-          {
-            "type": {
-              "type": 3,
-              "displayName": [
-                "u128"
-              ]
-            },
-            "name": "amount"
-          }
-        ],
-        "returnType": null,
-        "docs": [
-          ""
-        ],
-        "name": [
-          "mint"
-        ],
-        "selector": "0xcfdd9aa2"
-      },
-      {
-        "mutates": true,
-        "payable": false,
-        "args": [
-          {
-            "type": {
-              "type": 2,
-              "displayName": [
-                "AccountId"
-              ]
-            },
-            "name": "from"
-          },
-          {
-            "type": {
-              "type": 3,
-              "displayName": [
-                "u128"
-              ]
-            },
-            "name": "amount"
-          }
-        ],
-        "returnType": null,
-        "docs": [
-          ""
-        ],
-        "name": [
-          "burn"
-        ],
-        "selector": "0xb1efc17b"
-      },
       {
         "mutates": false,
         "payable": false,
@@ -153,7 +99,7 @@
         "payable": false,
         "args": [],
         "returnType": {
-          "type": 4,
+          "type": 2,
           "displayName": [
             "u8"
           ]
@@ -190,7 +136,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -218,7 +164,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -236,7 +182,7 @@
           }
         ],
         "returnType": {
-          "type": 5,
+          "type": 6,
           "displayName": [
             "bool"
           ]
@@ -255,7 +201,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -264,7 +210,7 @@
           },
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -292,7 +238,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -310,7 +256,7 @@
           }
         ],
         "returnType": {
-          "type": 5,
+          "type": 6,
           "displayName": [
             "bool"
           ]
@@ -329,7 +275,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -338,7 +284,7 @@
           },
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -356,7 +302,7 @@
           }
         ],
         "returnType": {
-          "type": 5,
+          "type": 6,
           "displayName": [
             "bool"
           ]
@@ -375,7 +321,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -393,7 +339,7 @@
           }
         ],
         "returnType": {
-          "type": 5,
+          "type": 6,
           "displayName": [
             "bool"
           ]
@@ -412,7 +358,7 @@
         "args": [
           {
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -430,7 +376,7 @@
           }
         ],
         "returnType": {
-          "type": 5,
+          "type": 6,
           "displayName": [
             "bool"
           ]
@@ -451,7 +397,7 @@
           {
             "indexed": true,
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -464,7 +410,7 @@
           {
             "indexed": true,
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -496,7 +442,7 @@
           {
             "indexed": true,
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -509,7 +455,7 @@
           {
             "indexed": true,
             "type": {
-              "type": 2,
+              "type": 4,
               "displayName": [
                 "AccountId"
               ]
@@ -546,17 +492,8 @@
     },
     {
       "def": {
-        "composite": {
-          "fields": [
-            {
-              "type": 6
-            }
-          ]
-        }
-      },
-      "path": [
-        "AccountId"
-      ]
+        "primitive": "u8"
+      }
     },
     {
       "def": {
@@ -565,7 +502,21 @@
     },
     {
       "def": {
-        "primitive": "u8"
+        "composite": {
+          "fields": [
+            {
+              "type": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "def": {
+        "array": {
+          "len": 0,
+          "type": 2
+        }
       }
     },
     {
@@ -575,9 +526,33 @@
     },
     {
       "def": {
-        "array": {
-          "len": 32,
-          "type": 4
+        "composite": {
+          "fields": [
+            {
+              "name": "key_index",
+              "type": 4
+            },
+            {
+              "name": "value",
+              "type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "key_index",
+              "type": 4
+            },
+            {
+              "name": "value",
+              "type": 7
+            }
+          ]
         }
       }
     }
@@ -588,43 +563,43 @@
         {
           "name": "balances",
           "layout": {
-            "key": "0xf4003a5b036c1551127c89d613b11daf0675575b8036c916230907bdf6f02360",
-            "ty": 6
+            "key": "0x58d8f9e302c96c2591d3e17e8f3a7a4ff8cc85b35f3346006026a6e8b27baeea",
+            "ty": 7
           }
         },
         {
           "name": "allowances",
           "layout": {
-            "key": "0x8854857695b661783aa9f97df112fb1d4f54448bbeaf623d175b6e139384226e",
-            "ty": 7
+            "key": "0xea8448d2e9027d596b2de7caade73cb33f8259c419a35e4c327b75e970f74284",
+            "ty": 8
           }
         },
         {
           "name": "totalSupply",
           "layout": {
-            "key": "0xaf9773139e314437b7fa8343f0af521f08d2f1bd5705e87cdefe3f1f7fdd449d",
+            "key": "0xcee165dd0ce68324cf70a5f962d9f7729b5bc508cd9348fc273f1384345e13b1",
             "ty": 3
           }
         },
         {
           "name": "name",
           "layout": {
-            "key": "0xe417ef1bd2f99fe3fa0d2ee6dcf07a1fad47e5d5cc28d4e8c82df9bde0f2362b",
+            "key": "0x77c7ccf920d05b029d50f8b20844884358dcedb568bf56883c1a059f3202900a",
             "ty": 1
           }
         },
         {
           "name": "symbol",
           "layout": {
-            "key": "0xb6196824408119e3703c6702bc23f619abdb68a0531c2e7afb30870e5d20ae92",
+            "key": "0x4919f4c00f5d868154136f8e62405c203f5c55b4b5b113c27a0dd4d14eb3947b",
             "ty": 1
           }
         },
         {
           "name": "decimal",
           "layout": {
-            "key": "0x36204ac0b19f16b1fe82139434555bc6b3edec0db33f6ecc1c62af7838f0237b",
-            "ty": 4
+            "key": "0x61bc1950644ff3664bf0f6e45233773ff8b0d180eb205a79e40e2c9fe79ff7ed",
+            "ty": 2
           }
         }
       ]
