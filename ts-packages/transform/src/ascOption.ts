@@ -27,7 +27,7 @@ export class APIOptionImpl implements APIOptions {
             }
             return text;
         } catch (e) {
-            console.log(e);
+            console.log(`Process file: ${filename} failed. Details: ${e}`);
             return null;
         }
     }

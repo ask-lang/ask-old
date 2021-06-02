@@ -17,7 +17,7 @@ function modifySourceText(sourceText, point) {
     } else if (point.mode == preprocess_1.ModifyType.TOP) {
         return point.code + sourceText;
     } else if (point.mode == preprocess_1.ModifyType.DELETE) {
-        sourceText = sourceText.replaceAll(/export\s/i, " ");
+        sourceText = sourceText.replaceAll(/export\s/g, " ");
         return sourceText;
     }
     return sourceText;
