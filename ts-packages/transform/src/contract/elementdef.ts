@@ -152,6 +152,8 @@ export class DocDecoratorNodeDef extends DecoratorNodeDef {
         super(decorator);
         if (this.pairs.has("desc")) {
             this.doc = Strings.removeQuotation(this.pairs.get("desc") || "");
+        } else {
+            DecoratorUtil.throwNoArguException(decorator, "desc");
         }
     }
 }

@@ -38,7 +38,7 @@ export class MetadataGenerator {
             return cntr.createMetadata();
         });
         contract.push(MetadataUtil.createDefaultCntr());
-        return new ContractSpec(contract, message, events, []);
+        return new ContractSpec(contract, message, events, this.contractInfo.contract.doc);
     }
 
     private createStoreLayout(): Layout {

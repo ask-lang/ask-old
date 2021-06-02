@@ -128,7 +128,8 @@ class CollectionTypes {
 }
 
 @contract
-class ArrayUsages {
+@doc(desc = "The contract about embed object")
+class EmbedObject {
     protected types: CollectionTypes;
 
     constructor() {
@@ -141,16 +142,22 @@ class ArrayUsages {
     }
 
     @message
-    setEmbedObjCarAge(age: i8): i8 {
-        return this.types.emObj.car.age = age;
+    setEmbedObjCarAge(age: i8): void {
+        this.types.emObj.car.age = age;
+    }
+
+    @message
+    setEmbedObja(a: i8): void {
+        this.types.emObj.a = a;
     }
 
     @message(mutates = false)
-    readEmbendObja(index: i32): i8 {
+    readEmbendObja(): i8 {
         return this.types.emObj.a;
     }
 
     @message(mutates = false)
+    @doc(desc = "doc about getEmbedObjCarAge")
     getEmbedObjCarAge(): i8 {
         return this.types.emObj.car.age;
     }
