@@ -86,12 +86,12 @@ export class MetadataGenerator {
                 metadataTypes.push(compositeDef);
             } else if (type.typeKind == TypeKindEnum.ARRAY) {
                 let argumentType = type.typeArguments[0];
-                let fieldType = exportedTypeMap.get(argumentType.getTypeKey())!;
+                let arguType = exportedTypeMap.get(argumentType.getTypeKey())!;
                 if (type.capacity == 0) {
-                    let sequence = new SequenceDef(fieldType.index);
+                    let sequence = new SequenceDef(arguType.index);
                     metadataTypes.push(sequence);
                 } else {
-                    let arr = new ArrayDef(fieldType.capacity, fieldType.index);
+                    let arr = new ArrayDef(type.capacity, arguType.index);
                     metadataTypes.push(arr);
                 }
             } else if (type.typeKind == TypeKindEnum.MAP) {
