@@ -57,14 +57,14 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     const render = Handlebars.compile(mainTpl);
     const exportMain = render(contractInfo);
 
-    contractInfo.contract.msgFuncDefs.forEach(item => {
-        let msgFun = <MessageFunctionDef>item;
-        if (msgFun.messageDecorator.mutates == "false") {
-            let body = msgFun.bodyRange.toString();
-            body = body.replace(/{/i, `{\n  ${CONFIG.scope}Storage.mode = ${CONFIG.scope}StoreMode.R;`);
-            sourceModifier.addModifyPoint(new ModifyPoint(msgFun.bodyRange, ModifyType.REPLACE, body));
-        }
-    });
+    // contractInfo.contract.msgFuncDefs.forEach(item => {
+    //     let msgFun = <MessageFunctionDef>item;
+    //     if (msgFun.messageDecorator.mutates == "false") {
+    //         let body = msgFun.bodyRange.toString();
+    //         body = body.replace(/{/i, `{\n  ${CONFIG.scope}Storage.mode = ${CONFIG.scope}StoreMode.R;`);
+    //         sourceModifier.addModifyPoint(new ModifyPoint(msgFun.bodyRange, ModifyType.REPLACE, body));
+    //     }
+    // });
     sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range.source.range, ModifyType.DELETE, 'export'));
     for (let index = 0; index < contractInfo.storages.length; index++) {
         let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);

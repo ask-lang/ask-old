@@ -2,9 +2,9 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Storage, StoreMode, Int8, Codec, ScaleString, u128, UInt128, PackedStorableArray, PackedStorableMap } from "ask-lang";
+import {Int8, Codec, ScaleString, u128, UInt128, PackedStorableArray, PackedStorableMap } from "ask-lang";
 
-class Car implements Codec {
+class Car {
 
     name: string;
     age: i8;
@@ -52,20 +52,19 @@ class Car implements Codec {
     notEq(other: Car): bool {
         return !this.eq(other);
     }
-
 }
-
-
 class EmbedObj implements Codec {
 
     a: i8;
     b: string;
     c: u128;
+    car: Car;
 
-    constructor(a: i8 = 0, b: string = "", c: u128 = u128.Zero) {
+    constructor(a: i8 = 0, b: string = "", c: u128 = u128.Zero, car: Car = new Car) {
         this.a = a;
         this.b = b;
         this.c = c;
+        this.car = car;
     }
 
     toU8a(): u8[] {
@@ -73,10 +72,12 @@ class EmbedObj implements Codec {
         let aWrap = new Int8(this.a);
         let bWrap = new ScaleString(this.b);
         let cWrap = new UInt128(this.c);
+        let car = this.car;
 
         bytes = bytes.concat(aWrap.toU8a())
             .concat(bWrap.toU8a())
-            .concat(cWrap.toU8a());
+            .concat(cWrap.toU8a())
+            .concat(car.toU8a());
         return bytes;
     }
 
@@ -84,8 +85,9 @@ class EmbedObj implements Codec {
         let aWrap = new Int8(this.a);
         let bWrap = new ScaleString(this.b);
         let cWrap = new UInt128(this.c);
+        let car = this.car;
 
-        return aWrap.encodedLength() + bWrap.encodedLength() + cWrap.encodedLength();
+        return aWrap.encodedLength() + bWrap.encodedLength() + cWrap.encodedLength() + car.encodedLength();
     }
 
     populateFromBytes(bytes: u8[], index: i32 = 0): void {
@@ -99,14 +101,18 @@ class EmbedObj implements Codec {
 
         let cWrap = new UInt128();
         cWrap.populateFromBytes(bytes, index);
-
+        index += cWrap.encodedLength();
+        let car = new Car();
+        car.populateFromBytes(bytes, index);
+    
         this.a = aWrap.unwrap();
         this.b = bWrap.toString();
         this.c = cWrap.unwrap();
+        this.car = car;
     }
 
     eq(other: EmbedObj): bool {
-        return this.a == other.a && this.b == other.b && this.c == other.c;
+        return this.a == other.a && this.b == other.b && this.c == other.c && this.car == other.car;
     }
 
     notEq(other: EmbedObj): bool {
@@ -121,7 +127,6 @@ class CollectionTypes {
     emObjMap: PackedStorableMap<ScaleString, EmbedObj>;
 }
 
-
 @contract
 class ArrayUsages {
     protected types: CollectionTypes;
@@ -130,13 +135,24 @@ class ArrayUsages {
         this.types = new CollectionTypes();
     }
     @constructor
-    default(capacity: i32): void {
-
+    default(emObja: i8, emObjb: string): void {
+        this.types.emObj.a = emObja;
+        this.types.emObj.b = emObjb;
     }
+
+    @message
+    setEmbedObjCarAge(age: i8): i8 {
+        return this.types.emObj.car.age = age;
+    }
+
     @message(mutates = false)
-    get(index: i32): i8 {
-        Storage.mode = StoreMode.R;
+    readEmbendObja(index: i32): i8 {
         return this.types.emObj.a;
+    }
+
+    @message(mutates = false)
+    getEmbedObjCarAge(): i8 {
+        return this.types.emObj.car.age;
     }
 }
 

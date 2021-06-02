@@ -26,6 +26,9 @@ export function call(): i32 {
   {{#each contract.msgFuncDefs}}
   const {{methodName}}Selector: u8[] = {{selector.shortArr}};
   if (${scope}msg.isSelector({{methodName}}Selector)) {
+    {{#eq messageDecorator.mutates 'false'}}
+    ${scope}Storage.mode = ${scope}StoreMode.R;
+    {{/eq}}  
     {{#neq parameters.length 0}}
     const fnParameters = new ${scope}FnParameters(${scope}msg.data);
     {{/neq}}
