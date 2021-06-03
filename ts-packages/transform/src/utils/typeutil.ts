@@ -28,9 +28,22 @@ export class TypeHelper {
         ["bool", "Bool"],
         ["boolean", "Bool"],
         ["string", "ScaleString"],
+        ["String", "ScaleString"],
         ["Array", "ScaleArray"],
         ["Map", "ScaleMap"]
     ]);
+
+    /**
+     * If the type is [], rename the array type to 'Array'
+     * @param name 
+     * @returns 
+     */
+    static renameArrayType(name: string): string {
+        if (name.replace(/ /g, "") == `[]`) {
+            return 'Array';
+        }
+        return name;
+    }
 
     static primitiveToAbiMap: Map<string, string> = new Map([
         ["i8", "i8"],

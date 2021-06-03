@@ -33,7 +33,7 @@ export class ProgramDiagnostic {
     constructor(contract: ContractProgram) {
         this.contract = contract;
         this.checkDuplicateMesssage();
-        this.checkDuplicateStorableInstace();
+        this.checkDuplicateStorableInstance();
     }
 
     private checkDuplicateMesssage(): void {
@@ -57,7 +57,7 @@ export class ProgramDiagnostic {
         });
     }
 
-    private checkDuplicateStorableInstace(): void {
+    private checkDuplicateStorableInstance(): void {
         let fields = this.contract.contract.fields;
         let stores = this.contract.storages;
         let countInstanceMap = new Map<string, number>();

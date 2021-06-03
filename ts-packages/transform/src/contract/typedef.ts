@@ -15,39 +15,50 @@ import { ClassInterpreter } from "./classdef";
 import { Strings } from "../utils/primitiveutil";
 import { CONFIG } from "../config/compile";
 import { ElementUtil } from "../utils/utils";
-import { Collections } from "../utils/collectionutil";
+export class NodeTypeInfo {
+    constructor(public isCodec: boolean = false, public type: TypeKindEnum) {}
+}
 
-
-/**
- * Type node description
- */
-export class NamedTypeNodeDef {
+export class BaseNamedTypeDef {
     protected parent: Element;
     protected typeNode: NamedTypeNode;
-    current!: Element;
-    typeKind: TypeKindEnum;
-    typeArguments: NamedTypeNodeDef[] = [];
+    plainTypeNode: string;
     isCodec = true;
-    plainType: string;
-    plainTypeNode: string; // that with argument
-    codecType: string;
-    codecTypeAlias: string; // original contract type
-    // Used for array and map
-    instanceType = ""; // Specify contract type that concrete type
-    definedCodeType = "";
-    abiType: string;
-    index = 0;
-    capacity = 0;
 
     constructor(parent: Element, typeNode: NamedTypeNode) {
         this.parent = parent;
         this.typeNode = typeNode;
         this.plainTypeNode = typeNode.range.toString();
+    }
+}
+
+/**
+ * Type node description
+ * Each type has main type and arguments type.
+ * Argument type is generic type
+ */
+export class NamedTypeNodeDef extends BaseNamedTypeDef {
+    current!: Element;
+    typeKind: TypeKindEnum;
+    typeArguments: NamedTypeNodeDef[] = [];
+    plainType: string; // Main type name
+    codecType: string; // Main type codecType name
+    codecTypeAlias: string; // original contract type
+    // Used for array and map
+    instanceType = ""; // Specify contract type that concrete type
+    definedCodeType = ""; // define Cdoe type
+    abiType: string;
+    index = 0;
+    capacity = 0;
+
+    constructor(parent: Element, typeNode: NamedTypeNode) {
+        super(parent, typeNode);
         this.definedCodeType = this.plainTypeNode;
         this.plainType = typeNode.name.range.toString();
+        this.current = this.getCurrentElement();
         this.typeKind = this.getTypeKind();
         this.abiType = TypeHelper.getAbiType(this.plainType);
-        this.codecType = TypeHelper.getCodecType(this.plainType);
+        this.codecType = TypeHelper.getCodecType(this.current.name);
         this.codecTypeAlias = this.getNameSpace() + this.codecType;
         if (this.typeKind != TypeKindEnum.ARRAY && this.typeKind != TypeKindEnum.MAP) {
             this.plainTypeNode = this.codecTypeAlias;
@@ -118,6 +129,52 @@ export class NamedTypeNodeDef {
         return false;
     }
 
+    private getCurrentElement(): Element {
+        this.plainType = TypeHelper.renameArrayType(this.plainType);
+        let element = this.parent.lookup(this.plainType)!;
+        if (element) {
+            return this.findBuildinElement(element);
+        }
+        return element;
+    }
+
+    private getNodeTypeInfo(buildinElement: Element): NodeTypeInfo {
+        if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
+            return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
+        } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
+            if (buildinElement.name == Strings.VOID) {
+                return new NodeTypeInfo(false, TypeKindEnum.VOID);
+            } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
+                return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
+            }
+            // TODO 
+            console.log(`type info: ${buildinElement.name}`);
+            let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
+            let definitionNode = <NamedTypeNode>declaration.type;
+            // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
+            let name = definitionNode.name.range.toString();
+            let type = TypeHelper.getTypeKindByName(name);
+
+            return new NodeTypeInfo(false, type);
+
+        } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
+            let type = TypeHelper.getTypeKindFromUnCodec(buildinElement.name);
+            if (type) {
+                return new NodeTypeInfo(false, type);
+
+            }
+            let classTypeKind = TypeHelper.getTypeKindByName(buildinElement.name);
+            if (classTypeKind == TypeKindEnum.USER_CLASS) {
+                this.isCodec = ElementUtil.isExtendCodec(buildinElement);
+                return new NodeTypeInfo(true, classTypeKind);
+
+            }
+            return new NodeTypeInfo(false, classTypeKind);
+        }
+        return new NodeTypeInfo(false, TypeKindEnum.USER_CLASS);
+    }
+
+
     /**
      *
      * declare U8Array = Array<u8>
@@ -130,43 +187,39 @@ export class NamedTypeNodeDef {
      * @returns
      */
     getTypeKind(): TypeKindEnum {
-        let element = this.parent.lookup(this.plainType)!;
-        if (!element) {
-            return TypeHelper.getTypeKindByName(this.plainType);
-        }
-        let buildinElement: Element = this.findBuildinElement(element);
-        this.current = buildinElement;
         // console.log(`this.plainType: ${this.plainType}`);
         // if (this.plainType == "[]") {
         //     console.log(`element: ${element}`);
         // }
         // console.log(`buildinElement: ${buildinElement.name}`);
         // console.log(`Element ${ElementKind[buildinElement.kind]}, ${buildinElement.name}, ${this.plainType}`);
-        if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
+        let element = this.current;
+        if (element.kind == ElementKind.FUNCTION_PROTOTYPE) {
             this.isCodec = false;
             return TypeKindEnum.NUMBER;
-        } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
-            if (buildinElement.name == Strings.VOID) {
+        } else if (element.kind == ElementKind.TYPEDEFINITION) {
+            if (element.name == Strings.VOID) {
                 this.isCodec = false;
                 return TypeKindEnum.VOID;
-            } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
+            } else if (TypeHelper.nativeType.includes(element.name)) {
                 this.isCodec = false;
                 return TypeKindEnum.NUMBER;
             }
-            let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
+            // TODO
+            let declaration = <TypeDeclaration>(<TypeDefinition>element).declaration;
             let definitionNode = <NamedTypeNode>declaration.type;
             // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
             let name = definitionNode.name.range.toString();
             return TypeHelper.getTypeKindByName(name);
-        } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-            let type = TypeHelper.getTypeKindFromUnCodec(buildinElement.name);
+        } else if (element.kind == ElementKind.CLASS_PROTOTYPE) {
+            let type = TypeHelper.getTypeKindFromUnCodec(element.name);
             if (type) {
                 this.isCodec = false;
                 return type;
             }
-            let classTypeKind = TypeHelper.getTypeKindByName(buildinElement.name);
+            let classTypeKind = TypeHelper.getTypeKindByName(element.name);
             if (classTypeKind == TypeKindEnum.USER_CLASS) {
-                this.isCodec = ElementUtil.isExtendCodec(buildinElement);
+                this.isCodec = ElementUtil.isExtendCodec(element);
             }
             return classTypeKind;
         }
