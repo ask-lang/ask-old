@@ -1,4 +1,4 @@
-import { AccountId, AccountId0, SpreadStorableMap, u128, UInt128, Log, msg } from "ask-lang";
+import { AccountId, AccountId0, SpreadStorableMap, u128, UInt128, msg } from "ask-lang";
 
 @storage
 class ERC20Storage {
@@ -102,12 +102,10 @@ export class ERC20 {
   @message
   transferFrom(sender: AccountId, recipient: AccountId, amount: u128): bool {
     this._transfer(sender, recipient, amount);
-    Log.println("transfer finished.");
     let allow = this.getAllowanceItem(sender);
     let leftAllowance: u128 = allow.get(msg.sender).unwrap();
     assert(leftAllowance >= amount, "allowance overflow");
     leftAllowance = leftAllowance - amount;
-    Log.println("calculate finished.");
     this._approve(sender, msg.sender, leftAllowance);
     return true;
   }
