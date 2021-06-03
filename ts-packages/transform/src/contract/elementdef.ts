@@ -247,6 +247,9 @@ export class ConstructorDef extends FunctionDef {
     constructor(funcPrototype: FunctionPrototype) {
         super(funcPrototype);
         AstUtil.checkPublic(this.declaration);
+        if (this.isReturnable) {
+            throw new Error(`The method that marked by @constructor should return void type. Please check ${RangeUtil.location(this.declaration.range)}`);
+        }
     }
 
     public createMetadata(): ConstructorSpec {
