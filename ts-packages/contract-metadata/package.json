@@ -6,7 +6,6 @@
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "devDependencies": {
     "ts-jest": "^26.3.0",
-    "@types/blake2": "^4.0.1",
     "assemblyscript": "0.18",
     "@types/node": "14",
     "ts-node": "9",
