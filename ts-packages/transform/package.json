@@ -14,11 +14,8 @@
   },
   "dependencies": {
     "assemblyscript": "0.18",
-    "blake2": "4.0.2",
+    "@polkadot/util-crypto": "^6.6",
     "handlebars": "4.7.6",
     "contract-metadata": "0.1.0"
-  },
-  "devDependencies": {
-    "@types/blake2": "^4.0.1"
   }
 }

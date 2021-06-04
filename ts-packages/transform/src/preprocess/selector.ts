@@ -1,5 +1,4 @@
-import * as blake2 from "blake2";
-
+import { blake2AsHex  } from "@polkadot/util-crypto";
 export class KeySelector {
     hex: string;
     short: string;
@@ -8,9 +7,8 @@ export class KeySelector {
     key: string;
     constructor(key: string) {
         this.key = key;
-        let keyHash = blake2.createHash('blake2b', { digestLength: 32 });
-        keyHash.update(Buffer.from(key));
-        let hexStr = keyHash.digest("hex");
+        // remove 0x
+        let hexStr = blake2AsHex(key, 256).substring(2);
         let selectorArr = [];
         for (let index = 0; index < 32; index++) {
             selectorArr.push("0x" + hexStr.substring(index * 2, index * 2 + 2));
