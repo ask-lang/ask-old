@@ -19,7 +19,7 @@ import { ElementUtil, DecoratorUtil } from "../utils/utils";
 
 import { Strings } from "../utils/primitiveutil";
 import { ConstructorDef, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
-import { ArrayLayout, CellLayout, FieldLayout, StructLayout } from "contract-metadata/src/layouts";
+import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
 import { TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
@@ -170,25 +170,53 @@ export class StorageInterpreter extends ClassInterpreter  {
     }
 
     createMetadata(): FieldLayout[] {
-        return this.fields.filter(item => item.decorators.isIgnore == false).map(field => {
-            if (TypeHelper.isPrimitiveType(field.type.typeKind)) {
-                let layout = new CellLayout(field.selector.hex, field.type.index);
-                return new FieldLayout(field.name, layout);
-            } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
-                let argu = field.type.typeArguments[0];
-                let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
-                let lenFieldLayout = new FieldLayout("len", lenCellLayout);
+        return this.fields.filter(item => item.decorators.isIgnore == false)
+            .map(field => this.getFiledLayout(field));
+    }
 
-                let arrLayout = new ArrayLayout(field.selector.key, field.type.capacity, 1, lenCellLayout);
-                let arrFiledLayout = new FieldLayout("elems", arrLayout);
-
-                let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
-                return new FieldLayout(field.name, arrStruct);
-            } 
+    private getFiledLayout(field: FieldDef): FieldLayout {
+        if (TypeHelper.isPrimitiveType(field.type.typeKind)) {
             let layout = new CellLayout(field.selector.hex, field.type.index);
             return new FieldLayout(field.name, layout);
-        });
+        } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
+            let argu = field.type.typeArguments[0];
+            let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
+            let lenFieldLayout = new FieldLayout("len", lenCellLayout);
+
+            let arrLayout = new ArrayLayout(field.selector.key, field.type.capacity, 1, lenCellLayout);
+            let arrFiledLayout = new FieldLayout("elems", arrLayout);
+
+            let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
+            return new FieldLayout(field.name, arrStruct);
+        } else if (field.type.typeKind == TypeKindEnum.USER_CLASS) {
+            if (field.type.plainType == "AccountId") {
+                let lenCellLayout = new CellLayout(new KeySelector(field.selector.key + field.type.capacity).hex, field.type.index);
+                let lenFieldLayout = new FieldLayout("len", lenCellLayout);
+                let arrLayout = new ArrayLayout(new KeySelector(field.selector.key + ".length").hex, field.type.capacity, 1, lenCellLayout);
+                let arrFiledLayout = new FieldLayout("elems", arrLayout);
+                let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
+                return new FieldLayout(field.name, arrStruct);
+            }
+        } else if (field.type.typeKind == TypeKindEnum.MAP) {
+            let strategy = new HashingStrategy(CryptoHasher.Blake2x256,
+                field.selector.hex, "");
+            let valType = field.type.typeArguments[1];
+            let valLayout = new CellLayout(new KeySelector(field.selector.key + ".value").hex, valType.index);
+            let valHash = new HashLayout(field.selector.hex, strategy, valLayout);
+            let valFieldLayout = new FieldLayout("values", valHash);
+
+            let keyType = field.type.typeArguments[0];
+            let keyLayout = new CellLayout(new KeySelector(field.selector.key + ".key").hex, keyType.index);
+            let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout);
+            let keyFieldLayout = new FieldLayout("values", keyHash);
+
+            let mapLayout = new StructLayout([keyFieldLayout, valFieldLayout]);
+            return new FieldLayout(field.name, mapLayout);
+        }
+        let layout = new CellLayout(field.selector.hex, field.type.index);
+        return new FieldLayout(field.name, layout);
     }
+
 }
 
 export class DynamicIntercepter extends ClassInterpreter {

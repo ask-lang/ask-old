@@ -80,7 +80,7 @@ export class HashingStrategy implements ToMetadata {
         return {
             hasher: this.hasher.toString(),
             prefix: this.prefix,
-            postfix: this.prefix,
+            postfix: this.postfix,
         };
     }
 }
