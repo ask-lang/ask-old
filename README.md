@@ -22,4 +22,4 @@ We have some examples under the examples directory. See [examples/readme](./exam
 
 ## Usage
 
-See our [document](https://substrate-contracts-book-patract.vercel.app/ask/introduction.html)
+See our [document](https://docs.patract.io/en/ask/introduction.html) for a quick start.
