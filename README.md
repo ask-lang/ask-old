@@ -16,14 +16,10 @@ Although AS is a new language that uses TS syntax, there are a wide range of dev
 
 Current proposal for this repo is [Patract's proposal for Ask! v0.2](https://kusama.polkassembly.io/treasury/81)
 
-## Design
-
-> TODO
-
 ## Example
 
-> TODO
+We have some examples under the examples directory. See [examples/readme](./examples/README.md).
 
 ## Usage
 
-> TODO
+See our [document](https://substrate-contracts-book-patract.vercel.app/ask/introduction.html)
