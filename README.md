@@ -14,7 +14,7 @@ Riot Group for disscusion: [https://app.element.io/#/room/#PatractLabsDev:matrix
 
 Although AS is a new language that uses TS syntax, there are a wide range of developers who use TS as a development language, so the cost of learning AS for these developers is very low. Therefore, we think the Ask! project has a very good application development prospect. Compared with Rust-based ink!, we believe that AS-based Ask! can effectively lower the threshold for contract developers and enrich the contract development ecosystem.
 
-Current proposal for this repo is [Patract's proposal for Ask! v0.2](https://kusama.polkassembly.io/treasury/81)
+Current proposal for this repo is [Patract's proposal for Ask! v0.2](https://kusama.polkassembly.io/treasury/81), and the report is [Post #639](https://kusama.polkassembly.io/post/639)
 
 ## Design
 
