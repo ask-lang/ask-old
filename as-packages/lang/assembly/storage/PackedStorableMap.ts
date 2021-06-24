@@ -63,6 +63,8 @@ export class PackedStorableMap<K extends Codec, V extends Codec> implements  Cod
       let s = new ScaleString();
       s.populateFromBytes(bytes, index);
       this.keyPrefix = s.toString();
+      this.valueHash = Crypto.blake256s(this.keyPrefix + ".values");
+      this.loadAllItems();
   }
 
   eq(other: PackedStorableMap<K, V>): bool {
