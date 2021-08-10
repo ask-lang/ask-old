@@ -16,6 +16,6 @@
     "assemblyscript": "0.18",
     "@polkadot/util-crypto": "^6.6",
     "handlebars": "4.7.6",
-    "contract-metadata": "0.1.0"
+    "contract-metadata": "file:../contract-metadata"
   }
 }

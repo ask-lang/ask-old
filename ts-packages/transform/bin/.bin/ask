@@ -16,8 +16,29 @@ try { require("source-map-support").install(); } catch (e) { }
 
 const asc = module.exports = require("ask-transform/src/asc/asc.js");
 // const asc = module.exports = require("assemblyscript/cli/asc.js");
+const sourceFile = process.argv[2];
+const releaseMode = process.argv[3];
+const outputDir = process.argv[4];
+const outputName = process.argv[5];
+
+if (!sourceFile || !releaseMode || !outputDir || !outputName) {
+    console.log(
+    `Usage:
+        ask <source-file> <release-mode> <output-dir> <output-name>
+
+        options:
+            source-file: file to be compiled.
+            release-mode: true of false, false will output debug files.
+            output-dir: an folder where to store output files.
+            output-name: name of output files.
+    `);
+
+    process.exit(1);
+}
+
 const path = require("path");
 const ARGS = [
+    sourceFile,
     "--importMemory",
     "--initialMemory",
     "2",
@@ -27,7 +48,7 @@ const ARGS = [
     "--runtime",
     "--use",
     "abort= ",
-    "-O2",
+    releaseMode ? "-O3z" : "-O2",
     "--transform",
     "ask-transform/index.ts"
 ]
@@ -35,24 +56,23 @@ const ARGS = [
 if (/\bask$/.test(process.argv[1])) {
     console.log("Build Starting ······")
     asc.ready.then(() => {
-        let args = process.argv.slice(2).concat(ARGS);
-        process.exitCode = asc.main(args);
+        process.exitCode = asc.main(ARGS);
         asc.ready.then(()=> {
-            args.pop(), args.pop();
-            let sourcePath = process.argv[2];
-            if (sourcePath) {
                 console.log("Build progressing. Generating target files ······")
-                let dirname = path.dirname(sourcePath);
-                let wasmPath = path.join(dirname, "target", "target.wasm");
-                let wastPath = path.join(dirname, "target", "target.wast");
-                args.push("-b", wasmPath)
-                args.push("-t", wastPath)
+                let wasmPath = path.join(outputDir, `${outputName}.wasm`);
+                ARGS.push("-b", wasmPath)
+                if (!releaseMode) {
+                    let wastPath = path.join(outputDir, `${outputName}.wast`);
+                    ARGS.push("-t", wastPath)
+                }
                 const ascOption = require("ask-transform/src/ascoption.js");
                 let apiOption = new ascOption.APIOptionImpl();
-                asc.main(args, apiOption);
-                apiOption.writeExtensionFile();
-                console.log(`Build Done. Targets generated. Target directory: ${path.join(dirname, "target")}.`);
-            }
+                // TODO: 将metadata.json生成于 `outputDir` 目录下
+                asc.main(ARGS, apiOption);
+                if (!releaseMode) {
+                    apiOption.writeExtensionFile();
+                }
+                console.log(`Build Done. Targets generated. Target directory: ${outputDir}.`);
         });
         return process.exitCode
     });
