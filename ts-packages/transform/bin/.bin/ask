@@ -62,8 +62,9 @@ if (/\bask$/.test(process.argv[1])) {
                 let wasmPath = path.join(outputDir, `${outputName}.wasm`);
                 ARGS.push("-b", wasmPath)
                 if (!releaseMode) {
+                    ARGS.push("--debug"); // to generate debug info in binary code
                     let wastPath = path.join(outputDir, `${outputName}.wast`);
-                    ARGS.push("-t", wastPath)
+                    ARGS.push("-t", wastPath);
                 }
                 const ascOption = require("ask-transform/src/ascoption.js");
                 let apiOption = new ascOption.APIOptionImpl();
