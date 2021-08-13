@@ -1,4 +1,4 @@
-export * from "./AccountId";
+export * from "./Account";
 export * from "./Block";
 export * from "./FnParameters";
 export * from "./Gas";

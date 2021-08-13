@@ -8,10 +8,10 @@ import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_caller, seal_value_transferred } from "as-contract-runtime";
 import { MessageInputReader } from "../primitives/inputdata";
 import { UInt128 } from "as-scale-codec";
-import { AccountId } from "./AccountId";
+import { Account } from ".";
 
 class Msg {
-    private _sender: AccountId | null = null;
+    private _sender: Account | null = null;
     private _value: UInt128 | null = null;
     private _sig: u8[] | null = null;
     private _data: u8[] | null = null;
@@ -31,11 +31,11 @@ class Msg {
         return this._value!.unwrap();
     }
 
-    get sender(): AccountId {
+    get sender(): Account {
         if (this._sender === null) {
             let readbuf = new ReadBuffer(32);
             seal_caller(readbuf.valueBuffer, readbuf.sizeBuffer);
-            this._sender = AccountId.from(readbuf.valueBytes);
+            this._sender = Account.from(readbuf.valueBytes);
         }
 
         return this._sender!;

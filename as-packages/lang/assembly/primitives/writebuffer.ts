@@ -16,7 +16,7 @@ export class WriteBuffer {
             arr.dataStart,
             changetype<usize>(ab),
             ab.byteLength
-            );
+        );
 
         return new WriteBuffer(arr);
     }
