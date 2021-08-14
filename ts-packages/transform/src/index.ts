@@ -3,6 +3,9 @@ import * as preprocess from "./preprocess";
 import { getContractInfo } from "./contract/contract";
 import { Program } from "assemblyscript";
 import * as path from "path";
+import * as fs from "fs";
+import * as mkdirp from "assemblyscript/cli/util/mkdirp";
+
 
 // TODO: refactor to ts code
 export class AskTransform extends Transform {
@@ -27,6 +30,10 @@ export class AskTransform extends Transform {
         out.entryDir = baseDir;
         process.sourceModifier = out;
         const abiPath = path.join(process.outputDir, "metadata.json");
-        this.writeFile(abiPath, abi, baseDir);
+        if (!fs.existsSync(path.dirname(abiPath))) {
+            mkdirp(path.dirname(abiPath));
+        }
+        fs.writeFileSync(abiPath, abi);
+        // this.writeFile(abiPath, abi, baseDir);
     }
 }

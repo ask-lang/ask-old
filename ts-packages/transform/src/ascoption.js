@@ -56,9 +56,10 @@ var APIOptionImpl = /** @class */ (function () {
     APIOptionImpl.prototype.writeExtensionFile = function (baseDir) {
         var sourceModifier = process.sourceModifier ? process.sourceModifier : new preprocess_1.SourceModifier();
         for (let [key, value] of sourceModifier.fileExtension) {
-            baseDir = sourceModifier.entryDir;
-            let filePath = path.join(baseDir, "extension", path.basename(key));
-            if (!fs.existsSync(path.dirname(filePath))) mkdirp(path.dirname(filePath));
+            let filePath = path.join(process.outputDir, "extension", path.basename(key));
+            if (!fs.existsSync(path.dirname(filePath))) { 
+                mkdirp(path.dirname(filePath));
+            }
             fs.writeFileSync(filePath, value);
         }
     };

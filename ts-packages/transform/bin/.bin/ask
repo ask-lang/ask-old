@@ -59,10 +59,11 @@ if (/\bask$/.test(process.argv[1])) {
         process.outputDir = outputDir;
         process.exitCode = asc.main(ARGS);
         asc.ready.then(()=> {
+                ARGS.pop(); ARGS.pop(); // shift ARGS 参数里面的 --transform配置
                 console.log("Build progressing. Generating target files ······")
                 let wasmPath = path.join(outputDir, `${outputName}.wasm`);
                 ARGS.push("-b", wasmPath)
-                if (!releaseMode) {
+                if (releaseMode == 'false') {
                     ARGS.push("--debug"); // to generate debug info in binary code
                     let wastPath = path.join(outputDir, `${outputName}.wast`);
                     ARGS.push("-t", wastPath);
@@ -70,7 +71,7 @@ if (/\bask$/.test(process.argv[1])) {
                 const ascOption = require("ask-transform/src/ascoption.js");
                 let apiOption = new ascOption.APIOptionImpl();
                 asc.main(ARGS, apiOption);
-                if (!releaseMode) {
+                if (releaseMode == 'false') {
                     apiOption.writeExtensionFile();
                 }
                 console.log(`Build Done. Targets generated. Target directory: ${outputDir}.`);
