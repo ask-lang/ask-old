@@ -5,6 +5,15 @@ export class Strings {
     static VOID = "void";
 
     /**
+     * Split the string that return result without empty.
+     * @param str 
+     * @param separator 
+     * @returns 
+     */
+    static splitString(str: string, separator: RegExp): string[] {
+        return str.split(separator).filter(item => item != "");
+    }
+    /**
        * Judge the string whetehr aroud by qutation or not.
        * The charcode of '"' is 0x22
        * @param str The string to judge

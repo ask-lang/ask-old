@@ -4,7 +4,7 @@ import { getContractInfo } from "./contract/contract";
 import { Program } from "assemblyscript";
 import * as path from "path";
 import * as fs from "fs";
-import * as mkdirp from "assemblyscript/cli/util/mkdirp";
+import mkdirp from "assemblyscript/cli/util/mkdirp";
 
 
 // TODO: refactor to ts code

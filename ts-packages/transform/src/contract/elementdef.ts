@@ -126,17 +126,27 @@ export class ParameterNodeDef {
 }
 
 export class DecoratorNodeDef {
-    private decorator: DecoratorNode;
-    pairs: Map<string, string>;
-    constructor(decorator: DecoratorNode) {
-        this.decorator = decorator;
-        this.pairs = new Map<string, string>();
+
+    constructor(decorator: DecoratorNode, public pairs: Map<string, string> = new Map<string, string>()) {
         if (decorator.args) {
             decorator.args.forEach(expression => {
+                // console.log(`expression: ${expression.range.toString()}`);
+                // console.log(`expression kind: ${NodeKind[expression.kind]}`);
                 if (expression.kind == NodeKind.BINARY) {
                     let identifier = AstUtil.getIdentifier(expression);
                     let val = AstUtil.getBinaryExprRight(expression);
                     this.pairs.set(identifier, val);
+                }
+                // TODO using the strick logical
+                if (expression.kind == NodeKind.LITERAL) {
+                    let exp = expression.range.toString().trim();
+                    let regex = new RegExp(/{|}|,/);
+                    regex.test(exp);
+                    let result = Strings.splitString(exp, regex);
+                    for (let item of result) {
+                        let pairItem = item.split(/:/);
+                        this.pairs.set(pairItem[0].trim(), pairItem[1]);
+                    }
                 }
             });
         }

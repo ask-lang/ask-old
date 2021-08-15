@@ -14,6 +14,7 @@ class MyToken extends ERC20 {
     super.default(name, symbol);
   }
 
+
   @message
   @doc(desc = "Mint a token")
   mint(to: Account, amount: u128): void {
