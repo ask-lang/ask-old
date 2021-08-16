@@ -8,7 +8,7 @@ import { u128 } from "as-bignum";
 import { ReturnCode, seal_transfer } from "as-contract-runtime";
 import { AccountId, Balance } from "../env";
 import { WriteBuffer } from "../primitives/writebuffer";
-import { Codec } from "as-scale-codec/";
+import { Codec } from "as-scale-codec";
 /**
  * @class AccountId
  * Class AccountId stands for an address, which should be a storagable type.
@@ -97,4 +97,4 @@ export class Account implements Codec{
     }
 }
 
-export const Account0 = new AccountId();
+export const Account0 = new Account();
