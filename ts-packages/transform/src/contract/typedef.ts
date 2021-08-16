@@ -106,14 +106,14 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
 
     /**
      * Resolve the class type
-     * @param clzPrototype 
-     * @param typeMap 
-     * @returns 
+     * @param clzPrototype
+     * @param typeMap
+     * @returns
      */
     private resolveClassType(clzPrototype: ClassPrototype, typeMap: Map<string, NamedTypeNodeDef>): boolean {
         let interpreter = new ClassInterpreter(clzPrototype);
         interpreter.resolveFieldMembers();
-        if (clzPrototype.name === 'AccountId') {
+        if (clzPrototype.name === 'Account') {
             interpreter.fields.forEach(item => {
                 if (item.type.typeKind == TypeKindEnum.ARRAY) {
                     item.type.capacity = 32;
@@ -147,7 +147,7 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
             } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
                 return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
             }
-            // TODO 
+            // TODO
             console.log(`type info: ${buildinElement.name}`);
             let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
             let definitionNode = <NamedTypeNode>declaration.type;

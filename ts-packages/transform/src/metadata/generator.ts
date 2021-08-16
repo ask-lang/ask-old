@@ -58,7 +58,7 @@ export class MetadataGenerator {
                 let interpreter = new ClassInterpreter(classType);
                 interpreter.resolveFieldMembers();
                 let fieldArr = new Array<Field>();
-                if (interpreter.className === "AccountId") {
+                if (interpreter.className === "Account") {
                     interpreter.fields.forEach(classField => {
                         if (classField.type.typeKind == TypeKindEnum.ARRAY) {
                             classField.type.capacity = 32;
@@ -73,7 +73,7 @@ export class MetadataGenerator {
                     let compositeDef = new CompositeDef(fieldArr);
                     metadataTypes.push(compositeDef);
                     return ;
-                } 
+                }
                 interpreter.fields.forEach(classField => {
                     let name = classField.name;
                     let fieldTypeName = classField.type.getTypeKey();

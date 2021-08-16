@@ -10,12 +10,12 @@
     "build": "rm -rf dist/* && tsc -p tsconfig.json"
   },
   "bin": {
-      "ask": "bin/.bin/ask"
+    "ask": "bin/.bin/ask"
   },
   "dependencies": {
     "assemblyscript": "0.18",
     "@polkadot/util-crypto": "^6.6",
     "handlebars": "4.7.6",
-    "contract-metadata": "file:../contract-metadata"
+    "contract-metadata": "0.1.0"
   }
 }

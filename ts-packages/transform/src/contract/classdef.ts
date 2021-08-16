@@ -189,7 +189,7 @@ export class StorageInterpreter extends ClassInterpreter  {
             let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
             return new FieldLayout(field.name, arrStruct);
         } else if (field.type.typeKind == TypeKindEnum.USER_CLASS) {
-            if (field.type.plainType == "AccountId") {
+            if (field.type.plainType == "Account") {
                 let lenCellLayout = new CellLayout(new KeySelector(field.selector.key + field.type.capacity).hex, field.type.index);
                 let lenFieldLayout = new FieldLayout("len", lenCellLayout);
                 let arrLayout = new ArrayLayout(new KeySelector(field.selector.key + ".length").hex, field.type.capacity, 1, lenCellLayout);
