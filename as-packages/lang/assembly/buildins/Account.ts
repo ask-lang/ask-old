@@ -40,12 +40,17 @@ export function TransferBalance(
 }
 
 export class Account implements Codec{
+
     private _id: AccountId;
 
     static from(uarr: u8[]): Account {
         let account = new Account();
         account._id = AccountId.from(uarr);
         return account;
+    }
+
+    static get Null(): Account {
+        return NullAccount;
     }
 
     constructor(id: AccountId = new AccountId(new Array<u8>(32).fill(0))) {
@@ -97,4 +102,4 @@ export class Account implements Codec{
     }
 }
 
-export const Account0 = new Account();
+const NullAccount = new Account();

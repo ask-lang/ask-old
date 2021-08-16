@@ -1,4 +1,4 @@
-import { Account, Account0, Bool, msg, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
+import { Account, Bool, msg, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
 
 @storage
 class ERC721Storage {
@@ -24,8 +24,8 @@ class ERC721Storage {
   * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
   */
 @event class Transfer {
-  @topic from: Account = Account0;
-  @topic to: Account = Account0;
+  @topic from: Account = Account.Null;
+  @topic to: Account = Account.Null;
   @topic tokenId: u128 = u128.Zero;
 
   constructor(from: Account, to: Account, tokenId: u128) {
@@ -87,7 +87,7 @@ export class ERC721 {
 
   @message(mutates = false)
   balanceOf(owner: Account): i32 {
-    assert(owner.notEq(Account0), "ERC721: balance query for the zero address");
+    assert(owner.notEq(Account.Null), "ERC721: balance query for the zero address");
 
     return this.storage._holderTokens.get(owner).length;
   }
@@ -289,13 +289,13 @@ export class ERC721 {
    * Emits a {Transfer} event.
    */
   protected _mint(to: Account, tokenId: u128): void {
-    assert(to.notEq(Account0), "ERC721: mint to the zero address");
+    assert(to.notEq(Account.Null), "ERC721: mint to the zero address");
     assert(!this._exists(tokenId), "ERC721: token already minted");
 
     this._getHolderTokens(to).push(new UInt128(tokenId));
     this.storage._tokenOwners.set(new UInt128(tokenId), to);
 
-    (new Transfer(Account0, to, tokenId));
+    (new Transfer(Account.Null, to, tokenId));
   }
 
   /**
@@ -312,7 +312,7 @@ export class ERC721 {
     let owner = this.ownerOf(tokenId);
 
     // Clear approvals
-    this._approve(Account0, tokenId);
+    this._approve(Account.Null, tokenId);
 
     // Clear metadata (if any)
     let tid = new UInt128(tokenId);
@@ -331,7 +331,7 @@ export class ERC721 {
 
     this.storage._tokenOwners.delete(tid);
 
-    (new Transfer(owner, Account0, tokenId));
+    (new Transfer(owner, Account.Null, tokenId));
   }
 
 
@@ -358,10 +358,10 @@ export class ERC721 {
 
   protected _transfer(from: Account, to: Account, tokenId: u128): void {
     assert(this.ownerOf(tokenId).eq(from), "ERC721: transfer of token that is not own");
-    assert(to.notEq(Account0), "ERC721: transfer to the zero address");
+    assert(to.notEq(Account.Null), "ERC721: transfer to the zero address");
 
     // Clear approvals from the previous owner
-    this._approve(Account0, tokenId);
+    this._approve(Account.Null, tokenId);
 
     let tid = new UInt128(tokenId);
     let tokensOfOwner = this._getHolderTokens(from);

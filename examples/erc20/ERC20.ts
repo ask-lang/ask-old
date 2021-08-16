@@ -1,4 +1,4 @@
-import { Account, Account0, SpreadStorableMap, u128, UInt128, msg } from "ask-lang";
+import { Account, SpreadStorableMap, u128, UInt128, msg } from "ask-lang";
 
 @storage
 class ERC20Storage {
@@ -134,26 +134,26 @@ export class ERC20 {
   }
 
   protected _mint(account: Account, amount: u128): void {
-    assert(account.notEq(Account0), "ERC20: mint to the zero address");
+    assert(account.notEq(Account.Null), "ERC20: mint to the zero address");
     this.storage.totalSupply += amount;
     let leftValue = this.storage.balances.get(account).unwrap() + amount;
     this.storage.balances.set(account, new UInt128(leftValue));
-    (new Transfer(Account0, account, amount));
+    (new Transfer(Account.Null, account, amount));
   }
 
   protected _burn(account: Account, amount: u128): void {
-    assert(account.notEq(Account0), "ERC20: burn from the zero address");
+    assert(account.notEq(Account.Null), "ERC20: burn from the zero address");
     let balanceOfAccount = this.storage.balances.get(account).unwrap();
     assert(balanceOfAccount >= amount, "ERC20: not enough balance to bure.");
     let leftValue = balanceOfAccount - amount;
     this.storage.balances.set(account, new UInt128(leftValue));
     this.storage.totalSupply -= amount;
-    (new Transfer(account, Account0, amount));
+    (new Transfer(account, Account.Null, amount));
   }
 
   protected _approve(owner: Account, spender: Account, amount: u128): void {
-    assert(owner.notEq(Account0), "ERC20: approve from the zero address");
-    assert(spender.notEq(Account0), "ERC20: approve to the zero address");
+    assert(owner.notEq(Account.Null), "ERC20: approve from the zero address");
+    assert(spender.notEq(Account.Null), "ERC20: approve to the zero address");
 
     let list = this.getAllowanceItem(owner);
     list.set(spender, new UInt128(amount));
@@ -161,8 +161,8 @@ export class ERC20 {
   }
 
   protected _transfer(sender: Account, recipient: Account, amount: u128): void {
-    assert(sender.notEq(Account0), "ERC20: transfer from the zero address");
-    assert(recipient.notEq(Account0), "ERC20: transfer to the zero address");
+    assert(sender.notEq(Account.Null), "ERC20: transfer from the zero address");
+    assert(recipient.notEq(Account.Null), "ERC20: transfer to the zero address");
 
     let spenderBalance = this.storage.balances.get(sender).unwrap();
     assert(spenderBalance >= amount, "ERC20: transfer amount exceeds balance");
