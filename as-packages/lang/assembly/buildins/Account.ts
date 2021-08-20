@@ -5,16 +5,17 @@
 
 import { Callable } from "./Callable";
 import { u128 } from "as-bignum";
-import { ReturnCode, seal_transfer } from "as-contract-runtime";
+import { ReturnCode, seal_address, seal_transfer } from "as-contract-runtime";
 import { AccountId, Balance } from "../env";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { Codec } from "as-scale-codec";
+import { ReadBuffer } from "../primitives/readbuffer";
 /**
  * @class AccountId
  * Class AccountId stands for an address, which should be a storagable type.
  */
 
-export function SendBalance(
+function SendBalance(
     destination: AccountId,
     value: Balance
 ): bool {
@@ -31,7 +32,7 @@ export function SendBalance(
     return ret === ReturnCode.Success;
 }
 
-export function TransferBalance(
+function TransferBalance(
     destination: AccountId,
     value: Balance
 ): void {
@@ -41,6 +42,9 @@ export function TransferBalance(
 
 export class Account implements Codec{
 
+    private static _Self: Account;
+    private static _Null: Account;
+
     private _id: AccountId;
 
     static from(uarr: u8[]): Account {
@@ -48,9 +52,35 @@ export class Account implements Codec{
         account._id = AccountId.from(uarr);
         return account;
     }
-
+    /**
+     * Get a Null account, like `address(0)` in solidity.
+     *
+     * @readonly
+     * @static
+     * @type {Account}
+     * @memberof Account
+     */
     static get Null(): Account {
-        return NullAccount;
+        if (Account._Null === null) {
+            Account._Null = new Account();
+        }
+        return Account._Null;
+    }
+    /**
+     * Get the Account of the contact which executing.
+     *
+     * @readonly
+     * @static
+     * @type {Account}
+     * @memberof Account
+     */
+    static get Self(): Account {
+        if (Account._Self === null) {
+            let readbuf = new ReadBuffer(32);
+            seal_address(readbuf.valueBuffer, readbuf.sizeBuffer);
+            Account._Self = Account.from(readbuf.valueBytes);
+        }
+        return Account._Self;
     }
 
     constructor(id: AccountId = new AccountId(new Array<u8>(32).fill(0))) {
@@ -101,5 +131,3 @@ export class Account implements Codec{
         return this._id.notEq(other._id);
     }
 }
-
-const NullAccount = new Account();

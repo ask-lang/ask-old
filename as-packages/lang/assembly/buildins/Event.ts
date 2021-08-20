@@ -31,9 +31,10 @@ export abstract class Event {
       this._data.push(d);
   }
 
-  emit(): void {
-      this.prepare();
+  abstract emit(): void;
 
+  protected __prepare__(): void {} // let it an empty block
+  protected __emit__(): void {
       assert(this._topics.length <= MAX_EVENT_TOPICS, "too many topics defined.");
 
       let topicsData = new Array<u8>();
@@ -65,13 +66,4 @@ export abstract class Event {
       // // to release allocated memory
       // Event.reset();
   }
-  // add another way to send an event,
-  // besides `Event.emit(e)`,
-  // you can also use `e.send()` while `e` is initialized.
-  public send(): void {
-      this.prepare();
-      this.emit();
-  }
-
-  abstract prepare(): void;
 }
