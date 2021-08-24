@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 import { ReturnCode } from "as-contract-runtime";
-import { Codec, Hash, ScaleString } from "as-scale-codec";
+import { Codec, Hash } from "as-scale-codec";
 import { Storage } from ".";
 import { Crypto } from "../primitives/crypto";
 import { MapEntry } from "./MapEntry";
@@ -11,13 +11,15 @@ import { NullHash, MaxStorageSize } from "./storage";
 
 export class PackedStorableMap<K extends Codec, V extends Codec> implements  Codec {
   private valueHash: Hash;
-  protected keyPrefix: string;
+  protected keyPrefix: Hash;
   protected mapInner: Map<K, V>;
+  protected isLazy: bool;
 
-  constructor(ep: string = "") {
+  constructor(ep: Hash = NullHash, lazy: bool = true) {
       this.keyPrefix = ep;
+      this.isLazy = lazy;
       this.mapInner = new Map<K, V>();
-      this.valueHash = Crypto.blake256s(ep + ".values");
+      this.valueHash = Crypto.blake256s(ep.toString() + ".values");
       this.loadAllItems();
   }
 
@@ -30,40 +32,38 @@ export class PackedStorableMap<K extends Codec, V extends Codec> implements  Cod
   }
 
   protected loadMapEntry(): MapEntry | null {
-      let strg = new Storage(Crypto.blake256s(this.keyPrefix));
+      let strg = new Storage(this.keyPrefix);
       let entry = strg.load<MapEntry>();
       return entry;
   }
 
   protected storeMapEntry(entries: Hash, size: i32): void {
-      let strg = new Storage(Crypto.blake256s(this.keyPrefix));
+      let strg = new Storage(this.keyPrefix);
       let entry = new MapEntry(entries, size);
       let r = strg.store(entry);
       assert(r == ReturnCode.Success, "store entry point of map failed.");
   }
 
-  get entryKey(): string {
+  get entryKey(): Hash {
       return this.keyPrefix;
   }
 
-  set entryKey(str: string) {
-      this.keyPrefix = str;
+  set entryKey(hash: Hash) {
+      this.keyPrefix = hash;
   }
 
-
   toU8a(): u8[] {
-      return (new ScaleString(this.keyPrefix)).toU8a();
+      return this.keyPrefix.toU8a();
   }
 
   encodedLength(): i32 {
-      return (new ScaleString(this.keyPrefix)).encodedLength();
+      return this.keyPrefix.encodedLength();
   }
 
   populateFromBytes(bytes: u8[], index: i32 = 0): void {
-      let s = new ScaleString();
-      s.populateFromBytes(bytes, index);
-      this.keyPrefix = s.toString();
-      this.valueHash = Crypto.blake256s(this.keyPrefix + ".values");
+      this.keyPrefix = new Hash();
+      this.keyPrefix.populateFromBytes(bytes, index);
+      this.valueHash = Crypto.blake256s(this.keyPrefix.toString() + ".values");
       this.loadAllItems();
   }
 
@@ -124,17 +124,17 @@ export class PackedStorableMap<K extends Codec, V extends Codec> implements  Cod
       let k = this.findKeyInner(key);
       if (k) key = k;
       this.mapInner.set(key, value);
-      this.storeAllItems();
+      if (!this.isLazy) this.__commit_storage__();
   }
 
   deleteKey(key: K): void {
       this.mapInner.delete(key);
-      this.storeAllItems();
+      if (!this.isLazy) this.__commit_storage__();
   }
 
   clearAll(): void {
       this.mapInner.clear();
-      this.storeAllItems();
+      if (!this.isLazy) this.__commit_storage__();
   }
 
   allKeys(): K[] {
@@ -185,5 +185,9 @@ export class PackedStorableMap<K extends Codec, V extends Codec> implements  Cod
               this.mapInner.set(k, v);
           }
       } while (false);
+  }
+
+  __commit_storage__(): void {
+      this.storeAllItems();
   }
 }

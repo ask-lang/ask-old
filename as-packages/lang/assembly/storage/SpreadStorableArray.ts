@@ -4,328 +4,288 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { ArrayEntry, Codec, Crypto, Hash, ScaleString } from "..";
+import { ArrayEntry, Codec, Crypto, Hash} from "..";
 import { ReturnCode } from "../primitives/alias";
-import { Storage } from "./storage";
+import { NullHash, Storage } from "./storage";
+
+const STATUS_UNCHANGED: u8 = 0;
+const STATUS_MODIFIED: u8 = 1;
+const STATUS_DELETED: u8 = 2;
+const STATUS_ADDED: u8 = 3;
+
+class ArrayStorage <T extends Codec> {
+    valueSlots: Array<T | null>;
+    statusSlots: Array<u8>;
+    initialLength: i32;
+
+    constructor(capacity: i32, initLen: i32) {
+        this.valueSlots = new Array<T | null>(capacity);
+        this.statusSlots = new Array<u8>(capacity);
+        for (let i = 0; i < capacity; ++i) {
+            this.valueSlots[i] = null;
+            this.statusSlots[i] = STATUS_UNCHANGED;
+        }
+
+        this.initialLength = initLen;
+    }
+
+    get length(): i32 { return this.valueSlots.length; }
+    get originLength(): i32 { return this.originLength; }
+    get statusLength(): i32 { return this.statusSlots.length; }
+
+    push(v: T): i32 {
+        this.valueSlots.push(v);
+        // pop value make status slot with hole
+        if (this.statusSlots.length >= this.valueSlots.length && this.statusSlots[this.valueSlots.length - 1] == STATUS_DELETED) {
+            this.statusSlots[this.valueSlots.length - 1] = STATUS_MODIFIED;
+        } else {
+            this.statusSlots.push(STATUS_ADDED);
+        }
+
+        return this.valueSlots.length - 1;
+    }
+
+    pop(): T | null {
+        if (this.valueSlots.length == this.initialLength) {
+            this.initialLength -= 1;
+        }
+
+        this.statusSlots[this.valueSlots.length - 1] = STATUS_DELETED;
+        return this.valueSlots.pop();
+    }
+
+    status(index: i32): u8 {
+        assert(index < this.statusSlots.length, "out of status slots bounds");
+        return this.statusSlots[index];
+    }
+    // after read value from storage, set to
+    set(index: i32, v: T): void {
+        this.valueSlots[index] = v;
+    }
+    // update value
+    update(index: i32, v: T): void {
+        this.valueSlots[index] = v;
+        this.statusSlots[index] = STATUS_MODIFIED;
+    }
+
+    get(index: i32): T | null {
+        return this.valueSlots[index];
+    }
+
+    delete(index: i32): bool {
+        this.valueSlots.splice(index, 1);
+        this.statusSlots.splice(index, 1);
+
+        if (index < this.initialLength) {
+            this.initialLength -= 1;
+            return true;
+        }
+        return false;
+    }
+}
 
 export class SpreadStorableArray<T extends Codec> implements Codec {
-  private synced: bool;
-  constructor(prefix: string = "", capacity: i32 = 0) {
-      this.keyPrefix = prefix;
-      this.arrayInner = new Array<T>(capacity);
+    [key: number]: T;
 
-      if (prefix.length != 0 && capacity == 0) {
-          this.initArrayInner();
-      }
+    protected keyPrefix: Hash;
+    protected arrayStorage: ArrayStorage<T>;
+    protected isLazy: bool;
 
-      this.synced = false;
-  }
+    constructor(prefix: Hash = NullHash, lazy: bool = true, capacity: i32 = 0) {
+        this.keyPrefix = prefix;
+        this.isLazy = lazy;
 
-  [key: number]: T;
+        this.initArrayStorage(capacity);
+    }
 
-  protected keyPrefix: string;
-  protected arrayInner: Array<T>;
+    toU8a(): u8[] {
+        return this.keyPrefix.toU8a();
+    }
 
-  toU8a(): u8[] {
-      return (new ScaleString(this.keyPrefix)).toU8a();
-  }
+    encodedLength(): i32 {
+        return this.keyPrefix.encodedLength();
+    }
 
-  encodedLength(): i32 {
-      return (new ScaleString(this.keyPrefix)).encodedLength();
-  }
+    populateFromBytes(bytes: u8[], index: i32): void {
+        this.keyPrefix = new Hash();
+        this.keyPrefix.populateFromBytes(bytes, index);
+        this.initArrayStorage(0);
+    }
 
-  populateFromBytes(bytes: u8[], index: i32): void {
-      let s: ScaleString = new ScaleString();
-      s.populateFromBytes(bytes, index);
-      this.keyPrefix = s.toString();
-      if (this.keyPrefix.length != 0) this.initArrayInner();
-  }
+    eq(other: SpreadStorableArray<T>): bool {
+        return this.keyPrefix == other.keyPrefix;
+    }
 
-  eq(other: SpreadStorableArray<T>): bool {
-      return this.keyPrefix == other.keyPrefix;
-  }
+    notEq(other: SpreadStorableArray<T>): bool {
+        return !this.eq(other);
+    }
 
-  notEq(other: SpreadStorableArray<T>): bool {
-      return !this.eq(other);
-  }
+    get length(): i32 {
+        let len = this.arrayStorage.length;
+        if (len == 0) {
+            let entry = this.loadArrayEntry();
+            if (entry) len = entry.arrayLength;
+        }
+        return len;
+    }
 
-  private initArrayInner(): void {
-    let v = this.loadArrayEntry();
-    if (v) { this.arrayInner.length = v.arrayLength; }
-  }
+    get entryKey(): Hash {
+        return this.keyPrefix;
+    }
 
-  protected loadArrayEntry(): ArrayEntry | null {
-      let strg = new Storage(Crypto.blake256s(this.keyPrefix + ".length"));
-      let entryInfo = strg.load<ArrayEntry>();
-      return entryInfo;
-  }
+    set entryKey(hash: Hash) {
+        this.keyPrefix = hash;
+    }
 
-  protected storeArrayEntry(storedBytes: i32 = 0): ReturnCode {
-      let entryHash = Crypto.blake256s(this.keyPrefix + ".length");
-      let strg = new Storage(entryHash);
-      let v: ArrayEntry = new ArrayEntry(
-          this.arrayInner.length,
-          storedBytes
-      );
-      let r = strg.store(v);
-      return r;
-  }
+    @operator("[]")
+    private __get(index: i32): T | null {
+        return this.at(index);
+    }
 
-  protected indexToHashKey(index: i32): Hash {
-      return Crypto.blake256s(this.keyPrefix + index.toString());
-  }
-
-  get length(): i32 {
-      let len = this.arrayInner.length;
-      if (len == 0) {
-          let entry = this.loadArrayEntry();
-          if (entry) len = entry.arrayLength;
-      }
-      return len;
-  }
-
-  get entryKey(): string {
-      return this.keyPrefix;
-  }
-
-  set entryKey(str: string) {
-      this.keyPrefix = str;
-  }
-
-  @operator("[]")
-  private __get(index: i32): T {
-      return this.at(index);
-  }
-
-  @operator("[]=")
-  private __set(index: i32, value: T): void {
-      this.setValueAt(index, value);
-  }
+    @operator("[]=")
+    private __set(index: i32, value: T): void {
+        this.updateValueAt(index, value);
+    }
 
 
-  push(value: T): i32 {
-      return this.pushValue(value);
-  }
+    push(value: T): i32 {
+        return this.pushValue(value);
+    }
 
-  pop(): T {
-      return this.popValue();
-  }
+    pop(): T | null {
+        return this.popValue();
+    }
 
-  delete(index: i32): bool {
-      return this.deleteValueAt(index);
-  }
+    delete(index: i32): void {
+        this.deleteValueAt(index);
+    }
 
-  at(index: i32): T {
-      assert(index < this.arrayInner.length, "out of bounds");
-      return this.visitValueAt(index);
-  }
+    at(index: i32): T | null {
+        assert(index < this.arrayStorage.length, "out of bounds");
+        return this.visitValueAt(index);
+    }
 
-  fill(value: T, start: i32 = 0, end: i32 = i32.MAX_VALUE): this {
-      this.arrayInner.fill(value, start, end);
-      this.storeItemsFrom(start);
-      return this;
-  }
+    protected pushValue(value: T): i32 {
+        let index = this.arrayStorage.push(value);
 
-  every(callbackfn: (element: T, index: i32, array?: Array<T>) => bool): bool {
-      for (let i = 0; i < this.arrayInner.length; i++) {
-          let v = this.at(i);
-          if (!callbackfn(v, i, this.arrayInner)) return false;
-      }
-      return true;
-  }
+        if (!this.isLazy) {
+            this.storeValueToNative(index, value);
+            this.storeArrayEntry();
+        }
 
-  findIndex(predicate: (element: T, index: i32, array?: Array<T>) => bool): i32 {
-      let index = this.arrayInner.findIndex(predicate);
-      if (index != -1) return index;
+        return index;
+    }
 
-      for (let i = 0; i < this.arrayInner.length; i++) {
-          let v = this.at(i);
-          if (predicate(v, i, this.arrayInner))
-              return i;
-      }
-      return -1;
-  }
+    protected popValue(): T | null {
+        assert(this.arrayStorage.length > 0, "can not pop from empty array.");
 
-  includes(searchElement: T, fromIndex: i32 = 0): bool {
-      return this.indexOf(searchElement, fromIndex) >= 0;
-  }
+        let t = this.arrayStorage.pop();
 
-  indexOf(searchElement: T, fromIndex: i32 = 0): i32 {
-      let index = this.arrayInner.indexOf(searchElement, fromIndex);
-      if (index != -1) return index;
+        if (!this.isLazy) {
+            this.deleteValueAtNative(this.arrayStorage.length);
+            this.storeArrayEntry();
+        }
+        return t;
+    }
 
-      for (let i = fromIndex; i < this.arrayInner.length; i++) {
-          if (this.at(i).eq(searchElement)) return i;
-      }
+    protected updateValueAt(index: i32, value: T): void {
+        assert(index < this.arrayStorage.length, "set out of bounds");
 
-      return -1;
-  }
+        this.arrayStorage.update(index, value);
 
-  lastIndexOf(searchElement: T, fromIndex: i32 = 0): i32 {
-      let index = this.arrayInner.lastIndexOf(searchElement, fromIndex);
-      if (index != -1) return index;
+        if (!this.isLazy) {
+            this.storeValueToNative(index, value);
+        }
+    }
 
-      let length = this.arrayInner.length;
-      if (length == 0) return -1;
-      if (fromIndex < 0) fromIndex = length + fromIndex;
-      else if (fromIndex >= length) fromIndex = length - 1;
-      while(fromIndex >= 0) {
-          let v = this.at(fromIndex);
-          if (v.eq(searchElement)) return fromIndex;
-          --fromIndex;
-      }
-      return -1;
-  }
+    protected deleteValueAt(index: i32): void {
+        assert(index < this.arrayStorage.length, "delete out of bounds");
 
-  concat(items: T[]): T[] {
-      let oldlen = this.arrayInner.length;
-      this.arrayInner = this.arrayInner.concat(items);
-      this.storeItemsFrom(oldlen);
+        this.arrayStorage.delete(index);
+        // FIXME(liangqin.fan): save to native immediately if you delete element in an array.
+        let endIndex = this.isLazy ? this.arrayStorage.originLength : this.arrayStorage.length;
 
-      return this.arrayInner;
-  }
+        for (let i = index; i <= endIndex; i++) {
+            this.deleteValueAtNative(index);
+        }
 
-  forEach(callbackfn: (value: T, index: i32, array: Array<T>) => void): void {
-      for (let i = 0; i < this.arrayInner.length; i++) {
-          let v = this.at(i);
-          callbackfn(v, i, this.arrayInner);
-      }
-  }
+        for (let i = index; i < endIndex; i++) {
+            this.storeValueToNative(index, this.arrayStorage.get(i)!);
+        }
+        this.storeArrayEntry();
+    }
 
-  map<U>(callbackfn: (value: T, index: i32, array: Array<T>) => U): Array<U> {
-      let uarr = new Array<U>(this.arrayInner.length);
-      for (let i = 0; i < this.arrayInner.length; i++) {
-          let v = this.at(i);
-          let mv = callbackfn(v, i, this.arrayInner);
-          uarr.push(mv);
-      }
-      return uarr;
-  }
+    protected visitValueAt(index: i32): T | null {
+        let v = this.arrayStorage.get(index);
 
-  filter(callbackfn: (value: T, index: i32, array: Array<T>) => bool): Array<T> {
-      let uarr = new Array<T>();
-      for (let i = 0; i < this.arrayInner.length; i++) {
-          let v = this.at(i);
-          if (callbackfn(v, i, this.arrayInner)) {
-              uarr.push(v);
-          }
-      }
-      return uarr;
-  }
+        if (v == null) {
+            let v = this.loadValueFromNative(index);
+            if (!v) return null;
 
-  reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U {
-      return this.arrayInner.reduce<U>(callbackfn, initialValue);
-  }
+            this.arrayStorage.set(index, v);
+        }
 
-  reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U {
-      return this.arrayInner.reduceRight<U>(callbackfn, initialValue);
-  }
+        return v;
+    }
 
-  some(callbackfn: (element: T, index: i32, array?: Array<T>) => bool): bool {
-      for (let i = 0; i < this.arrayInner.length; i++) {
-          let v = this.at(i);
-          if (callbackfn(v, i, this.arrayInner)) return true;
-      }
-      return false;
-  }
+    private initArrayStorage(capacity: i32): void {
+        let v = this.loadArrayEntry();
+        if (v) {
+            this.arrayStorage = new ArrayStorage<T>(capacity, v.arrayLength);
+        } else {
+            this.arrayStorage = new ArrayStorage<T>(capacity, -1);
+        }
+    }
 
-  slice(from: i32, to: i32 = i32.MAX_VALUE): Array<T> {
-      return this.arrayInner.slice(from, to);
-  }
+    protected loadArrayEntry(): ArrayEntry | null {
+        if (this.keyPrefix.eq(NullHash)) return null;
 
-  splice(start: i32, deleteCount: i32 = i32.MAX_VALUE): Array<T> {
-      return this.arrayInner.splice(start, deleteCount);
-  }
+        let strg = new Storage(Crypto.blake256s(this.keyPrefix.toString() + ".length"));
+        let entryInfo = strg.load<ArrayEntry>();
+        return entryInfo;
+    }
 
-  sort(comparator: (a: T, b: T) => i32): this {
-      this.loadItemsFrom(0);
-      this.arrayInner = this.arrayInner.sort(comparator);
-      this.storeItemsFrom(0);
-      return this;
-  }
+    protected storeArrayEntry(storedBytes: i32 = 0): ReturnCode {
+        let entryHash = Crypto.blake256s(this.keyPrefix.toString() + ".length");
+        let strg = new Storage(entryHash);
+        let v: ArrayEntry = new ArrayEntry(
+            this.arrayStorage.length,
+            storedBytes
+        );
+        let r = strg.store(v);
+        return r;
+    }
 
-  reverse(): T[] {
-      this.loadItemsFrom(0);
-      this.arrayInner = this.arrayInner.reverse();
-      this.storeItemsFrom(0);
-      return this.arrayInner;
-  }
+    protected indexToHashKey(index: i32): Hash {
+        return Crypto.blake256s(this.keyPrefix.toString() + index.toString());
+    }
 
-  private storeValueAt(index: i32): ReturnCode {
-      let strg = new Storage(this.indexToHashKey(index));
-      return strg.store(this.arrayInner[index]);
-  }
+    private storeValueToNative(index: i32, v: T): ReturnCode {
+        let strg = new Storage(this.indexToHashKey(index));
+        return strg.store(v);
+    }
 
-  private loadValueAt(index: i32): T | null {
-      let strg = new Storage(this.indexToHashKey(index));
-      return strg.load<T>();
-  }
+    private loadValueFromNative(index: i32): T | null {
+        let strg = new Storage(this.indexToHashKey(index));
+        return strg.load<T>();
+    }
 
-  private clearValueAt(index: i32): void {
-      let strg = new Storage(this.indexToHashKey(index));
-      strg.clear();
-  }
+    private deleteValueAtNative(index: i32): void {
+        let strg = new Storage(this.indexToHashKey(index));
+        strg.clear();
+    }
 
-  pushValue(value: T): i32 {
-      let newlen: i32 = 0;
-      newlen = this.arrayInner.push(value);
-      this.storeValueAt(newlen - 1);
-      this.storeArrayEntry();
-      return newlen;
-  }
-
-  popValue(): T {
-      assert(this.arrayInner.length > 0, "can not pop from empty array.");
-      let t = this.arrayInner.pop();
-      this.clearValueAt(this.arrayInner.length - 1);
-      this.storeArrayEntry();
-      return t;
-  }
-
-  setValueAt(index: i32, value: T): void {
-      assert(index < this.arrayInner.length, "out of bounds");
-
-      if (this.arrayInner[index].notEq(value)) {
-          this.arrayInner[index] = value;
-          this.storeValueAt(index);
-      }
-  }
-
-  deleteValueAt(index: i32): bool {
-      let deleted = this.loadValueAt(index);
-      if (!deleted) return false;
-
-      this.arrayInner[index] = instantiate<T>();
-      this.clearValueAt(index);
-      this.storeArrayEntry();
-
-      return true;
-  }
-
-  visitValueAt(index: i32): T {
-      let v = this.loadValueAt(index);
-      if (!v) return instantiate<T>();
-
-      this.arrayInner[index] = v;
-      return this.arrayInner[index];
-  }
-
-  storeItemsFrom(index: i32): void {
-      for (let i = index; i < this.arrayInner.length; ++i) {
-          this.storeValueAt(i);
-      }
-      this.storeArrayEntry();
-  }
-
-  loadItemsFrom(index: i32): void {
-      if (this.synced) return;
-
-      for (let i = index; i < this.arrayInner.length; ++i) {
-          let v = this.loadValueAt(i);
-          if (!v) v = instantiate<T>();
-          this.arrayInner[i] = v;
-      }
-
-      this.synced = true;
-  }
+    __commit_storage__(): void {
+        if (this.isLazy) {
+            let endIndex = this.arrayStorage.statusLength;
+            for (let i = 0; i < endIndex; ++i) {
+                let status = this.arrayStorage.status(i);
+                if (status == STATUS_ADDED || status == STATUS_MODIFIED) {
+                    this.storeValueToNative(i, this.arrayStorage.get(i)!);
+                } else if (status == STATUS_DELETED) {
+                    this.deleteValueAtNative(i);
+                }
+            }
+        }
+    }
 }

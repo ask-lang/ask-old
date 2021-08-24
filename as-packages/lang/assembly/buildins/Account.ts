@@ -101,6 +101,10 @@ export class Account implements Codec{
         return callable.callResult();
     }
 
+    toString(): string {
+        return this._id.toString();
+    }
+
     @inline @operator("==")
     static __eq(lhs: Account, rhs: Account): bool {
         return lhs._id.eq(rhs._id);
