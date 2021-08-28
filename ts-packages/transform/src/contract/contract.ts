@@ -48,14 +48,24 @@ export class ContractProgram {
         return new MetadataGenerator(this).createMetadata();
     }
     
-    private resolveContract(): void {
-        let countContract = 0;
-
+    private locateContract(): void {
+        let contractNum = 0;
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isTopContractClass(element)) {
-                countContract ++;
+                contractNum++;
                 this.contract = new ContractInterpreter(<ClassPrototype>element);
             }
+        });
+        if (contractNum != 1) {
+            throw new Error(`The entry file should contain only one '@contract', in fact it has ${contractNum}`);
+        }
+    }
+
+
+    private resolveContract(): void {
+        this.locateContract();
+
+        this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isStoreClassPrototype(element)) {
                 this.storages.push(new StorageInterpreter(<ClassPrototype>element));
             }
@@ -69,9 +79,6 @@ export class ContractProgram {
                 this.dynamics.push(dynamicInterpreter);
             }
         });
-        if (countContract != 1) {
-            throw new Error(`The entry file should contain only one '@contract', in fact it has ${countContract}`);
-        }
         this.setTypeSequence();
     }
 

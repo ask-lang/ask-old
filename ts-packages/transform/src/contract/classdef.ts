@@ -96,13 +96,11 @@ export class ClassInterpreter {
 
 export class ContractInterpreter extends ClassInterpreter {
     // The first case is lower.
-    version: string;
     cntrFuncDefs: FunctionDef[] = [];
     msgFuncDefs: FunctionDef[] = [];
 
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.version = "1.0";
         this.resolveFieldMembers();
         this.resolveContractClass();
     }

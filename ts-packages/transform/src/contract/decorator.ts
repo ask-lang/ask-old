@@ -14,6 +14,7 @@ function fromNode(nameNode: Expression): ContractDecoratorKind {
             case CharCode.d: {
                 if (nameStr == 'doc') return ContractDecoratorKind.DOC;
                 if (nameStr == "dynamic") return ContractDecoratorKind.DYNAMIC;
+                if (nameStr == "immediately") return ContractDecoratorKind.IMMEDIATELY;
                 break;
             }
             case CharCode.e: {

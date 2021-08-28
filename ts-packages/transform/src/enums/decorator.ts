@@ -12,5 +12,6 @@ export enum ContractDecoratorKind {
     IGNORE,
     DYNAMIC,
     PACKED,
-    SPREAD
+    SPREAD,
+    IMMEDIATELY
 }
