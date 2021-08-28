@@ -1,16 +1,8 @@
-import { CONFIG } from "../config/compile";
-
-let scope = CONFIG.scope;
-
-export const eventTpl = `{{export}}class {{className}} extends ${scope}Event {
-  {{#each fields}}
-  private {{name}}: {{type.plainType}};
-  {{/each}}
-
-  {{{constructor .}}}
-
-  prepare(): void {
+export const eventTpl = `
+  protected __prepare__(): void {
+    super.__prepare__();
     this.index = {{index}};
+
     {{#each fields}}
     {{#if decorators.isTopic}}
     this.appendTopic({{toCodec .}});
@@ -21,4 +13,9 @@ export const eventTpl = `{{export}}class {{className}} extends ${scope}Event {
     this.appendData({{toCodec .}});
     {{/each}}
   }
-}`;
+
+  emit(): void {
+      this.__prepare__();
+      this.__emit__();
+  }
+`;

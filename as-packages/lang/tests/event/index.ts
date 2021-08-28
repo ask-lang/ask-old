@@ -43,7 +43,7 @@ class EventEmitter {
 
      @message
      triggeEventB(): void {
-         let eventB = new EventB(300, "M");
+         let eventB = new EventB(<u8>300, "M");
          eventB.emit();
      }
  }

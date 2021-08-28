@@ -201,10 +201,7 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
  */
 Handlebars.registerHelper("constructor", function(event: EventInterpreter) {
     if (event.constructorFun) {
-        let body = event.constructorFun.declaration.range.toString();
-        body = body.replace(/{/i, `{${EOL}        super();`);
-        body = body.replace(/(.*)}/, `        this.emit();${EOL}  }`);
-        return body;
+        return event.constructorFun.declaration.range.toString();
     } else {
         let code =[];
         code.push(` constructor() {`);

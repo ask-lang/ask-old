@@ -10,6 +10,12 @@ export class APIOptionImpl implements APIOptions {
             return prefix + point.code + suffix;
         } else if (point.mode == ModifyType.APPEND) {
             return sourceText + point.code;
+        } else if (point.mode == ModifyType.INSERT) {
+            let prefix = sourceText.substring(0, point.range.end - 1 );
+            let suffix = sourceText.substring(point.range.end -1, sourceText.length);
+
+            console.log(`prefix + point.code + suffix: ${prefix + point.code + suffix}`);
+            return prefix + point.code + suffix;
         }
         return sourceText;
     }

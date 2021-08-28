@@ -19,6 +19,10 @@ function modifySourceText(sourceText, point) {
     } else if (point.mode == preprocess_1.ModifyType.DELETE) {
         sourceText = sourceText.replaceAll(/export\s/g, " ");
         return sourceText;
+    } else if (point.mode == preprocess_1.ModifyType.INSERT) {
+        let prefix = sourceText.substring(0, point.range.end - 1);
+        let suffix = sourceText.substring(point.range.end - 1, sourceText.length);
+        return prefix + point.code + suffix;
     }
     return sourceText;
 };
@@ -44,7 +48,7 @@ var APIOptionImpl = /** @class */ (function () {
                 let importLang = `import * as ${CONFIG.module} from "ask-lang";\n`;
                 text_1 = importLang + text_1;
                 sourceModifier.fileExtension.set(filename, text_1);
-                // console.log(`The file ${filename} extension: ${text_1}`);
+                console.log(`The file ${filename} extension: ${text_1}`);
             }
             return text_1;
         }

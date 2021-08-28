@@ -8,7 +8,8 @@ import { Event, ScaleString, UInt8 } from "../../assembly";
  @event
 class EventA extends Event {
 
-  @topic topicA: u8;
+  @topic 
+  topicA: u8;
   name: string;
 
   constructor(t: u8, n: string) {

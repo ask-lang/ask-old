@@ -1,10 +1,8 @@
 import Handlebars from "./handlebars";
 import { Range } from "assemblyscript";
 import { ContractProgram} from "../contract/contract";
-import { MessageFunctionDef } from "../contract/elementdef";
 
 import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl} from "../tpl";
-import { CONFIG } from "../config/compile";
 
 export class ModifyPoint {
     range: Range;
@@ -72,7 +70,7 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     }
     contractInfo.events.forEach(event => {
         let code = Handlebars.compile(eventTpl)(event);
-        sourceModifier.addModifyPoint(new ModifyPoint(event.range, ModifyType.REPLACE, code));
+        sourceModifier.addModifyPoint(new ModifyPoint(event.range, ModifyType.INSERT, code));
     });
     
     contractInfo.codecs.forEach(codec => {
