@@ -12,7 +12,7 @@ class StorageTest {
   @state({lazy: false})
   varr: SpreadStorableArray<UInt8>
 
-  @state
+  @state({lazy: true})
   vmap: SpreadStorableMap<ScaleString, UInt8>;
 
   constructor() {}

@@ -3,17 +3,17 @@ import { Bool, Hash, Int8, ScaleString, SpreadStorableMap, Storage } from "../..
 
 @contract
 class StorageTest {
-  private _vi8: Int8 | null = null;
+  private _vi8: Int8 | null = null; // lazy
 
   private _vbool: Bool | null = null; // not lazy
 
   private _varr: SpreadStorableArray<UInt8> | null = null; // not lazy
 
-  private _vmap: SpreadStorableMap<ScaleString, UInt8> | null = null;
+  private _vmap: SpreadStorableMap<ScaleString, UInt8> | null = null; // lazy
 
   get vi8(): i8 {
       if (this._vi8 === null) {
-          const st = new Storage(new Hash("0000000000000000000000000000")); // 按规律生成真实的Hash值
+          const st = new Storage(new Hash("0000000000000000000000000000")); // 按之前的约定规律, 生成真实的Hash值
           let val = st.load<Int8>();
           if (!val) this._vi8 = new Int8();
           else this._vi8 = val;
@@ -63,8 +63,8 @@ class StorageTest {
           st.store<UInt8>(this._vi8!);
       }
 
-      if (this._varr !== null) {
-          this._varr.__commit_storage__();
+      if (this._vmap !== null) {
+          this._vmap.__commit_storage__();
       }
   }
 
