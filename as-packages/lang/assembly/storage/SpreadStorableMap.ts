@@ -41,12 +41,15 @@ class MapStorage<K extends Codec, V extends Codec> {
     set(key: K, value: V, force: bool = false): void {
         if (force) { // already know that there is no key existed.
             this.valueSlots.set(key, value);
+            this.statusSlots.set(key, STATUS_MODIFIED);
         } else {
             let k = this.findKeyInner(key);
             if (!k) {
                 this.valueSlots.set(key, value);
+                this.statusSlots.set(key, STATUS_MODIFIED);
             } else {
                 this.valueSlots.set(k, value);
+                this.statusSlots.set(k, STATUS_MODIFIED);
             }
         }
     }
@@ -58,12 +61,29 @@ class MapStorage<K extends Codec, V extends Codec> {
     }
 
     delete(key: K): bool {
-        return false;
+        let k = this.findKeyInner(key);
+        if (k) {
+            this.valueSlots.delete(k!); // sure
+            this.statusSlots.set(k, STATUS_DELETED);
+        }
+
+        return k != null;
     }
 
     clear(): void {
+        let keys = this.keys();
+        for (let i = 0; i < keys.length; i++) {
+            this.statusSlots.set(keys[i], STATUS_DELETED);
+        }
         this.valueSlots.clear();
-        this.statusSlots.clear();
+    }
+
+    statusKeys(): K[] {
+        return this.statusSlots.keys();
+    }
+
+    getStatus(key: K): u8 {
+        return this.statusSlots.get(key);
     }
 }
 
@@ -176,7 +196,7 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
       return entry;
   }
 
-  private storeMapEntry(entries: Hash, size: i32): void {
+  private storeMapEntry(entries: Hash, size: i32 = 0): void {
       let strg = new Storage(this.keyPrefix);
       let entry = new MapEntry(entries, size);
       let r = strg.store(entry);
@@ -186,15 +206,14 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   private clearAll(): void {
       if (!this.synced) this.loadAllItems();
 
-      this.mapStorage.clear();
-
       if (!this.isLazy) {
           let keys = this.mapStorage.keys();
           for (let i = 0; i < keys.length; ++i) {
               this.removeItemFromNative(keys[i]);
           }
-          this.storeMapEntry(NullHash, 0);
       }
+
+      this.mapStorage.clear();
   }
 
   private allKeys(): K[] {
@@ -252,22 +271,25 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   private removeItemFromNative(key: K): bool {
       let keyHash = this.getHashByKey(key);
       let item = this.doLoadItemBy(keyHash);
-      if (item != null) {
-          if (item.prevkey == NullHash) { // the head node
-              if (item.nextkey != NullHash) {
-                  let strg = new Storage(item.nextkey);
-                  let newhead = strg.load<DoubleLinkKVStore<K, V>>();
-                  newhead!.prevkey = NullHash;
-                  strg.store(newhead!);
-              }
-          } else if (item.nextkey == NullHash) { // the tail node
-              if (item.prevkey != NullHash) {
-                  let strg = new Storage(item.prevkey);
-                  let newtail = strg.load<DoubleLinkKVStore<K, V>>();
-                  newtail!.nextkey = NullHash;
-                  strg.store(newtail!);
-              }
-          } else { // the middle node
+
+      do {
+          if (item == null) break;
+          if (item.prevkey == NullHash && item.nextkey == NullHash) {
+              // the last item, new head hash should be null
+              this.storeMapEntry(NullHash);
+          } else if (item.prevkey == NullHash && item.nextkey != NullHash) { // the head item
+              let strg = new Storage(item.nextkey);
+              let newhead = strg.load<DoubleLinkKVStore<K, V>>();
+              newhead!.prevkey = NullHash;
+              strg.store(newhead!);
+
+              this.storeMapEntry(item.nextkey);
+          } else if (item.prevkey != NullHash && item.nextkey == NullHash) { // the tail item
+              let strg = new Storage(item.prevkey);
+              let newtail = strg.load<DoubleLinkKVStore<K, V>>();
+              newtail!.nextkey = NullHash;
+              strg.store(newtail!);
+          } else {                                                           // the middle item
               let prevstrg = new Storage(item.prevkey);
               let previtem = prevstrg.load<DoubleLinkKVStore<K, V>>()!;
               previtem.nextkey = item.nextkey;
@@ -278,12 +300,14 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
               nextitem.prevkey = item.prevkey;
               nextstrg.store(nextitem);
           }
+
           // remove this key/value from native storage.
           let thisstrg = new Storage(keyHash);
           thisstrg.clear();
 
           return true;
-      }
+
+      } while (0);
 
       return false;
   }
@@ -295,11 +319,9 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
       let item = strg.load<DoubleLinkKVStore<K, V>>();
       if (item == null) { // new item, shift to head.
           let newHead: DoubleLinkKVStore<K, V>;
-          let size: i32 = 0;
           let entryInfo = this.loadMapEntry();
           if (!entryInfo) {
               newHead = new DoubleLinkKVStore<K, V>(key, value, NullHash, NullHash);
-              size++;
           } else {
               if (entryInfo.entries.notEq(NullHash)) {
                   // update previous head item info
@@ -311,12 +333,11 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
                   strg.store(oldHead!);
               }
               newHead = new DoubleLinkKVStore<K, V>(key, value, entryInfo.entries, NullHash);
-              size = entryInfo.size.unwrap() + 1;
           }
           // store new head
           strg.store(newHead);
 
-          this.storeMapEntry(keyHash, size);
+          this.storeMapEntry(keyHash);
       } else { // just update the exist item.
           item.value = value;
           strg.store(item as DoubleLinkKVStore<K, V>);
@@ -327,6 +348,17 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   }
 
   __commit_storage__(): void {
-      // nop
+      if (this.isLazy) {
+          let statusKeys = this.mapStorage.statusKeys();
+          for (let i = 0; i < statusKeys.length; i++) {
+              let key = statusKeys[i];
+              let status = this.mapStorage.getStatus(key);
+              if (status == STATUS_MODIFIED) {
+                  this.storeItemToNative(key, this.mapStorage.get(key)!);
+              } else if (status == STATUS_DELETED) {
+                  this.removeItemFromNative(key);
+              }
+          }
+      }
   }
 }
