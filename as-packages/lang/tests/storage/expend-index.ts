@@ -1,4 +1,4 @@
-import {SpreadStorableArray, UInt8} from "../..";
+import { SpreadStorableArray, UInt8} from "../..";
 import { Bool, Hash, Int8, ScaleString, SpreadStorableMap, Storage } from "../../assembly";
 
 @contract

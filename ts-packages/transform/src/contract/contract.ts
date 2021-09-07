@@ -48,7 +48,7 @@ export class ContractProgram {
         return new MetadataGenerator(this).createMetadata();
     }
     
-    private locateContract(): void {
+    private locateEntryContract(): void {
         let contractNum = 0;
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isTopContractClass(element)) {
@@ -61,14 +61,10 @@ export class ContractProgram {
         }
     }
 
-
     private resolveContract(): void {
-        this.locateContract();
+        this.locateEntryContract();
 
         this.program.elementsByName.forEach((element, _) => {
-            if (ElementUtil.isStoreClassPrototype(element)) {
-                this.storages.push(new StorageInterpreter(<ClassPrototype>element));
-            }
             if (ElementUtil.isEventClassPrototype(element)) {
                 let eventInterpreter = new EventInterpreter(<ClassPrototype>element);
                 eventInterpreter.index = this.events.length;

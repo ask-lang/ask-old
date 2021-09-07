@@ -2,7 +2,7 @@ import Handlebars from "./handlebars";
 import { Range } from "assemblyscript";
 import { ContractProgram} from "../contract/contract";
 
-import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl} from "../tpl";
+import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl, sotreFieldTpl} from "../tpl";
 
 export class ModifyPoint {
     range: Range;
@@ -17,8 +17,8 @@ export class ModifyPoint {
 }
 
 export enum ModifyType {
-    REPLACE,
-    INSERT,
+    INSERT, // INSERT
+    REPLACE, // 替换
     DELETE,
     TOP,
     APPEND
@@ -64,10 +64,22 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     //     }
     // });
     sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range.source.range, ModifyType.DELETE, 'export'));
-    for (let index = 0; index < contractInfo.storages.length; index++) {
-        let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
-        sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.storages[index].range, ModifyType.REPLACE, store));
-    }
+    // for (let index = 0; index < contractInfo.storages.length; index++) {
+    //     let store = Handlebars.compile(storeTpl)(contractInfo.storages[index]);
+    //     sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.storages[index].range, ModifyType.REPLACE, store));
+    // }
+
+    let store = Handlebars.compile(storeTpl)(contractInfo.contract);
+    console.log(store);
+    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.INSERT, store));
+    
+    // TODO
+    contractInfo.contract.fields.forEach(item => {
+        console.log(`item: ${item.rangeString}`);
+        let field = Handlebars.compile(sotreFieldTpl)(item);
+        sourceModifier.addModifyPoint(new ModifyPoint(item.range, ModifyType.REPLACE, field));
+    });
+
     contractInfo.events.forEach(event => {
         let code = Handlebars.compile(eventTpl)(event);
         sourceModifier.addModifyPoint(new ModifyPoint(event.range, ModifyType.INSERT, code));

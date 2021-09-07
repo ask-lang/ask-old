@@ -53,6 +53,7 @@ export class DecoratorsInfo {
 }
 export class FieldDef {
     protected fieldPrototype: FieldPrototype;
+    range: Range;
     name: string;
     type!: NamedTypeNodeDef;
     selector: KeySelector;
@@ -66,6 +67,7 @@ export class FieldDef {
         this.fieldPrototype = field;
         this.name = field.name;
         this.declaration = <FieldDeclaration>field.declaration;
+        this.range = this.declaration.range;
         this.rangeString = this.declaration.range.toString();
         this.doc = DecoratorUtil.getDoc(field.declaration);
         this.varName = "_" + this.name;

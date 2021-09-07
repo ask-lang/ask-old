@@ -36,6 +36,7 @@ function fromNode(nameNode: Expression): ContractDecoratorKind {
             case CharCode.s: {
                 if (nameStr == "storage") return ContractDecoratorKind.STORAGE;
                 if (nameStr == "spread") return ContractDecoratorKind.SPREAD;
+                if (nameStr == "state") return ContractDecoratorKind.STATE;
                 break;
             }
             case CharCode.t: {

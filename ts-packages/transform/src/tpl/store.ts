@@ -1,10 +1,9 @@
-export const storeTpl = `{{export}}class {{className}} {
-  {{#each fields}}
-  private {{varName}}: {{{type.plainTypeNode}}} | null = null;
-  {{/each}}
+export const storeTpl = `
 
   {{#each fields}}
   {{{storeGetter .}}}
   {{{storeSetter .}}}
   {{/each}}
-}`;
+`;
+
+export const sotreFieldTpl = `private {{varName}}: {{{type.plainTypeNode}}} | null = null`;

@@ -1,4 +1,4 @@
-import {Codec, SpreadStorableArray, UInt8} from "../..";
+import { SpreadStorableArray, UInt8} from "../..";
 import { ScaleString, SpreadStorableMap } from "../../assembly";
 
 @contract
@@ -10,7 +10,7 @@ class StorageTest {
   vbool: bool;
 
   @state({lazy: false})
-  varr: SpreadStorableArray<UInt8>
+  varr: SpreadStorableArray<UInt8>;
 
   @state({lazy: true})
   vmap: SpreadStorableMap<ScaleString, UInt8>;
