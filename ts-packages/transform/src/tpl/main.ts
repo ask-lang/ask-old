@@ -4,7 +4,7 @@ let scope = CONFIG.scope;
 
 export const mainTpl = `
 export function deploy(): i32 {
-  let {{contract.instanceName}} = new {{contract.className}}();
+  let {{contract.instanceName}} = new {{contract.name}}();
 
   {{#each contract.cntrFuncDefs}}
   const {{methodName}}Selector: u8[] = {{#selector methodName}}{{shortArr}}{{/selector}};
@@ -22,7 +22,7 @@ export function deploy(): i32 {
 }
 
 export function call(): i32 {
-  const {{contract.instanceName}} = new {{contract.className}}();
+  const {{contract.instanceName}} = new {{contract.name}}();
   {{#each contract.msgFuncDefs}}
   const {{methodName}}Selector: u8[] = {{selector.shortArr}};
   if (${scope}msg.isSelector({{methodName}}Selector)) {

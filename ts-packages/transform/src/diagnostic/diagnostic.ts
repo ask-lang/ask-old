@@ -1,4 +1,3 @@
-import { DiagnosticCategory, formatDiagnosticMessage } from "assemblyscript";
 import { DiagnosticMessage, Range } from "assemblyscript/cli/asc";
 import { ContractProgram } from "../contract/contract";
 import { FunctionDef } from "../contract/elementdef";
@@ -40,17 +39,17 @@ export class ProgramDiagnostic {
         let messageMap: Map<string, FunctionDef> = new Map();
         let finalMsgFunc: FunctionDef[] = [];
         this.contract.contract.msgFuncDefs.forEach(item => {
-            if (messageMap.has(item.methodName)) {
-                let currentSignature = `name:${item.methodName}signature:${item.declaration.signature.range.toString()}`.replaceAll(" ", "");
-                let existFun = messageMap.get(item.methodName)!;
-                let existSignature = `name:${existFun.methodName}signature:${existFun.declaration.signature.range.toString()}`.replaceAll(" ", "");
+            if (messageMap.has(item.name)) {
+                let currentSignature = `name:${item.name}signature:${item.declaration.signature.range.toString()}`.replaceAll(" ", "");
+                let existFun = messageMap.get(item.name)!;
+                let existSignature = `name:${existFun.name}signature:${existFun.declaration.signature.range.toString()}`.replaceAll(" ", "");
                 // let diagnostic = new ContractDiagnostic(DiagnosticCode.INHERIT_OVERRIDE_METHOD,
                 //     DiagnosticCategory.ERROR, "", item.declaration.signature.range, existFun.declaration.signature.range);
                 if (currentSignature != existSignature) {
-                    throw new Error(`The contract has message: ${item.methodName} that has two difference signatures.`);
+                    throw new Error(`The contract has message: ${item.name} that has two difference signatures.`);
                 }
             } else {
-                messageMap.set(item.methodName, item);
+                messageMap.set(item.name, item);
                 finalMsgFunc.push(item);
             }
             this.contract.contract.msgFuncDefs = finalMsgFunc;
@@ -62,7 +61,7 @@ export class ProgramDiagnostic {
         let stores = this.contract.storages;
         let countInstanceMap = new Map<string, number>();
         stores.forEach(item => {
-            countInstanceMap.set(item.classPrototype.internalName, 0);
+            countInstanceMap.set(item.element.internalName, 0);
         });
         fields.forEach(item => {
             let name = item.type.current.internalName;

@@ -1,8 +1,8 @@
-import Handlebars from "./handlebars";
+import Handlebars from "./handlebarsbiz";
 import { Range } from "assemblyscript";
 import { ContractProgram} from "../contract/contract";
 
-import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl, sotreFieldTpl} from "../tpl";
+import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl, storeFieldTpl, storeCommitTpl} from "../tpl";
 
 export class ModifyPoint {
     range: Range;
@@ -33,7 +33,7 @@ export class SourceModifier {
         this.modifyPoints.push(point);
     }
  
-    public toModifyFileMap(): void {
+    public genModifyFileMap(): void {
         this.modifyPoints.forEach(item => {
             let path = item.range.source.normalizedPath;
             if (this.fileExtMap.has(path)) {
@@ -70,13 +70,14 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     // }
 
     let store = Handlebars.compile(storeTpl)(contractInfo.contract);
-    console.log(store);
-    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.INSERT, store));
+    let storeCommit = Handlebars.compile(storeCommitTpl)(contractInfo.contract);
+    console.log(store + storeCommit);
+    sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.INSERT, store + storeCommit));
     
     // TODO
     contractInfo.contract.fields.forEach(item => {
-        console.log(`item: ${item.rangeString}`);
-        let field = Handlebars.compile(sotreFieldTpl)(item);
+        console.log(`item==: ${item.rangeStr}`);
+        let field = Handlebars.compile(storeFieldTpl)(item);
         sourceModifier.addModifyPoint(new ModifyPoint(item.range, ModifyType.REPLACE, field));
     });
 
@@ -95,7 +96,7 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
         sourceModifier.addModifyPoint(new ModifyPoint(dynamic.range, ModifyType.REPLACE, code));
     });
     sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.range, ModifyType.APPEND, exportMain));
-    sourceModifier.toModifyFileMap();
+    sourceModifier.genModifyFileMap();
     return sourceModifier;
 }
 

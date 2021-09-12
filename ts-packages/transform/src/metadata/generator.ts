@@ -58,7 +58,7 @@ export class MetadataGenerator {
                 let interpreter = new ClassInterpreter(classType);
                 interpreter.resolveFieldMembers();
                 let fieldArr = new Array<Field>();
-                if (interpreter.className === "Account") {
+                if (interpreter.name === "Account") {
                     interpreter.fields.forEach(classField => {
                         if (classField.type.typeKind == TypeKindEnum.ARRAY) {
                             classField.type.capacity = 32;

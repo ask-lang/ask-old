@@ -9,7 +9,8 @@ import {
     FunctionPrototype,
     Range,
     DecoratorNode,
-    FunctionDeclaration
+    FunctionDeclaration,
+    DeclaredElement
 } from "assemblyscript";
 
 import { AstUtil, DecoratorUtil, ElementUtil, RangeUtil } from "../utils/utils";
@@ -21,6 +22,7 @@ import { ContractDecoratorKind } from "../enums/decorator";
 import { FieldDefHelper, TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
+import { Interpreter } from "./interpreter";
 
 export class DecoratorsInfo {
     decorators: DecoratorNode[] | null;
@@ -51,41 +53,31 @@ export class DecoratorsInfo {
         }
     }
 }
-export class FieldDef {
-    protected fieldPrototype: FieldPrototype;
-    range: Range;
-    name: string;
+export class FieldDef extends Interpreter {
     type!: NamedTypeNodeDef;
     selector: KeySelector;
     varName: string;
-    doc: string[];
     declaration: FieldDeclaration;
     decorators: DecoratorsInfo;
-    rangeString = "";
 
-    constructor(field: FieldPrototype) {
-        this.fieldPrototype = field;
-        this.name = field.name;
-        this.declaration = <FieldDeclaration>field.declaration;
-        this.range = this.declaration.range;
-        this.rangeString = this.declaration.range.toString();
-        this.doc = DecoratorUtil.getDoc(field.declaration);
+    constructor(prototype: FieldPrototype) {
+        super(prototype);
+        this.declaration = <FieldDeclaration>prototype.declaration;
         this.varName = "_" + this.name;
-        this.decorators = new DecoratorsInfo(this.fieldPrototype.declaration.decorators);
-        let storeKey = this.fieldPrototype.internalName + this.name;
+        this.decorators = new DecoratorsInfo(this.element.declaration.decorators);
+        let storeKey = this.element.internalName + this.name;
         this.selector = new KeySelector(storeKey);
         this.resolveField();
     }
 
     /**
-     * 
+     * Resolve fields
      */
     private resolveField(): void {
-        let fieldDeclaration: FieldDeclaration = <FieldDeclaration>this.fieldPrototype.declaration;
-        let commonType: TypeNode | null = fieldDeclaration.type;
+        let commonType: TypeNode | null = this.declaration.type;
         if (commonType && commonType.kind == NodeKind.NAMEDTYPE) {
             let typeNode = <NamedTypeNode>commonType;
-            this.type = new NamedTypeNodeDef(this.fieldPrototype, typeNode);
+            this.type = new NamedTypeNodeDef(this.element, typeNode);
         }
         // IF the type is array, special process
         if (this.type.typeKind == TypeKindEnum.ARRAY) {
@@ -200,42 +192,36 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
     }
 }
 
-export class FunctionDef {
-    protected funcProto: FunctionPrototype;
+export class FunctionDef extends Interpreter {
+    element: FunctionPrototype;
     declaration: FunctionDeclaration;
     parameters: ParameterNodeDef[] = [];
-    methodName: string;
     isReturnable = false;
     isConstructor = false;
     returnType: NamedTypeNodeDef | null = null;
-    doc: string[];
-    rangeString = "";
-    defaultVals: string[] = [];
 
     constructor(funcPrototype: FunctionPrototype) {
+        super(funcPrototype);
         this.declaration = <FunctionDeclaration>funcPrototype.declaration;
-        this.doc = DecoratorUtil.getDoc(funcPrototype.declaration);
-        this.funcProto = funcPrototype;
-        this.methodName = this.funcProto.name;
-        this.rangeString = this.declaration.range.toString();
+        this.element = funcPrototype;
         this.resolve();
     }
 
     resolve(): void {
-        let params = this.funcProto.functionTypeNode.parameters;
+        let params = this.element.functionTypeNode.parameters;
         params.forEach(param => {
-            this.parameters.push(new ParameterNodeDef(this.funcProto, param));
+            this.parameters.push(new ParameterNodeDef(this.element, param));
         });
         this.resolveReturnType();
     }
 
     resolveReturnType(): void {
-        if (this.funcProto.name == "constructor") {
+        if (this.element.name == "constructor") {
             this.isConstructor = true;
             return ;
         }
-        let returnType = this.funcProto.functionTypeNode.returnType;
-        let returnTypeDesc = new NamedTypeNodeDef(this.funcProto, <NamedTypeNode>returnType);
+        let returnType = this.element.functionTypeNode.returnType;
+        let returnTypeDesc = new NamedTypeNodeDef(this.element, <NamedTypeNode>returnType);
         if (returnTypeDesc.typeKind != TypeKindEnum.VOID) {
             returnTypeDesc.codecType = TypeHelper.getCodecType(returnTypeDesc.plainType);
             this.isReturnable = true;
@@ -269,8 +255,8 @@ export class ConstructorDef extends FunctionDef {
             let type = new TypeSpec(item.type.index, item.type.plainType);
             return new ArgumentSpec(type, item.name);
         });
-        return new ConstructorSpec([this.methodName],
-            new KeySelector(this.methodName).short,
+        return new ConstructorSpec([this.name],
+            new KeySelector(this.name).short,
             args, this.doc);
     }
 }
@@ -289,8 +275,8 @@ export class MessageFunctionDef extends FunctionDef {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.messageDecorator = new MessageDecoratorNodeDef(msgDecorator!);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.selector = new KeySelector(this.methodName);
-        this.bodyRange = this.funcProto.bodyNode!.range;
+        this.selector = new KeySelector(this.name);
+        this.bodyRange = this.element.bodyNode!.range;
         if (this.messageDecorator.mutates == "false") {
             this.mutatable = false;
         } 
@@ -305,7 +291,7 @@ export class MessageFunctionDef extends FunctionDef {
             let type = MetadataUtil.createTypeSpec(item.type);
             return new ArgumentSpec(type!, item.name);
         });
-        let msgSpec = new MessageSpec([this.methodName],
+        let msgSpec = new MessageSpec([this.name],
             this.selector.short,
             args,
             MetadataUtil.createTypeSpec(this.returnType), this.doc);

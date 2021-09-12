@@ -3,9 +3,8 @@ import {
     ClassPrototype,
     FunctionPrototype,
     FieldPrototype,
-    Range,
     CommonFlags,
-    ClassDeclaration
+    ClassDeclaration,
 } from "assemblyscript";
 
 import {
@@ -17,13 +16,13 @@ import {
 
 import { ElementUtil, DecoratorUtil } from "../utils/utils";
 
-import { Strings } from "../utils/primitiveutil";
-import { ConstructorDef, FieldDef, FunctionDef, MessageFunctionDef} from "./elementdef";
+import { ConstructorDef, FieldDef, FunctionDef , MessageFunctionDef} from "./elementdef";
 import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
 import { TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
 import { KeySelector } from "../preprocess/selector";
+import { Interpreter } from "./interpreter";
 
 export interface Matadata {
     /**
@@ -32,39 +31,32 @@ export interface Matadata {
     createMetadata(): ToMetadata;
 }
 
-export class ClassInterpreter {
-    classPrototype: ClassPrototype;
+export class ClassInterpreter extends Interpreter {
+    element: ClassPrototype;
     declaration: ClassDeclaration;
-    camelName: string;
-    className: string;
     instanceName: string;
-    range: Range;
-    doc: string[];
     fields: FieldDef[] = [];
     functions: FunctionDef[] = [];
     variousPrefix = "_";
     export = "";
     constructorFun: FunctionDef | null = null;
 
-    constructor(clzPrototype: ClassPrototype) {
-        this.classPrototype = clzPrototype;
-        this.declaration = <ClassDeclaration>this.classPrototype.declaration;
-        this.range = this.declaration.range;
+    constructor(prototype: ClassPrototype) {
+        super(prototype);
+        this.element = prototype;
+        this.declaration = <ClassDeclaration>this.element.declaration;
         if (this.declaration.isAny(CommonFlags.EXPORT)) {
             this.export = "export ";
         }
-        this.doc = DecoratorUtil.getDoc(this.declaration);
-        this.className = clzPrototype.name;
-        this.camelName = Strings.lowerFirstCase(this.className);
-        this.instanceName = this.variousPrefix + this.className.toLowerCase();
-        if (this.classPrototype.constructorPrototype != null) {
-            this.constructorFun = new FunctionDef(this.classPrototype.constructorPrototype);
+        this.instanceName = this.variousPrefix + this.name.toLowerCase();
+        if (this.element.constructorPrototype != null) {
+            this.constructorFun = new FunctionDef(this.element.constructorPrototype);
         }
     }
 
     resolveFieldMembers(): void {
-        this.classPrototype.instanceMembers &&
-            this.classPrototype.instanceMembers.forEach((element, _) => {
+        this.element.instanceMembers &&
+            this.element.instanceMembers.forEach((element, _) => {
                 if (element.kind == ElementKind.FIELD_PROTOTYPE) {
                     this.fields.push(new FieldDef(<FieldPrototype>element));
                 }
@@ -72,8 +64,8 @@ export class ClassInterpreter {
     }
 
     resolveFunctionMembers(): void {
-        this.classPrototype.instanceMembers &&
-            this.classPrototype.instanceMembers.forEach((element, _) => {
+        this.element.instanceMembers &&
+            this.element.instanceMembers.forEach((element, _) => {
                 if (element.kind == ElementKind.FUNCTION_PROTOTYPE) {
                     let func = new FunctionDef(<FunctionPrototype>element);
                     if (!func.isConstructor) {
@@ -106,8 +98,8 @@ export class ContractInterpreter extends ClassInterpreter {
     }
 
     private resolveContractClass(): void {
-        this.classPrototype.instanceMembers &&
-            this.classPrototype.instanceMembers.forEach((instance, _) => {
+        this.element.instanceMembers &&
+            this.element.instanceMembers.forEach((instance, _) => {
                 if (ElementUtil.isCntrFuncPrototype(instance)) {
                     this.cntrFuncDefs.push(new ConstructorDef(<FunctionPrototype>instance));
                 }
@@ -116,7 +108,7 @@ export class ContractInterpreter extends ClassInterpreter {
                     this.msgFuncDefs.push(msgFunc);
                 }
             });
-        this.resolveBaseClass(this.classPrototype);
+        this.resolveBaseClass(this.element);
     }
 
     private resolveBaseClass(sonClassPrototype: ClassPrototype): void {
@@ -157,7 +149,7 @@ export class EventInterpreter extends ClassInterpreter implements Matadata {
             let param = new EventParamSpec(item.decorators.isTopic, type.toMetadata(), item.doc, item.name);
             eventParams.push(param);
         });
-        return new EventSpec(this.className, eventParams, []);
+        return new EventSpec(this.name, eventParams, []);
     }
 }
 

@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import Handlebars from "./handlebarsfunc";
 import { CONFIG } from "../config/compile";
 import { ClassInterpreter, EventInterpreter } from "../contract/classdef";
 import { FieldDef, FunctionDef } from "../contract/elementdef";
@@ -103,7 +103,7 @@ Handlebars.registerHelper("genPopulateFromBytes", function (classDef: ClassInter
 Handlebars.registerHelper("genCodeEq", function (classDef: ClassInterpreter) {
     let code: string[] = [];
     let fields: string[] = [];
-    code.push(` eq(other: ${classDef.className}): bool {`);
+    code.push(` eq(other: ${classDef.name}): bool {`);
 
     for (let index = 0; index < classDef.fields.length; index++) {
         let field = classDef.fields[index];
@@ -196,6 +196,25 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
 });
 
 /**
+ * Generate the commit storage command
+ * 
+ */
+Handlebars.registerHelper("genCommit", function (field: FieldDef) {
+    let code: string[] = [];
+    if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
+        code.push(`      if (this.${field.varName} !== null) {`);
+        code.push(`          this.${field.varName}.__commit_storage__();`);
+    } else {
+        code.push(`      if (this.${field.varName} !== null) {`);
+        code.push(`     const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
+        code.push(`     st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
+    }
+    code.push(`      }`);
+    return code.join("\n");
+});
+
+
+/**
  * Event constructor
  *
  */
@@ -210,20 +229,6 @@ Handlebars.registerHelper("constructor", function(event: EventInterpreter) {
         code.push(`}`);
         return code.join(EOL);
     }
-});
-
-/**
- * Register the tag of each.
- */
-Handlebars.registerHelper("each", function (context, options) {
-    var ret = "";
-    for (var i = 0, j = context.length; i < j; i++) {
-        let data = context[i];
-        data._index = i;
-        data.isMid = (i != j - 1 || (i == 0 && j != 1));
-        ret = ret + options.fn(data);
-    }
-    return ret;
 });
 
 /**
@@ -261,8 +266,8 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
         funVarious.push(convertToCodec(param.type, `p${i}`));
     }
     let code: string[] = [];
-    code.push(`${ fn.methodName }(${ funParams.join(",") }): ${ fn.isReturnable ? fn.returnType?.plainType : "void" } {`);
-    code.push(`     let data = ${CONFIG.scope}Abi.encode("${fn.methodName}", [${funVarious.join(",")}]);`);
+    code.push(`${ fn.name }(${ funParams.join(",") }): ${ fn.isReturnable ? fn.returnType?.plainType : "void" } {`);
+    code.push(`     let data = ${CONFIG.scope}Abi.encode("${fn.name}", [${funVarious.join(",")}]);`);
     if (fn.isReturnable) {
         code.push(`         let rs = this.addr.call(data);`);
         code.push(`         ${convertBytesToType(fn.returnType)}`);
@@ -271,28 +276,6 @@ Handlebars.registerHelper("generateFunction", function (fn: FunctionDef) {
     }
     code.push(`     }`);
     return code.join(EOL);
-});
-
-/**
- * Register the tag of equal
- */
-Handlebars.registerHelper("eq", function (v1, v2, options) {
-    if (v1 == v2) {
-        return options.fn(this);
-    } else {
-        return options.inverse(this);
-    }
-});
-
-/**
- * Register the tag of neq (Not equal)
- */
-Handlebars.registerHelper("neq", function (v1, v2, options) {
-    if (v1 != v2) {
-        return options.fn(this);
-    } else {
-        return options.inverse(this);
-    }
 });
 
 export default Handlebars;
