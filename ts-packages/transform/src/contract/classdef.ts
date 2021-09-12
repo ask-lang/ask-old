@@ -14,7 +14,7 @@ import {
     ToMetadata
 } from "contract-metadata/src/index";
 
-import { ElementUtil, DecoratorUtil } from "../utils/utils";
+import { ElementUtil } from "../utils/utils";
 
 import { ConstructorDef, FieldDef, FunctionDef , MessageFunctionDef} from "./elementdef";
 import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "contract-metadata/src/layouts";
@@ -32,7 +32,6 @@ export interface Matadata {
 }
 
 export class ClassInterpreter extends Interpreter {
-    element: ClassPrototype;
     declaration: ClassDeclaration;
     instanceName: string;
     fields: FieldDef[] = [];
@@ -41,9 +40,8 @@ export class ClassInterpreter extends Interpreter {
     export = "";
     constructorFun: FunctionDef | null = null;
 
-    constructor(prototype: ClassPrototype) {
-        super(prototype);
-        this.element = prototype;
+    constructor(public element: ClassPrototype) {
+        super(element);
         this.declaration = <ClassDeclaration>this.element.declaration;
         if (this.declaration.isAny(CommonFlags.EXPORT)) {
             this.export = "export ";

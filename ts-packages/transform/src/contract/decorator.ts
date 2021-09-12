@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CharCode, DecoratorKind, DecoratorNode, Expression, IdentifierExpression, NodeKind } from "assemblyscript";
 import { ContractDecoratorKind } from "../enums/decorator";
-import { RangeUtil } from "../utils/utils";
+import { Strings } from "../utils/primitiveutil";
+import { AstUtil, RangeUtil } from "../utils/utils";
 
 function fromNode(nameNode: Expression): ContractDecoratorKind {
     if (nameNode.kind == NodeKind.IDENTIFIER) {
@@ -57,4 +59,53 @@ export function getCustomDecoratorKind(decorator: DecoratorNode): ContractDecora
         throw new Error(`The contract don't support the decorator ${decorator.name.range.toString()}, please eheck ${RangeUtil.location(decorator.range)}`);
     }
     return kind;
+}
+
+export function toPairs(decorator: DecoratorNode): Map<string, string> {
+    let pairs = new Map<string, string>();
+
+    decorator.args && decorator.args.forEach(expression => {
+        if (expression.kind == NodeKind.BINARY) {
+            let identifier = AstUtil.getIdentifier(expression);
+            let val = AstUtil.getBinaryExprRight(expression);
+            pairs.set(identifier, val);
+        }
+        // Todo using the strict logical
+        if (expression.kind == NodeKind.LITERAL) {
+            let exp = expression.range.toString().trim();
+            let regex = new RegExp(/{|}|,/);
+            regex.test(exp);
+            let result = Strings.splitString(exp, regex);
+            for (let item of result) {
+                let pairItem = item.split(/:/);
+                pairs.set(pairItem[0].trim(), pairItem[1]);
+            }
+        }
+    });
+    return pairs;
+}
+
+function checkParam(map: Map<string, string>, key: string, required: boolean, regex: RegExp, defaultVal: string): void {
+    if (required && !map.has(key)) {
+        throw Error(`field ${key} is not exist.`);
+    }
+    if (map.has(key)) {
+        let val = map.get(key)!;
+        if (!regex.test(val)) {
+            throw Error(`filed ${key} should match the pattern ${regex}`);
+        }
+    } else {
+        map.set(key, defaultVal);
+    }
+}
+
+export function getDecoratorPairs(decorator: DecoratorNode): Map<string, string> {
+    let pairs = toPairs(decorator);
+    switch (getCustomDecoratorKind(decorator)) {
+        case ContractDecoratorKind.STATE: {
+            checkParam(pairs, "lazy", false, /false|true/g, "true");
+            break;
+        }
+    }
+    return pairs;
 }

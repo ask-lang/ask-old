@@ -9,11 +9,10 @@ import {
     FunctionPrototype,
     Range,
     DecoratorNode,
-    FunctionDeclaration,
-    DeclaredElement
+    FunctionDeclaration
 } from "assemblyscript";
 
-import { AstUtil, DecoratorUtil, ElementUtil, RangeUtil } from "../utils/utils";
+import { AstUtil, ElementUtil, RangeUtil } from "../utils/utils";
 import { Strings } from "../utils/primitiveutil";
 import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "contract-metadata/src";
 import { KeySelector } from "../preprocess/selector";
@@ -23,6 +22,8 @@ import { FieldDefHelper, TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
 import { Interpreter } from "./interpreter";
+import { DecoratorUtil } from "../utils/decoratorutil";
+import { getDecoratorPairs } from "./decorator";
 
 export class DecoratorsInfo {
     decorators: DecoratorNode[] | null;
@@ -120,39 +121,16 @@ export class ParameterNodeDef {
 }
 
 export class DecoratorNodeDef {
-
     constructor(decorator: DecoratorNode, public pairs: Map<string, string> = new Map<string, string>()) {
-        if (decorator.args) {
-            decorator.args.forEach(expression => {
-                // console.log(`expression: ${expression.range.toString()}`);
-                // console.log(`expression kind: ${NodeKind[expression.kind]}`);
-                if (expression.kind == NodeKind.BINARY) {
-                    let identifier = AstUtil.getIdentifier(expression);
-                    let val = AstUtil.getBinaryExprRight(expression);
-                    this.pairs.set(identifier, val);
-                }
-                // TODO using the strick logical
-                if (expression.kind == NodeKind.LITERAL) {
-                    let exp = expression.range.toString().trim();
-                    let regex = new RegExp(/{|}|,/);
-                    regex.test(exp);
-                    let result = Strings.splitString(exp, regex);
-                    for (let item of result) {
-                        let pairItem = item.split(/:/);
-                        this.pairs.set(pairItem[0].trim(), pairItem[1]);
-                    }
-                }
-            });
-        }
-    }
+        this.pairs = getDecoratorPairs(decorator);
+    }    
 }
 
 /**
  * Doc decorator info
  */
 export class DocDecoratorNodeDef extends DecoratorNodeDef {
-    doc = "";
-    constructor(decorator: DecoratorNode) {
+    constructor(decorator: DecoratorNode, public doc = "") {
         super(decorator);
         if (this.pairs.has("desc")) {
             this.doc = Strings.removeQuotation(this.pairs.get("desc") || "");
@@ -163,11 +141,8 @@ export class DocDecoratorNodeDef extends DecoratorNodeDef {
 }
 
 export class MessageDecoratorNodeDef extends DecoratorNodeDef {
-    payable = false;
-    mutates = "true";
-    selector = "";
-
-    constructor(decorator: DecoratorNode) {
+    constructor(decorator: DecoratorNode, public payable = false,
+        public mutates = "true", public selector = "") {
         super(decorator);
         if (decorator.args) {
             decorator.args.forEach(expression => {
@@ -179,7 +154,7 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
                     DecoratorUtil.checkMutates(decorator, this.mutates);
                 } else if (identifier == 'selector') {
                     this.selector = Strings.removeQuotation(AstUtil.getBinaryExprRight(expression));
-                    DecoratorUtil.checkSelecrot(decorator, this.selector);
+                    DecoratorUtil.checkSelector(decorator, this.selector);
                 } else {
                     DecoratorUtil.throwNoArguException(decorator, identifier);
                 }
@@ -188,22 +163,19 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
         if (this.payable && this.mutates == 'false') {
             throw new Error(`Decorator: ${decorator.name.range.toString()} arguments mutates and payable can only exist one. Trace: ${RangeUtil.location(decorator.range)} `);
         }
-
     }
 }
 
 export class FunctionDef extends Interpreter {
-    element: FunctionPrototype;
     declaration: FunctionDeclaration;
     parameters: ParameterNodeDef[] = [];
     isReturnable = false;
     isConstructor = false;
     returnType: NamedTypeNodeDef | null = null;
 
-    constructor(funcPrototype: FunctionPrototype) {
-        super(funcPrototype);
-        this.declaration = <FunctionDeclaration>funcPrototype.declaration;
-        this.element = funcPrototype;
+    constructor(public element: FunctionPrototype, public lazy = false) {
+        super(element);
+        this.declaration = <FunctionDeclaration>element.declaration;
         this.resolve();
     }
 
