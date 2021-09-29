@@ -10,25 +10,25 @@ class Stored {
 
 @contract
 class Incrementer {
-    private stored: Stored;
+    @state
+    value: u32;
 
     constructor() {
-        this.stored = new Stored();
     }
 
     @constructor
     default(initValue: u32): void {
-        this.stored.value = initValue;
+        this.value = initValue;
     }
 
     @message
     inc(): void {
-        let v = this.stored.value;
-        this.stored.value = ++v;
+        let v = this.value;
+        this.value = ++v;
     }
 
     @message(mutates = false)
     get(): u32 {
-        return this.stored.value;
+        return this.value;
     }
 }

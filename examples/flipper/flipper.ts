@@ -3,32 +3,28 @@
  * @author liangqin.fan@gmail.com
  */
 
-@storage
-class Stored {
-    flag: boolean;
-}
 
 @contract
 class Flipper {
-    private stored: Stored;
+    @state
+    flag: bool;
 
     constructor() {
-        this.stored = new Stored();
     }
 
     @constructor
     default(initFlag: bool): void {
-        this.stored.flag = initFlag;
+        this.flag = initFlag;
     }
 
     @message
     flip(): void {
-        const v = this.stored.flag;
-        this.stored.flag = !v;
+        const v = this.flag;
+        this.flag = !v;
     }
 
     @message(mutates = false)
     get(): bool {
-        return this.stored.flag;
+        return this.flag;
     }
 }

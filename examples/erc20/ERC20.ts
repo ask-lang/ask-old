@@ -1,30 +1,4 @@
 import { Account, SpreadStorableMap, u128, UInt128, msg } from "ask-lang";
-
-@storage
-class ERC20Storage {
-  balances: SpreadStorableMap<Account, UInt128>;
-  allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
-
-    totalSupply: u128;
-    name: string;
-    symbol: string;
-    decimal: u8;
-}
-
-@event
-class Transfer {
-    @topic from: Account;
-    @topic to: Account;
-
-    value: u128;
-
-    constructor(from: Account, to : Account, value: u128) {
-        this.from = from;
-        this.to = to;
-        this.value = value;
-    }
-}
-
 @event
 class Approval {
     @topic owner: Account;
@@ -42,43 +16,48 @@ class Approval {
 
 @contract
 export class ERC20 {
-  private storage: ERC20Storage;
+  @state balances: SpreadStorableMap<Account, UInt128>;
+  @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
+
+  @state totalSupply: u128;
+  @state name: string;
+  @state symbol: string;
+  @state decimal: u8;
 
   constructor() {
-    this.storage = new ERC20Storage();
   }
 
   @constructor
   default(name: string = "", symbol: string = ""): void {
-    this.storage.name = name;
-    this.storage.symbol = symbol;
-    this.storage.decimal = 18;
-    this.storage.totalSupply = u128.Zero;
+    this.name = name;
+    this.symbol = symbol;
+    this.decimal = 18;
+    this.totalSupply = u128.Zero;
   }
 
   @message(mutates = false)
   name(): string {
-    return this.storage.name;
+    return this.name;
   }
 
   @message(mutates = false)
   symbol(): string {
-    return this.storage.symbol;
+    return this.symbol;
   }
 
   @message(mutates = false)
   decimal(): u8 {
-    return this.storage.decimal;
+    return this.decimal;
   }
 
   @message(mutates = false)
   totalSupply(): u128 {
-    return this.storage.totalSupply;
+    return this.totalSupply;
   }
 
   @message(mutates = false)
   balanceOf(account: Account): u128 {
-    return this.storage.balances.get(account).unwrap();
+    return this.balances.get(account).unwrap();
   }
 
   @message
@@ -90,7 +69,7 @@ export class ERC20 {
 
   @message(mutates = false)
   allowance(owner: Account, spender: Account): u128 {
-    return this.storage.allowances.get(owner).get(spender).unwrap();
+    return this.allowances.get(owner).get(spender).unwrap();
   }
 
   @message
@@ -130,24 +109,24 @@ export class ERC20 {
   }
 
   protected _setupDecimals(decimals_: u8): void {
-    this.storage.decimal = decimals_;
+    this.decimal = decimals_;
   }
 
   protected _mint(account: Account, amount: u128): void {
     assert(account.notEq(Account.Null), "ERC20: mint to the zero address");
-    this.storage.totalSupply += amount;
-    let leftValue = this.storage.balances.get(account).unwrap() + amount;
-    this.storage.balances.set(account, new UInt128(leftValue));
+    this.totalSupply += amount;
+    let leftValue = this.balances.get(account).unwrap() + amount;
+    this.balances.set(account, new UInt128(leftValue));
     (new Transfer(Account.Null, account, amount));
   }
 
   protected _burn(account: Account, amount: u128): void {
     assert(account.notEq(Account.Null), "ERC20: burn from the zero address");
-    let balanceOfAccount = this.storage.balances.get(account).unwrap();
+    let balanceOfAccount = this.balances.get(account).unwrap();
     assert(balanceOfAccount >= amount, "ERC20: not enough balance to bure.");
     let leftValue = balanceOfAccount - amount;
-    this.storage.balances.set(account, new UInt128(leftValue));
-    this.storage.totalSupply -= amount;
+    this.balances.set(account, new UInt128(leftValue));
+    this.totalSupply -= amount;
     (new Transfer(account, Account.Null, amount));
   }
 
@@ -164,22 +143,22 @@ export class ERC20 {
     assert(sender.notEq(Account.Null), "ERC20: transfer from the zero address");
     assert(recipient.notEq(Account.Null), "ERC20: transfer to the zero address");
 
-    let spenderBalance = this.storage.balances.get(sender).unwrap();
+    let spenderBalance = this.balances.get(sender).unwrap();
     assert(spenderBalance >= amount, "ERC20: transfer amount exceeds balance");
 
     let senderLeft = spenderBalance - amount;
-    this.storage.balances.set(sender, new UInt128(senderLeft));
+    this.balances.set(sender, new UInt128(senderLeft));
 
-    let recipientLeft = this.storage.balances.get(recipient).unwrap() + amount;
-    this.storage.balances.set(recipient, new UInt128(recipientLeft));
+    let recipientLeft = this.balances.get(recipient).unwrap() + amount;
+    this.balances.set(recipient, new UInt128(recipientLeft));
     (new Transfer(sender, recipient, amount));
   }
 
   private getAllowanceItem(key: Account): SpreadStorableMap<Account, UInt128> {
-    let item = this.storage.allowances.get(key);
+    let item = this.allowances.get(key);
     if (item.entryKey == "") {
       item.entryKey = key.toString();
-      this.storage.allowances.set(key, item);
+      this.allowances.set(key, item);
     }
     return item;
   }
