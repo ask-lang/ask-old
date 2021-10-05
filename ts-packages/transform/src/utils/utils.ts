@@ -200,7 +200,7 @@ export class AstUtil {
             || declareType == "PackedStorableMap";
     }
 
-    static checkPublic(declaration: DeclarationStatement): void {
+    static checkPublicModifier(declaration: DeclarationStatement): void {
         if (declaration.isAny(CommonFlags.PRIVATE)) {
             throw new Error(`Method: ${declaration.name.range.toString()} should be public. Trace: ${RangeUtil.location(declaration.range)}.`);
         }

@@ -68,7 +68,7 @@ export function toPairs(decorator: DecoratorNode): Map<string, string> {
         if (expression.kind == NodeKind.BINARY) {
             let identifier = AstUtil.getIdentifier(expression);
             let val = AstUtil.getBinaryExprRight(expression);
-            pairs.set(identifier, val);
+            pairs.set(identifier, val.trim());
         }
         // Todo using the strict logical
         if (expression.kind == NodeKind.LITERAL) {
@@ -78,14 +78,14 @@ export function toPairs(decorator: DecoratorNode): Map<string, string> {
             let result = Strings.splitString(exp, regex);
             for (let item of result) {
                 let pairItem = item.split(/:/);
-                pairs.set(pairItem[0].trim(), pairItem[1]);
+                pairs.set(pairItem[0].trim(), pairItem[1].trim());
             }
         }
     });
     return pairs;
 }
 
-function checkParam(map: Map<string, string>, key: string, required: boolean, regex: RegExp, defaultVal: string): void {
+function checkDecoratorField(map: Map<string, string>, key: string, required: boolean, regex: RegExp, defaultVal: string): void {
     if (required && !map.has(key)) {
         throw Error(`field ${key} is not exist.`);
     }
@@ -103,9 +103,15 @@ export function getDecoratorPairs(decorator: DecoratorNode): Map<string, string>
     let pairs = toPairs(decorator);
     switch (getCustomDecoratorKind(decorator)) {
         case ContractDecoratorKind.STATE: {
-            checkParam(pairs, "lazy", false, /false|true/g, "true");
+            checkDecoratorField(pairs, "lazy", false, /false|true/g, "true");
+            break;
+        }
+        case ContractDecoratorKind.DOC: {
+            checkDecoratorField(pairs, "doc", true, /\*/g, "");
             break;
         }
     }
     return pairs;
 }
+
+// export function getDecorator()

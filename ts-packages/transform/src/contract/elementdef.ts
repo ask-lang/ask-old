@@ -23,37 +23,57 @@ import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
 import { Interpreter } from "./interpreter";
 import { DecoratorUtil } from "../utils/decoratorutil";
-import { getDecoratorPairs } from "./decorator";
+import { getCustomDecoratorKind, getDecoratorPairs, toPairs } from "./decorator";
+import { PrimitiveDef } from "contract-metadata/src/types";
+
+
+// export class DocDecoratorNodeDef
+
+
+
 
 export class DecoratorsInfo {
-    decorators: DecoratorNode[] | null;
+    decorators: DecoratorNode[] = [];
+
     isIgnore = false;
     isTopic = false;
     isPacked = false;
+    isLazy = false;
     capacity = 0;
 
     constructor(decorators: DecoratorNode[] | null) {
+        if (!decorators) {
+            return ;
+        }
         this.decorators = decorators;
 
-        if (this.decorators) {
-            for (let decorator of this.decorators) {
-                if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.IGNORE)) {
-                    this.isIgnore = true;
-                }
-                if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
-                    this.isTopic = true;
-                }
-                if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.PACKED)) {
-                    this.isPacked = true;
-                    let decratorDef = new DecoratorNodeDef(decorator);
-                    if (decratorDef.pairs.has("capacity")) {
-                        this.capacity = Number(decratorDef.pairs.get("capacity"));
-                    }
+        for (let decorator of this.decorators) {
+            let kind = getCustomDecoratorKind(decorator);
+            if (kind == ContractDecoratorKind.INTERNAL) {
+                continue;
+            }
+            let pairs = getDecoratorPairs(decorator);
+            if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.IGNORE)) {
+                this.isIgnore = true;
+            }
+            if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
+                this.isTopic = true;
+            }
+            if (kind == ContractDecoratorKind.STATE) {
+                this.isLazy = Strings.toBool(pairs.get("lazy")!);
+                console.log(`ContractDecoratorKind.STATE: ${this.isLazy}`);
+            }
+            if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.PACKED)) {
+                this.isPacked = true;
+                let decratorDef = new DecoratorNodeDef(decorator);
+                if (decratorDef.pairs.has("capacity")) {
+                    this.capacity = Number(decratorDef.pairs.get("capacity"));
                 }
             }
         }
     }
 }
+
 export class FieldDef extends Interpreter {
     type!: NamedTypeNodeDef;
     selector: KeySelector;
@@ -69,6 +89,7 @@ export class FieldDef extends Interpreter {
         this.decorators = new DecoratorsInfo(this.element.declaration.decorators);
         let storeKey = this.element.internalName + this.name;
         this.selector = new KeySelector(storeKey);
+        this.lazy = this.decorators.isLazy;
         this.resolveField();
     }
 
@@ -217,7 +238,7 @@ export class ConstructorDef extends FunctionDef {
     
     constructor(funcPrototype: FunctionPrototype) {
         super(funcPrototype);
-        AstUtil.checkPublic(this.declaration);
+        AstUtil.checkPublicModifier(this.declaration);
         if (this.isReturnable) {
             throw new Error(`The method that marked by @constructor should return void type. Please check ${RangeUtil.location(this.declaration.range)}`);
         }
@@ -243,7 +264,7 @@ export class MessageFunctionDef extends FunctionDef {
 
     constructor(funcPrototype: FunctionPrototype) {
         super(funcPrototype);
-        AstUtil.checkPublic(this.declaration);
+        AstUtil.checkPublicModifier(this.declaration);
         let msgDecorator = AstUtil.getSpecifyDecorator(funcPrototype.declaration, ContractDecoratorKind.MESSAGE);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.messageDecorator = new MessageDecoratorNodeDef(msgDecorator!);

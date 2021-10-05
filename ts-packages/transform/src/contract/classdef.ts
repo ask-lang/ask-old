@@ -84,6 +84,9 @@ export class ClassInterpreter extends Interpreter {
     }
 }
 
+/**
+ * It indicate the contract interpreter
+ */
 export class ContractInterpreter extends ClassInterpreter {
     // The first case is lower.
     cntrFuncDefs: FunctionDef[] = [];

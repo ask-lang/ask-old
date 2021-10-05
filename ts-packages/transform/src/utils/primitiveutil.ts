@@ -31,6 +31,11 @@ export class Strings {
         return "string" == typeName || "String" == typeName;
     }
 
+    static toBool(str: string): boolean {
+        console.log(`toBool:a${str}a ${"true" === String(str)}`);
+        return "true" === str ? true : false;
+    }
+
     /**
      * If the string around quotation, remove the quotation.
      * @param str The source string

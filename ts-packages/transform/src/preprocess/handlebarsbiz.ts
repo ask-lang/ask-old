@@ -175,7 +175,9 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
         return code.join("\n");
     }
     code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
-    if (field.decorators.isIgnore) {
+
+    // the field is ignore or lazy, not store the field.
+    if (field.decorators.isIgnore || field.decorators.isLazy) {
         if (field.type.isCodec || field.type.typeKind == TypeKindEnum.USER_CLASS) {
             code.push(`     this.${field.varName} = v;`);
         } else {
@@ -200,7 +202,8 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
  * Generate the commit storage command
  * 
  */
-Handlebars.registerHelper("genCommit", function (field: FieldDef) {
+Handlebars.registerHelper("genCommitLazy", function (field: FieldDef) {
+    if (!field.lazy)  return "";
     let code: string[] = [];
     if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
         code.push(`      if (this.${field.varName} !== null) {`);

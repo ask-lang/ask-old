@@ -2,7 +2,7 @@ import Handlebars from "./handlebarsbiz";
 import { Range } from "assemblyscript";
 import { ContractProgram} from "../contract/contract";
 
-import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl, storeFieldTpl, storeCommitTpl} from "../tpl";
+import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl, storeFieldTpl, storeCommitTpl} from "../tpl/tpl";
 
 export class ModifyPoint {
     range: Range;

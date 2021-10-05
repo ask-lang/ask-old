@@ -11,7 +11,7 @@ export const storeFieldTpl = `private {{varName}}: {{{type.plainTypeNode}}} | nu
 export const storeCommitTpl = `
   __commit_storage__(): void {
     {{#each fields}}
-    {{{genCommit .}}}
+    {{{genCommitLazy .}}}
     {{/each}}
   }
 `;
