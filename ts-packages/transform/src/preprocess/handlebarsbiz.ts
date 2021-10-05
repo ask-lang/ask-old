@@ -170,6 +170,7 @@ Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
  */
 Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
     let code: string[] = [];
+    // ARRAY & MAP wasn't generated `set` method.
     if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
         return code.join("\n");
     }

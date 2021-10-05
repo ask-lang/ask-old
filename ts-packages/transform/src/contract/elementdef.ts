@@ -58,6 +58,7 @@ export class FieldDef extends Interpreter {
     type!: NamedTypeNodeDef;
     selector: KeySelector;
     varName: string;
+    lazy = false;
     declaration: FieldDeclaration;
     decorators: DecoratorsInfo;
 
