@@ -23,10 +23,6 @@ function fromNode(nameNode: Expression): ContractDecoratorKind {
                 if (nameStr == "event") return ContractDecoratorKind.EVENT;
                 break;
             }
-            case CharCode.i: {
-                if (nameStr == "ignore") return ContractDecoratorKind.IGNORE;
-                break;
-            }
             case CharCode.m: {
                 if (nameStr == "message") return ContractDecoratorKind.MESSAGE;
                 break;
@@ -36,7 +32,6 @@ function fromNode(nameNode: Expression): ContractDecoratorKind {
                 break;
             }
             case CharCode.s: {
-                if (nameStr == "storage") return ContractDecoratorKind.STORAGE;
                 if (nameStr == "spread") return ContractDecoratorKind.SPREAD;
                 if (nameStr == "state") return ContractDecoratorKind.STATE;
                 break;

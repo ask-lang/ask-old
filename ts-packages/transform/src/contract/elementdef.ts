@@ -53,9 +53,6 @@ export class DecoratorsInfo {
                 continue;
             }
             let pairs = getDecoratorPairs(decorator);
-            if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.IGNORE)) {
-                this.isIgnore = true;
-            }
             if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
                 this.isTopic = true;
             }

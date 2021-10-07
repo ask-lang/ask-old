@@ -40,12 +40,6 @@ export class ElementUtil {
         return false;
     }
 
-    static isStoreClassPrototype(element: Element): boolean {
-        return (element.kind == ElementKind.CLASS_PROTOTYPE)
-            ? AstUtil.hasSpecifyDecorator((<ClassPrototype>element).declaration, ContractDecoratorKind.STORAGE)
-            : false;
-    }
-
     static isDynamicClassPrototype(element: Element): boolean {
         return (element.kind == ElementKind.CLASS_PROTOTYPE)
             ? AstUtil.hasSpecifyDecorator((<ClassPrototype>element).declaration, ContractDecoratorKind.DYNAMIC)
