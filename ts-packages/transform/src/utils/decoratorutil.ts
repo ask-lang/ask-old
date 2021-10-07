@@ -3,7 +3,7 @@ import { getCustomDecoratorKind } from "../contract/decorator";
 import { DocDecoratorNodeDef } from "../contract/elementdef";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { Strings } from "./primitiveutil";
-import { AstUtil } from "./utils";
+import { AstUtil, RangeUtil } from "./utils";
 
 export class DecoratorUtil {
 

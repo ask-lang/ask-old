@@ -7,15 +7,15 @@ export function deploy(): i32 {
   let {{contract.instanceName}} = new {{contract.name}}();
 
   {{#each contract.cntrFuncDefs}}
-  const {{methodName}}Selector: u8[] = {{#selector methodName}}{{shortArr}}{{/selector}};
-  if (${scope}msg.isSelector({{methodName}}Selector)) {
+  const {{name}}Selector: u8[] = {{#selector name}}{{shortArr}}{{/selector}};
+  if (${scope}msg.isSelector({{name}}Selector)) {
     {{#neq parameters.length 0}}
     const fnParameters = new ${scope}FnParameters(${scope}msg.data);
     {{/neq}}
     {{#each parameters}}
     let p{{_index}} = fnParameters.get<{{type.codecTypeAlias}}>();
     {{/each}}
-    {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}}{{ctrDefaultVals}});
+    {{../contract.instanceName}}.{{name}}({{#joinParams parameters}}{{/joinParams}}{{ctrDefaultVals}});
   }
   {{/each}}
   return 0;
@@ -24,8 +24,8 @@ export function deploy(): i32 {
 export function call(): i32 {
   const {{contract.instanceName}} = new {{contract.name}}();
   {{#each contract.msgFuncDefs}}
-  const {{methodName}}Selector: u8[] = {{selector.shortArr}};
-  if (${scope}msg.isSelector({{methodName}}Selector)) {
+  const {{name}}Selector: u8[] = {{selector.shortArr}};
+  if (${scope}msg.isSelector({{name}}Selector)) {
     {{#eq messageDecorator.mutates 'false'}}
     ${scope}Storage.mode = ${scope}StoreMode.R;
     {{/eq}}  
@@ -36,12 +36,12 @@ export function call(): i32 {
     let p{{_index}} = fnParameters.get<{{type.codecTypeAlias}}>();
     {{/each}}
     {{#if isReturnable}}
-    let rs = {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}});
+    let rs = {{../contract.instanceName}}.{{name}}({{#joinParams parameters}}{{/joinParams}});
 
     ${scope}ReturnData.set<{{returnType.codecTypeAlias}}>({{{wrapResult returnType}}});
     {{/if}}
     {{#unless isReturnable}}
-    {{../contract.instanceName}}.{{methodName}}({{#joinParams parameters}}{{/joinParams}});
+    {{../contract.instanceName}}.{{name}}({{#joinParams parameters}}{{/joinParams}});
     {{/unless}}
   }
   {{/each}}

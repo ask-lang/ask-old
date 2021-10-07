@@ -3,7 +3,6 @@
  * @author liangqin.fan@gmail.com
  */
 
-
 @contract
 class Flipper {
     @state
@@ -23,7 +22,7 @@ class Flipper {
         this.flag = !v;
     }
 
-    @message(mutates = false)
+    @message({mutates: false})
     get(): bool {
         return this.flag;
     }

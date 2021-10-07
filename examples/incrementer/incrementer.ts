@@ -2,12 +2,6 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-
-@storage
-class Stored {
-    value: u32;
-}
-
 @contract
 class Incrementer {
     @state

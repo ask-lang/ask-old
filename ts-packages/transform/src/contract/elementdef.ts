@@ -23,14 +23,9 @@ import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
 import { Interpreter } from "./interpreter";
 import { DecoratorUtil } from "../utils/decoratorutil";
-import { getCustomDecoratorKind, getDecoratorPairs, toPairs } from "./decorator";
-import { PrimitiveDef } from "contract-metadata/src/types";
-
+import { getCustomDecoratorKind, getDecoratorPairs } from "./decorator";
 
 // export class DocDecoratorNodeDef
-
-
-
 
 export class DecoratorsInfo {
     decorators: DecoratorNode[] = [];
@@ -163,22 +158,18 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public payable = false,
         public mutates = "true", public selector = "") {
         super(decorator);
-        if (decorator.args) {
-            decorator.args.forEach(expression => {
-                let identifier = AstUtil.getIdentifier(expression);
-                if (identifier == 'payable') {
-                    this.payable = true;
-                } else if (identifier == 'mutates') {
-                    this.mutates = AstUtil.getBinaryExprRight(expression);
-                    DecoratorUtil.checkMutates(decorator, this.mutates);
-                } else if (identifier == 'selector') {
-                    this.selector = Strings.removeQuotation(AstUtil.getBinaryExprRight(expression));
-                    DecoratorUtil.checkSelector(decorator, this.selector);
-                } else {
-                    DecoratorUtil.throwNoArguException(decorator, identifier);
-                }
-            });
+
+        if (this.pairs.get('payable')) {
+            this.payable = true;
+        } else if (this.pairs.get('mutates')) {
+            this.mutates = this.pairs.get('mutates')!;
+            DecoratorUtil.checkMutates(decorator, this.mutates);
+        } else if (this.pairs.get('selector')) {
+            let selector = this.pairs.get('selector')!;
+            this.selector = Strings.removeQuotation(selector);
+            DecoratorUtil.checkSelector(decorator, this.selector);
         }
+
         if (this.payable && this.mutates == 'false') {
             throw new Error(`Decorator: ${decorator.name.range.toString()} arguments mutates and payable can only exist one. Trace: ${RangeUtil.location(decorator.range)} `);
         }

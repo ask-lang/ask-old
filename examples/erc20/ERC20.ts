@@ -19,10 +19,10 @@ export class ERC20 {
   @state balances: SpreadStorableMap<Account, UInt128>;
   @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
 
-  @state totalSupply: u128;
-  @state name: string;
-  @state symbol: string;
-  @state decimal: u8;
+  @state totalSupply: u128 = 0;
+  @state name: string = "";
+  @state symbol: string = ""
+  @state decimal: u8 = 0;
 
   constructor() {
   }
@@ -35,27 +35,27 @@ export class ERC20 {
     this.totalSupply = u128.Zero;
   }
 
-  @message(mutates = false)
-  name(): string {
+  @message({mutates: false})
+  get name(): string {
     return this.name;
   }
 
-  @message(mutates = false)
-  symbol(): string {
+  @message({ mutates: false })
+  get symbol(): string {
     return this.symbol;
   }
 
-  @message(mutates = false)
-  decimal(): u8 {
+  @message({ mutates: false })
+  get decimal(): u8 {
     return this.decimal;
   }
 
-  @message(mutates = false)
-  totalSupply(): u128 {
+  @message({ mutates: false })
+  get supply(): u128 {
     return this.totalSupply;
   }
 
-  @message(mutates = false)
+  @message({ mutates: false })
   balanceOf(account: Account): u128 {
     return this.balances.get(account).unwrap();
   }
@@ -67,7 +67,7 @@ export class ERC20 {
     return true;
   }
 
-  @message(mutates = false)
+  @message({ mutates: false })
   allowance(owner: Account, spender: Account): u128 {
     return this.allowances.get(owner).get(spender).unwrap();
   }
@@ -100,8 +100,8 @@ export class ERC20 {
 
   @message
   decreaseAllowance(spender: Account, subtractedValue: u128): bool {
-    let info = this.getAllowanceItem(msg.sender);
-    let leftAllowance: u128 = info.get(spender).unwrap();
+    let info = this.getAllowanceItem(msg.sender)!;
+    let leftAllowance: u128 = info.get(spender)!.unwrap();
     assert(leftAllowance >= subtractedValue, "substract value over flow.");
     leftAllowance = leftAllowance - subtractedValue;
     this._approve(msg.sender, spender, leftAllowance);
@@ -115,14 +115,14 @@ export class ERC20 {
   protected _mint(account: Account, amount: u128): void {
     assert(account.notEq(Account.Null), "ERC20: mint to the zero address");
     this.totalSupply += amount;
-    let leftValue = this.balances.get(account).unwrap() + amount;
+    let leftValue = this.balances.get(account)!.unwrap() + amount;
     this.balances.set(account, new UInt128(leftValue));
     (new Transfer(Account.Null, account, amount));
   }
 
   protected _burn(account: Account, amount: u128): void {
     assert(account.notEq(Account.Null), "ERC20: burn from the zero address");
-    let balanceOfAccount = this.balances.get(account).unwrap();
+    let balanceOfAccount = this.balances.get(account)!.unwrap();
     assert(balanceOfAccount >= amount, "ERC20: not enough balance to bure.");
     let leftValue = balanceOfAccount - amount;
     this.balances.set(account, new UInt128(leftValue));
@@ -143,19 +143,19 @@ export class ERC20 {
     assert(sender.notEq(Account.Null), "ERC20: transfer from the zero address");
     assert(recipient.notEq(Account.Null), "ERC20: transfer to the zero address");
 
-    let spenderBalance = this.balances.get(sender).unwrap();
+    let spenderBalance = this.balances.get(sender)!.unwrap();
     assert(spenderBalance >= amount, "ERC20: transfer amount exceeds balance");
 
     let senderLeft = spenderBalance - amount;
     this.balances.set(sender, new UInt128(senderLeft));
 
-    let recipientLeft = this.balances.get(recipient).unwrap() + amount;
+    let recipientLeft = this.balances.get(recipient)!.unwrap() + amount;
     this.balances.set(recipient, new UInt128(recipientLeft));
     (new Transfer(sender, recipient, amount));
   }
 
   private getAllowanceItem(key: Account): SpreadStorableMap<Account, UInt128> {
-    let item = this.allowances.get(key);
+    let item = this.allowances.get(key)!;
     if (item.entryKey == "") {
       item.entryKey = key.toString();
       this.allowances.set(key, item);

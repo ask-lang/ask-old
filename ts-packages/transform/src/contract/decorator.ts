@@ -102,7 +102,7 @@ export function getDecoratorPairs(decorator: DecoratorNode): Map<string, string>
             break;
         }
         case ContractDecoratorKind.DOC: {
-            checkDecoratorField(pairs, "doc", true, /\*/g, "");
+            checkDecoratorField(pairs, "desc", true, /\\*/g, "");
             break;
         }
     }
