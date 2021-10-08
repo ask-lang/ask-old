@@ -32,7 +32,6 @@ export class Strings {
     }
 
     static toBool(str: string): boolean {
-        console.log(`toBool:a${str}a ${"true" === String(str)}`);
         return "true" === str ? true : false;
     }
 

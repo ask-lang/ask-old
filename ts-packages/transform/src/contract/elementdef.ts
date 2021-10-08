@@ -29,8 +29,7 @@ import { getCustomDecoratorKind, getDecoratorPairs } from "./decorator";
 
 export class DecoratorsInfo {
     decorators: DecoratorNode[] = [];
-
-    isIgnore = false;
+    ignore = true;
     isTopic = false;
     isPacked = false;
     isLazy = false;
@@ -51,9 +50,11 @@ export class DecoratorsInfo {
             if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
                 this.isTopic = true;
             }
+            // if has no STATE decorator, ignore the field
             if (kind == ContractDecoratorKind.STATE) {
+                this.ignore = false;
                 this.isLazy = Strings.toBool(pairs.get("lazy")!);
-                console.log(`ContractDecoratorKind.STATE: ${this.isLazy}`);
+                // console.log(`ContractDecoratorKind.STATE: ${this.isLazy}`);
             }
             if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.PACKED)) {
                 this.isPacked = true;

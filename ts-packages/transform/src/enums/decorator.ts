@@ -12,5 +12,4 @@ export enum ContractDecoratorKind {
     PACKED,
     SPREAD,
     STATE
-    // IMMEDIATELY
 }

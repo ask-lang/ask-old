@@ -1,4 +1,5 @@
 import { ImportStatement, NodeKind, Program, SourceKind } from "assemblyscript";
+import { ElementUtil } from "../utils/utils";
 
 export class ProgramAnalyzar {
     private program: Program;
@@ -58,7 +59,10 @@ export class ProgramAnalyzar {
     }
 
     logElementsByDeclaration(): void {
-        this.program.elementsByDeclaration.forEach((_, key) => {
+        this.program.elementsByDeclaration.forEach((item, key) => {
+            if (ElementUtil.isUserEntryFile(item.declaration.range)) {
+                console.log(`state: range: ${item.declaration.range.start}: ${item.declaration.range.toString()}`);
+            }
             if (
                 key.kind == NodeKind.IMPORTDECLARATION ||
                 key.kind == NodeKind.IMPORT

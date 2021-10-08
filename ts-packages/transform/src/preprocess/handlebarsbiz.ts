@@ -136,7 +136,7 @@ Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
     } else {
         code.push(`get ${field.name}(): ${field.type.plainType} {`);
         code.push(`    if (this.${field.varName} === null) {`);
-        if (field.decorators.isIgnore) {
+        if (field.decorators.ignore) {
             code.push(`    this.${field.varName} = new ${field.type.getNameSpace()}${field.type.codecType}(); `);
         } else {
             code.push(`         const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
@@ -177,7 +177,7 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
     code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
 
     // the field is ignore or lazy, not store the field.
-    if (field.decorators.isIgnore || field.decorators.isLazy) {
+    if (field.decorators.ignore || field.decorators.isLazy) {
         if (field.type.isCodec || field.type.typeKind == TypeKindEnum.USER_CLASS) {
             code.push(`     this.${field.varName} = v;`);
         } else {

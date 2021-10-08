@@ -20,8 +20,8 @@ function modifySourceText(sourceText, point) {
         sourceText = sourceText.replaceAll(/export\s/g, " ");
         return sourceText;
     } else if (point.mode == preprocess_1.ModifyType.INSERT) {
-        let prefix = sourceText.substring(0, point.range.end - 1);
-        let suffix = sourceText.substring(point.range.end - 1, sourceText.length);
+        let prefix = sourceText.substring(0, point.range.end);
+        let suffix = sourceText.substring(point.range.end, sourceText.length);
         return prefix + point.code + suffix;
     }
     return sourceText;
@@ -40,8 +40,12 @@ var APIOptionImpl = /** @class */ (function () {
             if (sourceModifier.fileExtMap.has(relativePath)) {
                 var extCodes = sourceModifier.fileExtMap.get(relativePath);
                 extCodes.sort((a, b) => {
-                    if (a.mode != b.mode) return a.mode - b.mode;
-                    return (b.range.end - a.range.end); 
+                    if ((a.mode == 1 || a.mode == 0) && (b.mode == 1 || b.mode == 0)) {
+                        return (b.range.end - a.range.end);
+                    } else if (a.mode == b.mode) {
+                        return (b.range.end - a.range.end);
+                    }
+                    return a.mode - b.mode;
                 }).forEach(function (item) {
                     text_1 = modifySourceText(text_1, item);
                 });

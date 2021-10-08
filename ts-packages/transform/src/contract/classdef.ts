@@ -5,6 +5,7 @@ import {
     FieldPrototype,
     CommonFlags,
     ClassDeclaration,
+    Range,
 } from "assemblyscript";
 
 import {
@@ -38,6 +39,7 @@ export class ClassInterpreter extends Interpreter {
     functions: FunctionDef[] = [];
     variousPrefix = "_";
     export = "";
+    lastRange: Range;
     constructorFun: FunctionDef | null = null;
 
     constructor(public element: ClassPrototype) {
@@ -50,6 +52,8 @@ export class ClassInterpreter extends Interpreter {
         if (this.element.constructorPrototype != null) {
             this.constructorFun = new FunctionDef(this.element.constructorPrototype);
         }
+        let len = this.declaration.members.length;
+        this.lastRange = this.declaration.members[len -1].range;
     }
 
     resolveFieldMembers(): void {
@@ -161,7 +165,7 @@ export class StorageInterpreter extends ClassInterpreter  {
     }
 
     createMetadata(): FieldLayout[] {
-        return this.fields.filter(item => item.decorators.isIgnore == false)
+        return this.fields.filter(item => item.decorators.ignore == false)
             .map(field => this.getFiledLayout(field));
     }
 

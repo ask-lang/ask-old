@@ -30,20 +30,22 @@ class EventB extends EventA {
 }
 
  @contract
-class EventEmitter {
+export class EventEmitter {
 
-     constructor() {
-     }
+    count: i8;
+
+    constructor() {
+    }
 
      @message
-     triggeEventA(): void {
-         let eventA = new EventA(100, "Elon");
-         eventA.emit();
-     }
+    triggeEventA(): void {
+        let eventA = new EventA(100, "Elon");
+        eventA.emit();
+    }
 
      @message
      triggeEventB(): void {
          let eventB = new EventB(<u8>300, "M");
          eventB.emit();
      }
- }
+}

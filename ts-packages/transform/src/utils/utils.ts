@@ -31,10 +31,14 @@ export class ElementUtil {
         return false;
     }
 
+    static isUserEntryFile(range: Range) : boolean {
+        return range.source.sourceKind == SourceKind.USER_ENTRY;
+    }
+
     static isTopContractClass(element: Element): boolean {
         if (element.kind == ElementKind.CLASS_PROTOTYPE) {
             let clzPrototype = <ClassPrototype>element;
-            return clzPrototype.declaration.range.source.sourceKind == SourceKind.USER_ENTRY &&
+            return ElementUtil.isUserEntryFile(clzPrototype.declaration.range) &&
                 AstUtil.hasSpecifyDecorator(clzPrototype.declaration, ContractDecoratorKind.CONTRACT);
         }
         return false;
