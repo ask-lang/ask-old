@@ -4,6 +4,14 @@
  */
 import { Codec, Hash, Int32 } from "as-scale-codec";
 
+/**
+ * @class MapEntry
+ * Class `MapEntry` is usded for storing entry info of a storable map, it implements the interface `Codec`.
+ * It has two properties:
+ *
+ * @property entries The hash of the first item of map, which stored in a `DoubleLinkKVStore`.
+ * @property size The size of the map.
+ */
 export class MapEntry implements Codec {
    entries: Hash;
    size: Int32;

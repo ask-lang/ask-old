@@ -1,3 +1,3 @@
  # Framework
 
-Framework seals api for substrate, and provides some functional components.
+`ask-lang` is the framework of Ask!  

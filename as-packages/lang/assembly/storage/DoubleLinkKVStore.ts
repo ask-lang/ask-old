@@ -4,6 +4,19 @@
  */
 import { Codec, Hash } from "as-scale-codec";
 
+/**
+ * @class DoubleLinkKVStore
+ *
+ * This class is used for storing a Node of Map, with values of both `key` and `value`.
+ * It implements interface `Codec`, and requires type of Key and type of Value also should implement `Codec`.
+ *
+ * It has for properties:
+ *
+ * @property key Key of an item of map
+ * @property value Value of an item of map
+ * @property nextKey The hash of next item
+ * @property prevKey The hash of pervious item
+ */
 export class DoubleLinkKVStore<K extends Codec, V extends Codec> implements Codec {
    key: K;
    value: V;

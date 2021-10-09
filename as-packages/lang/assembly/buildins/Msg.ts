@@ -9,7 +9,12 @@ import { seal_caller, seal_value_transferred } from "as-contract-runtime";
 import { MessageInputReader } from "../primitives/inputdata";
 import { UInt128 } from "as-scale-codec";
 import { Account } from ".";
-
+/**
+ * This class is used by retrieving informations for current call.
+ * like object `msg` in Solidity.
+ *
+ * @class Msg
+ */
 class Msg {
     private _sender: Account | null = null;
     private _value: UInt128 | null = null;
@@ -21,7 +26,13 @@ class Msg {
     set mutates(mu: bool) {
         this._isMutates = mu;
     }
-
+    /**
+     * To get the value send by curent message call.
+     *
+     * @readonly
+     * @type {u128}
+     * @memberof Msg
+     */
     get value(): u128 {
         if (this._value === null) {
             this._value = ReadBuffer.readInstance<UInt128>(
@@ -30,7 +41,13 @@ class Msg {
         }
         return this._value!.unwrap();
     }
-
+    /**
+     * To get the account of sender of current call.
+     *
+     * @readonly
+     * @type {Account}
+     * @memberof Msg
+     */
     get sender(): Account {
         if (this._sender === null) {
             let readbuf = new ReadBuffer(32);
@@ -40,14 +57,26 @@ class Msg {
 
         return this._sender!;
     }
-
+    /**
+     * signature of current call.
+     *
+     * @readonly
+     * @type {u8[]}
+     * @memberof Msg
+     */
     get sig(): u8[] {
         if (this._sig === null) {
             this.init_sig_and_data();
         }
         return this._sig!;
     }
-
+    /**
+     * data of current call.
+     *
+     * @readonly
+     * @type {u8[]}
+     * @memberof Msg
+     */
     get data(): u8[] {
         if (this._data === null) {
             this.init_sig_and_data();
@@ -102,5 +131,7 @@ class Msg {
         }
     }
 }
-
+/**
+ * A global variable of class Msg.
+ */
 export const msg: Msg = new Msg();

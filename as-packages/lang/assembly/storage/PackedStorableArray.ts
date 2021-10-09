@@ -9,6 +9,19 @@ import { ArrayEntry, Codec, Hash } from "..";
 import { Crypto } from "../primitives/crypto";
 import { NullHash, Storage } from "./storage";
 
+/**
+ * @class PackedStorableArray
+ *
+ * This class stores the `packed` contents of a storable array.
+ * `packed` means all items of this array are stored in one slot,
+ * and any store and load operation will impact all items.
+ * So, it is used in the situation of little items, or sometimes you know what happened backend.
+ *
+ * There are 3 properties:
+ * @property keyPrefix The hash of store point of this array
+ * @property isLazy Bool value, the store mode of this array, refer to `QuickStart.md` for more details about store mode.
+ * @property arrayInner Array of T, it stores the elements in an array.
+ */
 export class PackedStorableArray<T extends Codec> implements Codec {
     [key: number]: T;
 
@@ -69,177 +82,97 @@ export class PackedStorableArray<T extends Codec> implements Codec {
     protected indexToHashKey(index: i32): Hash {
         return Crypto.blake256s(this.keyPrefix.toString() + index.toString());
     }
-
+    /**
+     * To get the length of arrayInner.
+     *
+     * @readonly
+     * @type {i32}
+     * @memberof PackedStorableArray
+     */
     get length(): i32 {
         return this.arrayInner.length;
     }
-
+    /**
+     * To get the hash of store point
+     *
+     * @type {Hash}
+     * @memberof PackedStorableArray
+     */
     get entryKey(): Hash {
         return this.keyPrefix;
     }
-
+    /**
+     * To set the hash of store point
+     *
+     * @memberof PackedStorableArray
+     */
     set entryKey(hash: Hash) {
         this.keyPrefix = hash;
     }
 
+    /**
+     * To get a specific element of array,
+     * throws if out of bounds.
+     *
+     * @param index the index of element to get
+     * @returns T
+     */
     @operator("[]")
     private __get(index: i32): T {
         return this.at(index);
     }
-
+    /**
+     * To set or update an element,
+     * throws if out of bounds
+     *
+     * @param index the index of element to set or update
+     * @param value the value to set
+     */
     @operator("[]=")
     private __set(index: i32, value: T): void {
         this.setValueAt(index, value);
     }
 
-
+    /**
+     * To push an element at the end of array
+     *
+     * @param value the value to pushed at the end of array .
+     * @returns the length of array
+     */
     push(value: T): i32 {
         return this.pushValue(value);
     }
-
+    /**
+     * To pop an element from the array,
+     * if array is empty, then throws
+     * @returns T
+     */
     pop(): T {
         return this.popValue();
     }
-
+    /**
+     * To delete an item at specific position, all elements after if will moved forward
+     * It is a heavy operation.
+     * throws if index out of bounds.
+     *
+     * @param index the index to delete
+     * @returns bool, means operation successful or failed
+     */
     delete(index: i32): bool {
         return this.deleteValueAt(index);
     }
-
+    /**
+     * To get a specific element of array,
+     * throws if out of bounds.
+     *
+     * @param index the index of element to get
+     * @returns T
+     */
     at(index: i32): T {
         assert(index < this.arrayInner.length, "out of bounds");
         return this.visitValueAt(index);
     }
 
-    fill(value: T, start: i32 = 0, end: i32 = i32.MAX_VALUE): this {
-        this.arrayInner.fill(value, start, end);
-        this.storeItemsFrom(start);
-        return this;
-    }
-
-    every(callbackfn: (element: T, index: i32, array?: Array<T>) => bool): bool {
-        for (let i = 0; i < this.arrayInner.length; i++) {
-            let v = this.at(i);
-            if (!callbackfn(v, i, this.arrayInner)) return false;
-        }
-        return true;
-    }
-
-    findIndex(predicate: (element: T, index: i32, array?: Array<T>) => bool): i32 {
-        let index = this.arrayInner.findIndex(predicate);
-        if (index != -1) return index;
-
-        for (let i = 0; i < this.arrayInner.length; i++) {
-            let v = this.at(i);
-            if (predicate(v, i, this.arrayInner))
-                return i;
-        }
-        return -1;
-    }
-
-    includes(searchElement: T, fromIndex: i32 = 0): bool {
-        return this.indexOf(searchElement, fromIndex) >= 0;
-    }
-
-    indexOf(searchElement: T, fromIndex: i32 = 0): i32 {
-        let index = this.arrayInner.indexOf(searchElement, fromIndex);
-        if (index != -1) return index;
-
-        for (let i = fromIndex; i < this.arrayInner.length; i++) {
-            if (this.at(i).eq(searchElement)) return i;
-        }
-
-        return -1;
-    }
-
-    lastIndexOf(searchElement: T, fromIndex: i32 = 0): i32 {
-        let index = this.arrayInner.lastIndexOf(searchElement, fromIndex);
-        if (index != -1) return index;
-
-        let length = this.arrayInner.length;
-        if (length == 0) return -1;
-        if (fromIndex < 0) fromIndex = length + fromIndex;
-        else if (fromIndex >= length) fromIndex = length - 1;
-        while (fromIndex >= 0) {
-            let v = this.at(fromIndex);
-            if (v.eq(searchElement)) return fromIndex;
-            --fromIndex;
-        }
-        return -1;
-    }
-
-    concat(items: T[]): T[] {
-        let oldlen = this.arrayInner.length;
-        this.arrayInner = this.arrayInner.concat(items);
-        this.storeItemsFrom(oldlen);
-
-        return this.arrayInner;
-    }
-
-    forEach(callbackfn: (value: T, index: i32, array: Array<T>) => void): void {
-        for (let i = 0; i < this.arrayInner.length; i++) {
-            let v = this.at(i);
-            callbackfn(v, i, this.arrayInner);
-        }
-    }
-
-    map<U>(callbackfn: (value: T, index: i32, array: Array<T>) => U): Array<U> {
-        let uarr = new Array<U>(this.arrayInner.length);
-        for (let i = 0; i < this.arrayInner.length; i++) {
-            let v = this.at(i);
-            let mv = callbackfn(v, i, this.arrayInner);
-            uarr.push(mv);
-        }
-        return uarr;
-    }
-
-    filter(callbackfn: (value: T, index: i32, array: Array<T>) => bool): Array<T> {
-        let uarr = new Array<T>();
-        for (let i = 0; i < this.arrayInner.length; i++) {
-            let v = this.at(i);
-            if (callbackfn(v, i, this.arrayInner)) {
-                uarr.push(v);
-            }
-        }
-        return uarr;
-    }
-
-    reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U {
-        return this.arrayInner.reduce<U>(callbackfn, initialValue);
-    }
-
-    reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U {
-        return this.arrayInner.reduceRight<U>(callbackfn, initialValue);
-    }
-
-    some(callbackfn: (element: T, index: i32, array?: Array<T>) => bool): bool {
-        for (let i = 0; i < this.arrayInner.length; i++) {
-            let v = this.at(i);
-            if (callbackfn(v, i, this.arrayInner)) return true;
-        }
-        return false;
-    }
-
-    slice(from: i32, to: i32 = i32.MAX_VALUE): Array<T> {
-        return this.arrayInner.slice(from, to);
-    }
-
-    splice(start: i32, deleteCount: i32 = i32.MAX_VALUE): Array<T> {
-        return this.arrayInner.splice(start, deleteCount);
-    }
-
-    sort(comparator: (a: T, b: T) => i32): this {
-        this.loadItemsFrom(0);
-        this.arrayInner = this.arrayInner.sort(comparator);
-        this.storeItemsFrom(0);
-        return this;
-    }
-
-    reverse(): T[] {
-        this.loadItemsFrom(0);
-        this.arrayInner = this.arrayInner.reverse();
-        this.storeItemsFrom(0);
-        return this.arrayInner;
-    }
     // to sotre this instance as packed,
     // use hash of this.keyPrefix as storage key.
     private storeAllItems(): i32 {
@@ -274,7 +207,7 @@ export class PackedStorableArray<T extends Codec> implements Codec {
         return this;
     }
 
-    pushValue(value: T): i32 {
+    protected pushValue(value: T): i32 {
         let newlen: i32 = 0;
         newlen = this.arrayInner.push(value);
 
@@ -283,7 +216,7 @@ export class PackedStorableArray<T extends Codec> implements Codec {
         return newlen;
     }
 
-    popValue(): T {
+    protected popValue(): T {
         assert(this.arrayInner.length > 0, "can not pop from empty array.");
         let t = this.arrayInner.pop();
 
@@ -292,7 +225,7 @@ export class PackedStorableArray<T extends Codec> implements Codec {
         return t;
     }
 
-    setValueAt(index: i32, value: T): void {
+    protected setValueAt(index: i32, value: T): void {
         assert(index < this.arrayInner.length, "out of bounds");
 
         if (this.arrayInner[index].notEq(value)) {
@@ -302,7 +235,7 @@ export class PackedStorableArray<T extends Codec> implements Codec {
         }
     }
 
-    deleteValueAt(index: i32): bool {
+    protected deleteValueAt(index: i32): bool {
         this.arrayInner[index] = instantiate<T>();
 
         if (!this.isLazy) this.__commit_storage__();
@@ -310,16 +243,16 @@ export class PackedStorableArray<T extends Codec> implements Codec {
         return true;
     }
 
-    visitValueAt(index: i32): T {
+    protected visitValueAt(index: i32): T {
         return this.arrayInner[index];
     }
 
-    storeItemsFrom(index: i32): void {
+    protected storeItemsFrom(index: i32): void {
         index = 0; // to supress warning
         if (!this.isLazy) this.__commit_storage__();
     }
 
-    loadItemsFrom(index: i32): void {
+    protected loadItemsFrom(index: i32): void {
         index = 0; // to supress warning
         this.loadAllItems();
     }

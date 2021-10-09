@@ -5,6 +5,15 @@
 
 import { Codec, Int32, UInt32 } from "..";
 
+/**
+ * @class ArrayEntry
+ * Class `ArrayEntry` is usded for storing entry info of a storable array, it implements the interface `Codec`.
+ * It has two properties, `arrayLength` and `rawBytesCount`.
+ * `arrayLength` means how many elements are stored, and `rawBytesCount` means the length of raw bytes of searized elements.
+ *
+ * @property arrayLength size of elements
+ * @property rawBytesCount length of raw bytes of searized elements.
+ */
 export class ArrayEntry implements Codec {
    arrayLength: i32;
    rawBytesCount: u32;
@@ -19,7 +28,7 @@ export class ArrayEntry implements Codec {
        let k2 = new UInt32(0);
        return k1.encodedLength() + k2.encodedLength();
 
-       // FIXME(liangqin.fan): if write code like belowing, compile failed.
+       // FIXME(liangqin.fan): if write code like belowing, compile failed. It is a pitfall of AssemblyScript.
        // return (new Int32(0)).encodedLength() +
        //        (new UInt32(0)).encodedLength();
    }

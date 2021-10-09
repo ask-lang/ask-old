@@ -79,7 +79,7 @@ export class ERC721 {
     this._symbol = symbol;
   }
 
-  @message(mutates = false)
+  @message({"mutates": false})
   balanceOf(owner: Account): i32 {
     assert(owner.notEq(Account.Null), "ERC721: balance query for the zero address");
 

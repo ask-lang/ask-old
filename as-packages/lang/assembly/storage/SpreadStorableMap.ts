@@ -86,7 +86,19 @@ class MapStorage<K extends Codec, V extends Codec> {
         return this.statusSlots.get(key);
     }
 }
-
+/**
+ * @class SpreadStorableMap
+ *
+ * This class stores a map,
+ * `spread` means each item will store at a spread place,
+ * and update or set operations only impact its own value,
+ * it is the main different with `SpreadStorableMap`.
+ *
+ * There are 3 properties:
+ * @property keyPrefix The hash of store point of this array
+ * @property isLazy Bool value, the store mode of this array, refer to `QuickStart.md` for more details about store mode.
+ * @property mapStorage MapStorage of <K,V>, it stores the pair in a map.
+ */
 export class SpreadStorableMap<K extends Codec, V extends Codec> implements Codec {
   private synced: bool;
   private isLazy: bool;
@@ -128,11 +140,16 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   notEq(other: SpreadStorableMap<K, V>): bool {
       return !this.eq(other);
   }
-
-  // FIXME(liangqin.fan)
-  // Map<K, V> use reference as the key storage,
-  // so we should find the inner key storage to retrieve the stored value.
+  /**
+   * To test if a key existed or not
+   * @param key the key value to test
+   * @returns bool to indicate if contains `key` in the map
+   * @memberof SpreadStorableMap
+   */
   has(key: K): bool {
+      // FIXME(liangqin.fan)
+      // Map<K, V> use reference as the key storage,
+      // so we should find the inner key storage to retrieve the stored value.
       let contains = this.mapStorage.contains(key);
       if (contains) return true;
 
@@ -165,7 +182,15 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
       this.mapStorage.set(key, v, true);
       return v;
   }
-
+  /**
+   * To delete a key from the map,
+   * return `false` if the key is not existed
+   *
+   * @param key key to delete
+   * @returns bool means operation successful or not
+   *
+   * @memberof SpreadStorableMap
+   */
   delete(key: K): bool {
       if (!this.has(key)) return false;
 
@@ -177,15 +202,27 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
 
       return true;
   }
-
+  /**
+   * To remove all items in these map
+   */
   clear(): void {
       this.clearAll();
   }
-
+  /**
+   * To get all key items
+   *
+   * @returns {K[]}
+   * @memberof SpreadStorableMap
+   */
   keys(): K[] {
       return this.allKeys();
   }
-
+  /**
+   * To get all value items
+   *
+   * @returns {V[]}
+   * @memberof SpreadStorableMap
+   */
   values(): V[] {
       return this.allValues();
   }

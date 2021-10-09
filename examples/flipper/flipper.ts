@@ -5,8 +5,7 @@
 
 @contract
 class Flipper {
-    @state
-    flag: bool;
+    @state flag: bool;
 
     constructor() {
     }

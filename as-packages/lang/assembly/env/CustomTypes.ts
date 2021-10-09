@@ -3,12 +3,24 @@
  * @author liangqin.fan@gmail.com
  */
 import { Codec, UInt128, UInt32 } from "as-scale-codec";
-
+/**
+ * To customize type of `Balance` according to your FRAME.
+ */
 export type Balance = UInt128;
+/**
+ * To customize type of `BlockNumber` according to your FRAME.
+ */
 export type BlockNumber = UInt32;
 
 
 const BytesCount = 32;
+/**
+ * To customized type of `AccountId` according to your FRAME.
+ *
+ * @export
+ * @class AccountId
+ * @implements {Codec}
+ */
 export class AccountId implements Codec {
   private _id: Array<u8>;
 

@@ -83,7 +83,19 @@ class ArrayStorage <T extends Codec> {
         return false;
     }
 }
-
+/**
+ * @class SpreadStorableArray
+ *
+ * This class stores an array,
+ * `spread` means each item will store at a spread place,
+ * and update or set operations only impact its own value,
+ * it is the main different with `PackedStorableArray`.
+ *
+ * There are 3 properties:
+ * @property keyPrefix The hash of store point of this array
+ * @property isLazy Bool value, the store mode of this array, refer to `QuickStart.md` for more details about store mode.
+ * @property arrayStorage ArrayStorage of T, it stores the elements in an array.
+ */
 export class SpreadStorableArray<T extends Codec> implements Codec {
     [key: number]: T;
 
@@ -119,7 +131,13 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
     notEq(other: SpreadStorableArray<T>): bool {
         return !this.eq(other);
     }
-
+    /**
+     * To get the length of this array
+     *
+     * @readonly
+     * @type {i32}
+     * @memberof SpreadStorableArray
+     */
     get length(): i32 {
         let len = this.arrayStorage.length;
         if (len == 0) {
@@ -128,11 +146,20 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
         }
         return len;
     }
-
+    /**
+     * To get the store point of this array
+     *
+     * @type {Hash}
+     * @memberof SpreadStorableArray
+     */
     get entryKey(): Hash {
         return this.keyPrefix;
     }
-
+    /**
+     * To set the store point of this array
+     *
+     * @memberof SpreadStorableArray
+     */
     set entryKey(hash: Hash) {
         this.keyPrefix = hash;
     }
@@ -147,19 +174,36 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
         this.updateValueAt(index, value);
     }
 
-
+    /**
+     * To push value to the end of array
+     * @param value value to be pushed to the end of this array
+     * @returns the length of this array after pushing
+     */
     push(value: T): i32 {
         return this.pushValue(value);
     }
-
+    /**
+     * To pop an item from the end of array
+     * @returns T if array is not empty, otherwise null
+     */
     pop(): T | null {
         return this.popValue();
     }
-
+    /**
+     * To delete an item from this array, items after the index will be moved forward.
+     *
+     * @param index item to be deleted
+     */
     delete(index: i32): void {
         this.deleteValueAt(index);
     }
-
+    /**
+     * To access an item at specific index,
+     * throws if index out of bounds.
+     *
+     * @param index access item at specific index
+     * @returns T if value at this index is set, null if not set.
+     */
     at(index: i32): T | null {
         assert(index < this.arrayStorage.length, "out of bounds");
         return this.visitValueAt(index);

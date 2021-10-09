@@ -9,7 +9,16 @@ import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_deposit_event } from "as-contract-runtime";
 
 const MAX_EVENT_TOPICS = 4; // Refer to `frame/contracts/src/schedule.rs` L464
-
+/**
+ * This is an abstract class to implements an Event type.
+ * It is used by compiler.
+ *
+ * refer to `QuickStart.md` for more details about how to define an Event in contract.
+ *
+ * @export
+ * @abstract
+ * @class Event
+ */
 export abstract class Event {
   private _topics: Codec[];
   private _data: Codec[];
@@ -33,7 +42,10 @@ export abstract class Event {
 
   abstract emit(): void;
 
-  protected __prepare__(): void {} // let it an empty block
+  protected __prepare__(): void {
+      // let it an empty block
+  }
+
   protected __emit__(): void {
       assert(this._topics.length <= MAX_EVENT_TOPICS, "too many topics defined.");
 
@@ -63,7 +75,5 @@ export abstract class Event {
           dataBuf.buffer,
           dataBuf.size
       );
-      // // to release allocated memory
-      // Event.reset();
   }
 }

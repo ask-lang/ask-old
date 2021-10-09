@@ -39,7 +39,14 @@ function TransferBalance(
     let status = SendBalance(destination, value);
     assert(status, "Transfer balance reverted.");
 }
-
+/**
+ * This class stands for an account, both with external owner address and contract address.
+ *
+ *
+ * @export
+ * @class Account
+ * @implements {Codec}
+ */
 export class Account implements Codec{
 
     private static _Self: Account;
@@ -67,7 +74,7 @@ export class Account implements Codec{
         return Account._Null;
     }
     /**
-     * Get the Account of the contact which executing.
+     * Get the Account of the contact which executing with.
      *
      * @readonly
      * @static
@@ -86,21 +93,45 @@ export class Account implements Codec{
     constructor(id: AccountId = new AccountId(new Array<u8>(32).fill(0))) {
         this._id = id;
     }
-
+    /**
+     * Get the `AccountId` with this account.
+     * AccountId is a customized data type, which defined by the FRAME of substrate.
+     *
+     * @readonly
+     * @type {AccountId}
+     * @memberof Account
+     */
     get id(): AccountId { return this._id; }
 
-    // transfer from `contract.address` to this.account
+    /**
+     * To transfer from Account.Self to this account.
+     *
+     * @param value Balance type, default type is u128
+     */
     transfer(value: Balance): void {
         TransferBalance(this._id, value);
     }
-
+    /**
+     * To call external message.
+     *
+     * refer to `QuickStart.md` for more details about cross call.
+     *
+     * @param data bytes of function signature and its arguments
+     * @param gas max gas to call external message
+     * @param value value send to external message
+     * @returns bytes returned by external message
+     */
     call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[] {
         let callable = new Callable(this._id.toU8a());
         let ret = callable.gas(gas).value(value).data(data).call();
         assert(ret == ReturnCode.Success, "call external message failed.");
         return callable.callResult();
     }
-
+    /**
+     * convert to string value.
+     *
+     * @returns an hex styled string
+     */
     toString(): string {
         return this._id.toString();
     }

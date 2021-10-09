@@ -25,7 +25,20 @@ const HexChar = [
     "f",
 ];
 
+/**
+ * This class wrappers function `seal_println` on chain,
+ * which helps to debug.
+ *
+ * @class Logger
+ */
 class Logger {
+    /**
+     * To print a message
+     *
+     * @param {string} message message to print
+     * @returns {Logger}
+     * @memberof Logger
+     */
     println(message: string): Logger {
         const outbuf = new WriteBuffer(toU8Array(String.UTF8.encode(message)));
 
@@ -36,7 +49,13 @@ class Logger {
 
         return this;
     }
-
+    /**
+     * To print an u32
+     *
+     * @param {u32} v
+     * @returns {Logger}
+     * @memberof Logger
+     */
     printu32(v: u32): Logger {
         let num = "";
         let y = v % 10;
@@ -53,7 +72,12 @@ class Logger {
         this.println(num);
         return this;
     }
-
+    /**
+     * To print an array with decimal styled string.
+     *
+     * @param ds array to print
+     * @returns
+     */
     printdec(ds: u8[]): Logger {
         let s: string = '[ ';
         for (let i = 0; i < ds.length; i++) {
@@ -93,7 +117,13 @@ class Logger {
         s += "]";
         return s;
     }
-
+    /**
+     * To print an array with hex styled string.
+     *
+     * @param {u8[]} ds
+     * @returns {Logger}
+     * @memberof Logger
+     */
     printhex(ds: u8[]): Logger {
         this.println(this.encodehex(ds));
         return this;

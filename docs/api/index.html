@@ -1,0 +1,476 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ask-lang - v0.1.0</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">ask-lang - v0.1.0</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> ask-lang - v0.1.0</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#ask-编写合约快速入门" id="ask-编写合约快速入门" style="color: inherit; text-decoration: none;">
+					<h1>Ask! 编写合约快速入门</h1>
+				</a>
+				<p>Ask!是基于<a href="https://www.assemblyscript.org/">AssemblyScript</a>开发的, AssemblyScript是以TypeScript作为编程语言, 如果你还不是很了解的话, 那你需要先学习<a href="https://www.typescriptlang.org/">TypeScript</a>相关知识, 然后再学习<a href="https://www.assemblyscript.org/quick-start.html">AssemblyScript编程</a>相关的内容. </p>
+				<a href="#运行环境要求" id="运行环境要求" style="color: inherit; text-decoration: none;">
+					<h2>运行环境要求</h2>
+				</a>
+				<p>Ask!运行依赖于Node.js和npm, 请先安装Node.js及配套的npm:</p>
+				<ul>
+					<li>node.js &gt;= v14.17.0</li>
+					<li>npm &gt;=6.14.13</li>
+				</ul>
+				<a href="#安装依赖" id="安装依赖" style="color: inherit; text-decoration: none;">
+					<h2>安装依赖</h2>
+				</a>
+				<p>接下来, 请安装<code>ask-cli</code>:(你可以选择全局安装或者仅仅在项目中安装, 如果只在项目中使用, 请在项目目录下执行下面的安装语句)<br><code>npm install ask-cli</code>  </p>
+				<p><code>ask-cli</code>是Ask!的命令行管理工具, 用来管理合约编译的生命周期.  </p>
+				<a href="#ask-cli的基本用法" id="ask-cli的基本用法" style="color: inherit; text-decoration: none;">
+					<h2>ask-cli的基本用法</h2>
+				</a>
+				<p>在本节中, 我们将描述如何使用<code>ask-cli</code>工具, 使用Ask!编写合约.<br>我们将ask-cli安装在项目里面.</p>
+				<a href="#建立工程" id="建立工程" style="color: inherit; text-decoration: none;">
+					<h3>建立工程</h3>
+				</a>
+				<p>要建立并初始化一个Ask!工程, 需要新建一个目录, 并在这个目录中调用<code>init</code>命令. <code>init</code>命令将会检查Ask!和各依赖项的最新版本, 并通过npm将它们下载到本地:</p>
+				<pre><code class="language-bash">$ mkdir helloworld
+$ <span class="hljs-built_in">cd</span> helloworld
+$ npx ask-cli init</code></pre>
+				<p>项目初始化成功之后, 将会在helloworld目录下生成如下的目录结构:</p>
+				<pre><code class="language-text">// TODO, 补充最终的项目目录结构</code></pre>
+				<a href="#编写hello-world合约" id="编写hello-world合约" style="color: inherit; text-decoration: none;">
+					<h3>编写Hello world合约</h3>
+				</a>
+				<a href="#编译合约" id="编译合约" style="color: inherit; text-decoration: none;">
+					<h3>编译合约</h3>
+				</a>
+				<p>合约编写完成之后, 可以使用<code>ask-cli</code>来编译指定的合约文件:<br><code>ask-cli compile contracts/helloworld.ts</code>  </p>
+				<p>编译成功之后, 会在项目的根目录下, 生成一个新的文件夹<code>build</code>, 并且生成最终部署时需要用到的文件: <code>helloworld.wasm</code>, <code>metadata.json</code>.  </p>
+				<p>默认情况下, <code>compile</code>命令使用<code>--release</code>模式进行编译. 如果需要生成<code>.wast</code>文件, 那么可以使用<code>ask-cli compile --debug contracts/helloworld.ts</code>命令进行编译. 在<code>debug</code>模式下, 将会在<code>wasm</code>文件中插入调试需要的头文件信息. 关于<code>--debug</code>模式的详细信息, 可以参考AssemblyScript的<a href="https://www.assemblyscript.org/compiler.html#command-line-options">debug编译选项</a>.  </p>
+				<a href="#部署和调用合约方法" id="部署和调用合约方法" style="color: inherit; text-decoration: none;">
+					<h3>部署和调用合约方法</h3>
+				</a>
+				<p>// TODO: 描述Europa和polkadot.js两个项目中部署和调用合约的方法</p>
+				<a href="#ask合约的组成结构" id="ask合约的组成结构" style="color: inherit; text-decoration: none;">
+					<h2>Ask!合约的组成结构</h2>
+				</a>
+				<p>Ask!合约使用注解的方式, 封装合约中各组件的功能和使用方式.  </p>
+				<a href="#ask中的注解和注解的选项" id="ask中的注解和注解的选项" style="color: inherit; text-decoration: none;">
+					<h3>Ask!中的注解和注解的选项</h3>
+				</a>
+				<p>Ask!合约中, 最常用到的几个注解有以下几个:  </p>
+				<ol>
+					<li><p>@contract<br>这个注解作用于<code>class</code>级别的对象上, 表示这个合约是一个contract. 只有文件中包含了<code>@contract</code>标注的class, 才能被<code>ask-cli compile</code>命令编译.  </p>
+					</li>
+					<li><p>@state<br>这个注解作用于<code>@contract</code>标注的class的成员变量, 表示这个成员变量是一个状态变量(state variable), 它有一个<code>lazy</code>选项.<br><code>@state</code>的完整定义方式为<code>@state({lazy: true})</code>或者<code>@state({lazy: false})</code>. <code>{lazy: true}</code>是默认值, 可以省略.<br>lazy的意义是, 在一次message的调用过程中, 每一次对状态变量的修改, 是否会立即同步到链上.<br>如果<code>{lazy: true}</code>, 表示将采用延迟模式保存数据, 只有在message执行完成之后, 才会将最终状态变量的值写入到链上;<br>而<code>{lazy: false}</code>表示每次修改状态变量的值, 都会立即写入到链上.</p>
+					</li>
+					<li><p>@message<br>这个注解作用于<code>@contract</code>标注的class的成员函数, 表示这个方法可以被外部调用(external message).<br><code>@message</code>有几个参数可以设定, 用来控制外部调用时的行为.它的完整定义是这样的:  <code>@message({payable: false, mutates: true, selector: &quot;0xabcdef12&quot;})</code><br>下面我们分别描述这些选项的意义:</p>
+						<ul>
+							<li><code>payable</code>选项表示调用这个方法时, 是否可以接受value, 它的值可以是<code>true</code>或<code>false</code>, 默认为false.  </li>
+							<li><code>mutates</code>选项表示方法是否能够改变状态变量的值. 它的值可以是<code>true</code>或<code>false</code>, 默认值为true, 并且可以省略. 如果需要控制这个方法是一个view方法的话, 可以将mutates的值设置为false.  </li>
+							<li><code>selector</code>选项用于表明这个方法使用固定的值作为selector, 不用根据真实的方法名计算生成. 这样如果需要修改合约中方法的名字时, 外部调用的逻辑不用随着一起改变. 它的值可以指定为形如<code>0x02a6e0d5</code>的字符串.  </li>
+						</ul>
+					</li>
+					<li><p>@constructor<br>这个注解作用于<code>@contract</code>标注的class的成员函数, 表示这是一个构造方法. 它将生成<code>metadata.json</code>中<code>spec.constructors</code>字段的内容.</p>
+					</li>
+					<li><p>@event<br>这个注解作用于一个派生自<code>Event</code>的class, 表示这个类是一个事件. </p>
+						<ul>
+							<li>@topic<br>这个注解作用于<code>@event</code>标的class的成员变量. 所有被标注的@topic的成员变量的数量, 不能超过4个. 它的作用与solidity中<code>indexed</code>的作用类似.  </li>
+						</ul>
+					</li>
+					<li><p>@dynamic<br>这个注解作用于class上, 被标记为dynamic的类, ask-cli会为它的每一个方法生成远程调用的逻辑, 开发者无须为dynamic类的方法编写实现逻辑.<br>关于@dynamic的使用, 参考源码中<code>examples/crosscall/ask-contract/dynamic.ts</code>.</p>
+					</li>
+					<li><p>@doc<br>这是一个辅助注解符, 为@message, @state等注解提供注释. <code>@doc</code>提供的注释, 会为metadata.json中对应的<code>doc</code>字段生成内容. 如果无需提供注释, 则这个注解可以省略.  </p>
+					</li>
+				</ol>
+				<a href="#基本组成" id="基本组成" style="color: inherit; text-decoration: none;">
+					<h3>基本组成</h3>
+				</a>
+				<p>在Ask!的环境下, 依托于上述注解, 一个合约的完整结构大概是这样的:</p>
+				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
+<span class="hljs-keyword">class</span> HelloAsk {
+    <span class="hljs-meta">@state</span> greeting: <span class="hljs-built_in">string</span>;
+
+    <span class="hljs-meta">@constructor</span>
+    <span class="hljs-meta">@doc</span>(<span class="hljs-string">"this is a constructor method"</span>) 
+    <span class="hljs-keyword">default</span>(msg: <span class="hljs-built_in">string</span> = <span class="hljs-string">"hello ask"</span>) {
+        <span class="hljs-keyword">this</span>.greeting = msg;
+    }
+
+    <span class="hljs-meta">@message</span>({mutates: <span class="hljs-literal">false</span>})
+    <span class="hljs-meta">@doc</span>(<span class="hljs-string">"to get greeting message"</span>)
+    getGreeting(): <span class="hljs-built_in">string</span> {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.greeting;
+    }
+
+    <span class="hljs-meta">@message</span>
+    setGreeting(msg: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">void</span> {
+        <span class="hljs-keyword">this</span>.greeting = msg;
+    }
+}</code></pre>
+				<a href="#事件注解符event" id="事件注解符event" style="color: inherit; text-decoration: none;">
+					<h3>事件注解符@event</h3>
+				</a>
+				<p>事件是Ask!中通过<code>@event</code>注解的类.  </p>
+				<a href="#定义一个事件类" id="定义一个事件类" style="color: inherit; text-decoration: none;">
+					<h4>定义一个事件类</h4>
+				</a>
+				<pre><code class="language-typescript"><span class="hljs-meta">@event</span>
+<span class="hljs-keyword">class</span> Approved <span class="hljs-keyword">extends</span> Event {
+    <span class="hljs-meta">@topic</span> who: Account;
+    amount: u128;
+
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">w: Account, a: u128</span>) {
+        <span class="hljs-keyword">super</span>();
+        <span class="hljs-keyword">this</span>.who = w;
+        <span class="hljs-keyword">this</span>.amount = a;
+    }
+}</code></pre>
+				<p>上面的示例代码, 定义了一个事件<code>Approved</code>, 它定义了两个成员<code>who</code>和<code>amount</code>. 其中<code>who</code>是一个<code>@topic</code>, 它与solidity事件中的<code>indexed</code>关键字作用一样. 到目前为止, 在一个事件class中, <code>@topic</code>的数量不超过4个.  </p>
+				<a href="#发送事件" id="发送事件" style="color: inherit; text-decoration: none;">
+					<h4>发送事件</h4>
+				</a>
+				<p>当事件类定义好之后, 你可以在需要的地方实例化它, 然后调用<code>emit</code>方法, 将事件发送出去.  </p>
+				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
+<span class="hljs-keyword">class</span> ERC20 {
+    <span class="hljs-meta">@message</span>
+    <span class="hljs-meta">@doc</span>(<span class="hljs-string">"to approve someone transfer your token"</span>)
+    approve(spender: Account, amount: u128): bool {
+        <span class="hljs-comment">// .....</span>
+        (<span class="hljs-keyword">new</span> Approved(spender, amount)).emit();
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+  }
+}</code></pre>
+				<a href="#事件类继承" id="事件类继承" style="color: inherit; text-decoration: none;">
+					<h4>事件类继承</h4>
+				</a>
+				<p>事件类和其它普通的类, 也支持继承, 只是继承链上的类, 都必须是<code>@event</code>. 特别要注意的是, 无论继承链有多长, 它的最终级父类必须是<code>Event</code>, 同时, 所有继承链上的事件类的<code>@topic</code>的数量的和, 不能超过4个.  </p>
+				<pre><code class="language-typescript"><span class="hljs-meta">@event</span>
+<span class="hljs-keyword">class</span> AnotherApproved <span class="hljs-keyword">extends</span> Approved {
+    <span class="hljs-meta">@topic</span> owner: Account;
+
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">owner: Account, spender: Account, amount: u128</span>) {
+        <span class="hljs-keyword">super</span>(spender, amount);
+        <span class="hljs-keyword">this</span>.owner = owner;
+    }
+}
+
+<span class="hljs-meta">@contract</span>
+<span class="hljs-keyword">class</span> ERC20 {
+    <span class="hljs-meta">@message</span>
+    approve(spender: Account, amount: u128): bool {
+        <span class="hljs-comment">// .....</span>
+        (<span class="hljs-keyword">new</span> AnotherApproved(msg.sender, spender, amount)).emit();
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+  }
+}</code></pre>
+				<a href="#合约继承" id="合约继承" style="color: inherit; text-decoration: none;">
+					<h3>合约继承</h3>
+				</a>
+				<p>Ask!支持合约之间继承, 即: 具有@contract注解的合约类, 可以像普通类一样产生继承关系.  </p>
+				<p>相比较于普通类的继承, 合约类的继承主要是为继承链上的每一个合约的<code>@message</code>方法, 在metadata.json中生成入口. 在为具有继承关系的合约生成metadata.json的过程中, 将遵循以下原则:  </p>
+				<ul>
+					<li>如果子类和父类中声明了名字相同的@message方法, 将只导出子类的@message方法.  </li>
+					<li>只导出子类的@constructor方法, 如果子类中未声明@constructor方法, 那么metadata.json中不会导出@constractor方法, 即使父类中声明了@constructor方法.  </li>
+				</ul>
+				<a href="#使用dynamic声明外部合约接口进行跨合约调用" id="使用dynamic声明外部合约接口进行跨合约调用" style="color: inherit; text-decoration: none;">
+					<h3>使用@dynamic声明外部合约接口进行跨合约调用</h3>
+				</a>
+				<a href="#ask常用组件说明" id="ask常用组件说明" style="color: inherit; text-decoration: none;">
+					<h2>Ask!常用组件说明</h2>
+				</a>
+				<a href="#account" id="account" style="color: inherit; text-decoration: none;">
+					<h3>Account</h3>
+				</a>
+				<p><code>Account</code>类是<code>AccountId</code>的封装类. 它可以表示一个EOA地址, 也可以表示一个合约地址.<br>它包括以下几个重要的属性和方法:  </p>
+				<ul>
+					<li><code>Account.Null</code> : 这是一个值为<code>0</code>的地址, 它的值类似于solidity中的<code>address(0)</code>.  </li>
+					<li><code>Account.Self</code> : 代表当前合约的地址, 类似于solidity中的<code>address(this)</code>.  </li>
+					<li><code>transfer(value: Balance): void</code> : 这个方法用于本币转账操作, 即从<code>Account.Self</code>账号的余额, 向这个账号的地址转账.  </li>
+					<li><code>call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[]</code> : 用于调用外部合约的方法. 参考上一节中关于<strong>跨合约调用</strong>的部分.  </li>
+				</ul>
+				<a href="#msg" id="msg" style="color: inherit; text-decoration: none;">
+					<h3>Msg</h3>
+				</a>
+				<p><code>Msg</code>类封装了一次调用过程中附带的数据和信息. Ask!内部具有一个全局变量<code>msg</code>, 用于获取相关信息:  </p>
+				<ul>
+					<li><code>msg.value</code>  : 一次调用中附带的value, <code>Balance</code>类型的数据.</li>
+					<li><code>msg.sender</code> : 一次调用的发起人账号, <code>Account</code>类型的数据.</li>
+					<li><code>msg.sig</code>    : 一次调用的方法的签名, <code>u8[]</code>类型的数据.</li>
+					<li><code>msg.data</code>   : 一次调用的方法的参数, 已经被序列化为<code>u8[]</code>类型.</li>
+				</ul>
+				<a href="#block" id="block" style="color: inherit; text-decoration: none;">
+					<h3>Block</h3>
+				</a>
+				<p><code>Block</code>类封装了两个常用的系统参数. Ask!内部导出了一个全局变量<code>block</code>, 用于获取相关信息:  </p>
+				<ul>
+					<li><code>block.number</code> : 当前的块高.</li>
+					<li><code>block.timestamp</code> : 当前的时间截.</li>
+				</ul>
+				<a href="#spreadstorablearraypackedstorablearray和spreadstorablemappackedstorablemap" id="spreadstorablearraypackedstorablearray和spreadstorablemappackedstorablemap" style="color: inherit; text-decoration: none;">
+					<h3>SpreadStorableArray/PackedStorableArray和SpreadStorableMap/PackedStorableMap</h3>
+				</a>
+				<p><code>SpreadStorableArray</code>, <code>PackedStorableArray</code>, <code>SpreadStorableMap</code>, <code>PackedStorableMap</code> 这四个类是用来存储集合类型的数据Array和Map. 但是在实现的细节上, 它们有一些区别.<br>名字中含有<code>Spread</code>的, 表示每一个存储的元素, 都会有一个独立的存储位置, 每次存取操作, 只操作这个元素本身; 而<code>Packed</code>则表示这个集合中所有的数据会被打包存储到同一个位置, 每次需要修改其中一个元素的时候, 都需要存取所有的元素, 所以它们适用于数据比较少的场景.</p>
+				<a href="#自定义ask环境变量类型" id="自定义ask环境变量类型" style="color: inherit; text-decoration: none;">
+					<h2>自定义Ask!环境变量类型</h2>
+				</a>
+				<p>基于Substrate开发的链, 它的FRAME中定义的环境变量类型, 主要是<code>Hash</code> <code>AccountId</code> <code>BlockNumber</code> <code>Balance</code>, 它们在Ask!中的定义如下:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">type</span> Balance = UInt128;
+<span class="hljs-keyword">type</span> BlockNumber = UInt32;
+<span class="hljs-keyword">type</span> AccountId = <span class="hljs-built_in">Array</span>&lt;u8&gt;(<span class="hljs-number">32</span>);
+<span class="hljs-keyword">type</span> Hash = <span class="hljs-built_in">Array</span>&lt;u8&gt;(<span class="hljs-number">32</span>);</code></pre>
+				<p>这些环境变量, 均实现了接口<code>Codec</code>, 用来序列化和反序列化数据.  </p>
+				<p>如果需要重新定义它们的数据类型, 只需要在<code>lang/assembly/env/CustomTypes.ts</code>中重新按照您的要求实现它们即可. 需要注意的是, <strong>无论你将它们定义为何种具体数据类型, 它们都需要实现Codec接口</strong>, 否则将无法工作.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_account_.html">&quot;buildins/<wbr>Account&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_block_.html">&quot;buildins/<wbr>Block&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_callable_.html">&quot;buildins/<wbr>Callable&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_event_.html">&quot;buildins/<wbr>Event&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_fnparameters_.html">&quot;buildins/<wbr>FnParameters&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_gas_.html">&quot;buildins/<wbr>Gas&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_hash_.html">&quot;buildins/<wbr>Hash&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_msg_.html">&quot;buildins/<wbr>Msg&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_buildins_index_.html">&quot;buildins/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_env_abi_.html">&quot;env/<wbr>Abi&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_env_customtypes_.html">&quot;env/<wbr>Custom<wbr>Types&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_env_emitableevent_.html">&quot;env/<wbr>Emitable<wbr>Event&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_env_timestamp_.html">&quot;env/<wbr>Timestamp&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_env_valuetype_.html">&quot;env/<wbr>Value<wbr>Type&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_env_index_.html">&quot;env/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_alias_.html">&quot;primitives/alias&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_crypto_.html">&quot;primitives/crypto&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_index_.html">&quot;primitives/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_inputdata_.html">&quot;primitives/inputdata&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_readbuffer_.html">&quot;primitives/readbuffer&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_returndata_.html">&quot;primitives/returndata&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_sizebuffer_.html">&quot;primitives/sizebuffer&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_primitives_writebuffer_.html">&quot;primitives/writebuffer&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_arrayentry_.html">&quot;storage/<wbr>Array<wbr>Entry&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_doublelinkkvstore_.html">&quot;storage/<wbr>Double<wbr>LinkKVStore&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_mapentry_.html">&quot;storage/<wbr>Map<wbr>Entry&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_packedstorablearray_.html">&quot;storage/<wbr>Packed<wbr>Storable<wbr>Array&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_packedstorablemap_.html">&quot;storage/<wbr>Packed<wbr>Storable<wbr>Map&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_spreadstorablearray_.html">&quot;storage/<wbr>Spread<wbr>Storable<wbr>Array&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_spreadstorablemap_.html">&quot;storage/<wbr>Spread<wbr>Storable<wbr>Map&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_storablearray_.html">&quot;storage/<wbr>Storable<wbr>Array&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_storablemap_.html">&quot;storage/<wbr>Storable<wbr>Map&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_index_.html">&quot;storage/index&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_storage_storage_.html">&quot;storage/storage&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_utils_arrayutils_.html">&quot;utils/<wbr>Array<wbr>Utils&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_utils_log_.html">&quot;utils/<wbr>Log&quot;</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_utils_index_.html">&quot;utils/index&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
