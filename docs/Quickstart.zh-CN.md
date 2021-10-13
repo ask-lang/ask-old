@@ -137,7 +137,7 @@ class HelloAsk {
         this.greeting = msg;
     }
 
-    @message({mutates: false})
+    @message({"mutates": false})
     @doc({"desc": "to get greeting message"})
     getGreeting(): string {
         return this.greeting;

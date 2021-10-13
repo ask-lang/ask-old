@@ -62,44 +62,46 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="#ask-编写合约快速入门" id="ask-编写合约快速入门" style="color: inherit; text-decoration: none;">
-					<h1>Ask! 编写合约快速入门</h1>
+				<a href="#ask-quick-start-for-writing-contracts" id="ask-quick-start-for-writing-contracts" style="color: inherit; text-decoration: none;">
+					<h1>Ask! Quick Start for Writing Contracts</h1>
 				</a>
-				<p>Ask!是基于<a href="https://www.assemblyscript.org/">AssemblyScript</a>开发的, AssemblyScript是以TypeScript作为编程语言, 如果你还不是很了解的话, 那你需要先学习<a href="https://www.typescriptlang.org/">TypeScript</a>相关知识, 然后再学习<a href="https://www.assemblyscript.org/quick-start.html">AssemblyScript编程</a>相关的内容. </p>
-				<a href="#运行环境要求" id="运行环境要求" style="color: inherit; text-decoration: none;">
-					<h2>运行环境要求</h2>
+				<p>Ask! is developed based on <a href="https://www.assemblyscript.org/">AssemblyScript</a>, AssemblyScript uses TypeScript as the programming language, if you don’t know it well, then you need to learn [TypeScript](https:/ /<a href="http://www.typescriptlang.org/">www.typescriptlang.org/</a>) related knowledge, and then learn <a href="https://www.assemblyscript.org/quick-start.html">AssemblyScript programming</a> related content.</p>
+				<a href="#operating-environment-requirements" id="operating-environment-requirements" style="color: inherit; text-decoration: none;">
+					<h2>Operating environment requirements</h2>
 				</a>
-				<p>Ask!运行依赖于Node.js和npm, 请先安装Node.js及配套的npm:</p>
+				<p>Ask! depends on Node.js and npm to run, please install Node.js and supporting npm first:</p>
 				<ul>
 					<li>node.js &gt;= v14.17.0</li>
 					<li>npm &gt;=6.14.13</li>
 				</ul>
-				<a href="#安装依赖" id="安装依赖" style="color: inherit; text-decoration: none;">
-					<h2>安装依赖</h2>
+				<a href="#installation-dependencies" id="installation-dependencies" style="color: inherit; text-decoration: none;">
+					<h2>Installation dependencies</h2>
 				</a>
-				<p><code>patractlabs-ask-cli</code>是Ask!的命令行管理工具, 用来管理合约编译的生命周期.<br>以下我们使用<code>ask-cli</code>来指代<code>patractlabs-ask-cli</code>.  </p>
-				<a href="#ask-cli的基本用法" id="ask-cli的基本用法" style="color: inherit; text-decoration: none;">
-					<h2>ask-cli的基本用法</h2>
+				<p><code>patractlabs-ask-cli</code> is Ask!&#39;s command line management tool, used to manage the life cycle of contract compilation.
+				Below we use <code>ask-cli</code> to refer to <code>patractlabs-ask-cli</code>.</p>
+				<a href="#basic-usage-of-ask-cli" id="basic-usage-of-ask-cli" style="color: inherit; text-decoration: none;">
+					<h2>Basic usage of ask-cli</h2>
 				</a>
-				<p>在本节中, 我们将描述如何使用<code>ask-cli</code>工具, 使用Ask!编写合约.<br>我们将ask-cli安装在项目里面.</p>
-				<a href="#建立工程" id="建立工程" style="color: inherit; text-decoration: none;">
-					<h3>建立工程</h3>
+				<p>In this section, we will describe how to use the <code>ask-cli</code> tool to write contracts using Ask!.
+				We install ask-cli in the project.</p>
+				<a href="#build-the-project" id="build-the-project" style="color: inherit; text-decoration: none;">
+					<h3>Build the project</h3>
 				</a>
-				<p>要建立并初始化一个Ask!工程, 需要新建一个目录, 并在这个目录中调用<code>init</code>命令. <code>init</code>命令将会检查Ask!和各依赖项的最新版本, 并通过npm将它们下载到本地:</p>
+				<p>To create and initialize an Ask! project, you need to create a new directory and call the <code>init</code> command in this directory. The <code>init</code> command will check the latest version of Ask! and each dependency, and download them to the local through npm :</p>
 				<pre><code class="language-bash">$ mkdir flipper
 $ <span class="hljs-built_in">cd</span> flipper
 $ npm init -y
 $ npm install patractlabs-ask-cli
 $ npx ask-cli init</code></pre>
-				<p>项目初始化成功之后, 将会在flipper/目录下生成如下的目录结构:</p>
+				<p>After the project is successfully initialized, the following directory structure will be generated in the flipper/ directory:</p>
 				<pre><code class="language-text">.
 ├── contracts
 ├── node_modules
 └── package.json</code></pre>
-				<a href="#编写flipper合约" id="编写flipper合约" style="color: inherit; text-decoration: none;">
-					<h3>编写flipper合约</h3>
+				<a href="#write-flipper-contract" id="write-flipper-contract" style="color: inherit; text-decoration: none;">
+					<h3>Write flipper contract</h3>
 				</a>
-				<p>接下来我们新建一个文件<code>contracts/flipper.ts</code>, 并编辑它的内容如下:  </p>
+				<p>Next, we create a new file <code>contracts/flipper.ts</code>, and edit its content as follows:</p>
 				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
 <span class="hljs-keyword">class</span> Flipper {
     <span class="hljs-meta">@state</span> flag: bool;
@@ -124,74 +126,91 @@ $ npx ask-cli init</code></pre>
     }
 }
 </code></pre>
-				<p>我们将在后续的章节中, 详细介绍代码中各部分的意义.  </p>
-				<a href="#编译合约" id="编译合约" style="color: inherit; text-decoration: none;">
-					<h3>编译合约</h3>
+				<p>We will introduce the meaning of each part of the code in detail in subsequent chapters.</p>
+				<a href="#compile-the-contract" id="compile-the-contract" style="color: inherit; text-decoration: none;">
+					<h3>Compile the contract</h3>
 				</a>
-				<p>合约编写完成之后, 可以使用<code>ask-cli</code>来编译指定的合约文件:<br><code>npx ask-cli compile contracts/flipper.ts</code>  </p>
-				<p>编译成功之后, 会在项目的根目录下, 生成一个新的文件夹<code>build</code>, 并且生成最终部署时需要用到的文件: <code>flipper.wasm</code>, <code>metadata.json</code>.  </p>
-				<p>默认情况下, <code>compile</code>命令使用<code>--release</code>模式进行编译. 如果需要生成<code>.wast</code>文件, 那么可以使用<code>npx ask-cli compile --debug contracts/flipper.ts</code>命令进行编译. 在<code>debug</code>模式下, 将会在<code>wasm</code>文件中插入调试需要的头文件信息. 关于<code>--debug</code>模式的详细信息, 可以参考AssemblyScript的<a href="https://www.assemblyscript.org/compiler.html#command-line-options">debug编译选项</a>.  </p>
-				<a href="#部署和调用合约方法" id="部署和调用合约方法" style="color: inherit; text-decoration: none;">
-					<h3>部署和调用合约方法</h3>
+				<p>After the contract is written, you can use <code>ask-cli</code> to compile the specified contract file:
+				<code>npx ask-cli compile contracts/flipper.ts</code></p>
+				<p>After the compilation is successful, a new folder <code>build</code> will be generated in the root directory of the project, and the files needed for the final deployment are generated: <code>flipper.wasm</code>, <code>metadata.json</code>.</p>
+				<p>By default, the <code>compile</code> command uses the <code>--release</code> mode to compile. If you need to generate a <code>.wast</code> file, you can use the <code>npx ask-cli compile --debug contracts/flipper.ts</code> command to compile. In the <code>debug</code> mode, the header file information needed for debugging will be inserted into the <code>wasm</code> file. For more information about the <code>--debug</code> mode, please refer to <a href="https://www.assemblyscript">debug compilation option</a> of AssemblyScript .org/compiler.html#command-line-options).</p>
+				<a href="#deploy-and-call-contract-methods" id="deploy-and-call-contract-methods" style="color: inherit; text-decoration: none;">
+					<h3>Deploy and call contract methods</h3>
 				</a>
-				<p>我们使用<a href="https://github.com/patractlabs/europa">Europa</a>沙盒环境中部署和测试合约功能, 前端使用<a href="https://github.com/polkadot-js/apps">polkadot-js</a>作为交互界面.<br>测试步骤如下:  </p>
+				<p>We use <a href="https://github.com/patractlabs/europa">Europa</a> to deploy and test contract functions in the sandbox environment, and use <a href="https://github.com/polkadot-js/apps">polkadot-js</a> on the front end As an interactive interface.
+				The test steps are as follows:</p>
 				<ol>
-					<li><p>首先我们按照<code>Europa</code>和<code>plokadot-js</code>的说明, 启动节点和服务.  </p>
+					<li><p>First, we follow the instructions of <code>Europa</code> and <code>plokadot-js</code> to start nodes and services.</p>
 					</li>
-					<li><p>在<code>polkadot-js</code>的合约界面中, 上传<code>build/</code>下的<code>metadata.json</code>和<code>flipper.wasm</code>文件.  </p>
+					<li><p>In the contract interface of <code>polkadot-js</code>, upload the <code>metadata.json</code> and <code>flipper.wasm</code> files under <code>build/</code>.</p>
 					</li>
-					<li><p>部署已经上传的合约, 调用<code>default</code>方法设置flag的初始值.  </p>
+					<li><p>Deploy the uploaded contract and call the <code>default</code> method to set the initial value of the flag.</p>
 					</li>
-					<li><p>调用<code>flip</code>, <code>get</code>方法, 查看合约执行效果.  </p>
+					<li><p>Call the <code>flip</code>, <code>get</code> methods to view the contract execution effect.</p>
 					</li>
 				</ol>
-				<a href="#ask合约的组成结构" id="ask合约的组成结构" style="color: inherit; text-decoration: none;">
-					<h2>Ask!合约的组成结构</h2>
+				<a href="#ask-the-structure-of-the-contract" id="ask-the-structure-of-the-contract" style="color: inherit; text-decoration: none;">
+					<h2>Ask! The structure of the contract</h2>
 				</a>
-				<p>Ask!合约使用注解的方式, 封装合约中各组件的功能和使用方式.  </p>
-				<a href="#ask中的注解和注解的选项" id="ask中的注解和注解的选项" style="color: inherit; text-decoration: none;">
-					<h3>Ask!中的注解和注解的选项</h3>
+				<p>The Ask! contract uses annotations to encapsulate the functions and usage of each component in the contract.</p>
+				<a href="#comments-and-comment-options-in-ask" id="comments-and-comment-options-in-ask" style="color: inherit; text-decoration: none;">
+					<h3>Comments and comment options in Ask!</h3>
 				</a>
-				<p>Ask!合约中, 最常用到的几个注解有以下几个:  </p>
+				<p>In the Ask! contract, the most commonly used annotations are as follows:</p>
 				<ol>
-					<li><p>@contract<br>这个注解作用于<code>class</code>级别的对象上, 表示这个合约是一个contract. 只有文件中包含了<code>@contract</code>标注的class, 才能被<code>ask-cli compile</code>命令编译.  </p>
+					<li><p>@contract
+						This annotation acts on objects at the <code>class</code> level, indicating that this contract is a contract. Only the file containing the class marked with <code>@contract</code> can it be compiled by the <code>ask-cli compile</code> command.</p>
 					</li>
-					<li><p>@state<br>这个注解作用于<code>@contract</code>标注的class的成员变量, 表示这个成员变量是一个状态变量(state variable), 它有一个<code>lazy</code>选项.<br><code>@state</code>的完整定义方式为<code>@state({&quot;lazy&quot;: true})</code>或者<code>@state({&quot;lazy&quot;: false})</code>. <code>{&quot;lazy&quot;: true}</code>是默认值, 可以省略.<br>lazy的意义是, 在一次message的调用过程中, 每一次对状态变量的修改, 是否会立即同步到链上.<br>如果<code>{&quot;lazy&quot;: true}</code>, 表示将采用延迟模式保存数据, 只有在message执行完成之后, 才会将最终状态变量的值写入到链上;<br>而<code>{&quot;lazy&quot;: false}</code>表示每次修改状态变量的值, 都会立即写入到链上.</p>
+					<li><p>@state
+							This annotation acts on the member variable of the class marked by <code>@contract</code>, indicating that this member variable is a state variable, and it has a <code>lazy</code> option.
+							The complete definition of <code>@state</code> is <code>@state({&quot;lazy&quot;: true})</code> or <code>@state({&quot;lazy&quot;: false})</code>. <code>{&quot;lazy&quot;: true}</code> is the default value, Can be omitted.
+							The meaning of lazy is, in the process of a message call, every modification of the state variable will be immediately synchronized to the chain.
+							If <code>{&quot;lazy&quot;: true}</code>, it means that the data will be saved in a delayed mode, and the value of the final state variable will be written to the chain only after the execution of the message is completed;
+						And <code>{&quot;lazy&quot;: false}</code> means that every time the value of the state variable is modified, it will be written to the chain immediately.</p>
 					</li>
-					<li><p>@message<br>这个注解作用于<code>@contract</code>标注的class的成员函数, 表示这个方法可以被外部调用(external message).<br><code>@message</code>有几个参数可以设定, 用来控制外部调用时的行为.它的完整定义是这样的:  <code>@message({&quot;payable&quot;: false, &quot;mutates&quot;: true, &quot;selector&quot;: &quot;0xabcdef12&quot;})</code><br>下面我们分别描述这些选项的意义:</p>
+					<li><p>@message
+							This annotation acts on the member functions of the class marked by <code>@contract</code>, indicating that this method can be called externally (external message).
+							<code>@message</code> has several parameters that can be set to control the behavior of external calls. Its complete definition is like this: <code>@message({&quot;payable&quot;: false, &quot;mutates&quot;: true, &quot;selector&quot;: &quot;0xabcdef12&quot;})</code>
+						Below we describe the meaning of these options:</p>
 						<ul>
-							<li><code>payable</code>选项表示调用这个方法时, 是否可以接受value, 它的值可以是<code>true</code>或<code>false</code>, 默认为false.  </li>
-							<li><code>mutates</code>选项表示方法是否能够改变状态变量的值. 它的值可以是<code>true</code>或<code>false</code>, 默认值为true, 并且可以省略. 如果需要控制这个方法是一个view方法的话, 可以将mutates的值设置为false.  </li>
-							<li><code>selector</code>选项用于表明这个方法使用固定的值作为selector, 不用根据真实的方法名计算生成. 这样如果需要修改合约中方法的名字时, 外部调用的逻辑不用随着一起改变. 它的值可以指定为形如<code>0x02a6e0d5</code>的字符串.  </li>
+							<li>The <code>payable</code> option indicates whether the value can be accepted when calling this method, its value can be <code>true</code> or <code>false</code>, and the default is false.</li>
+							<li>The <code>mutates</code> option indicates whether the method can change the value of the state variable. Its value can be <code>true</code> or <code>false</code>, the default value is true, and can be omitted. If you need to control this method to be a view method, you can change The value of mutates is set to false.</li>
+							<li>The <code>selector</code> option is used to indicate that this method uses a fixed value as the selector, and does not need to be calculated and generated based on the actual method name. In this way, if the name of the method in the contract needs to be modified, the logic of the external call does not need to be changed along with it. Its value It can be specified as a string of the form <code>0x02a6e0d5</code>.</li>
 						</ul>
 					</li>
-					<li><p>@constructor<br>这个注解作用于<code>@contract</code>标注的class的成员函数, 表示这是一个构造方法. 它将生成<code>metadata.json</code>中<code>spec.constructors</code>字段的内容.</p>
+					<li><p>@constructor
+						This annotation acts on the member function of the class marked by <code>@contract</code>, indicating that this is a construction method. It will generate the content of the <code>spec.constructors</code> field in <code>metadata.json</code>.</p>
 					</li>
-					<li><p>@event<br>这个注解作用于一个派生自<code>Event</code>的class, 表示这个类是一个事件. </p>
+					<li><p>@event
+						This annotation applies to a class derived from <code>Event</code>, indicating that this class is an event.</p>
 						<ul>
-							<li>@topic<br>这个注解作用于<code>@event</code>标的class的成员变量. 所有被标注的@topic的成员变量的数量, 不能超过4个. 它的作用与solidity中<code>indexed</code>的作用类似.  </li>
+							<li>@topic
+							This annotation is applied to the member variables of the class of the target of <code>@event</code>. The number of all marked @topic member variables cannot exceed 4. Its function is similar to the function of <code>indexed</code> in solidity.</li>
 						</ul>
 					</li>
-					<li><p>@dynamic<br>这个注解作用于class上, 被标记为dynamic的类, ask-cli会为它的每一个方法生成远程调用的逻辑, 开发者无须为dynamic类的方法编写实现逻辑.<br>关于@dynamic的使用, 参考源码中<code>examples/crosscall/ask-contract/dynamic.ts</code>.</p>
+					<li><p>@dynamic
+							This annotation is applied to the class, the class marked as dynamic, ask-cli will generate remote call logic for each of its methods, and the developer does not need to write the implementation logic for the method of the dynamic class.
+						For the use of @dynamic, refer to <code>examples/crosscall/ask-contract/dynamic.ts</code> in the source code.</p>
 					</li>
-					<li><p>@doc<br>这是一个辅助注解符, 为@message, @state等注解提供注释. <code>@doc</code>提供的注释, 会为metadata.json中对应的<code>doc</code>字段生成内容. 如果无需提供注释, 则这个注解可以省略.  </p>
+					<li><p>@doc
+						This is an auxiliary annotation that provides annotations for @message, @state and other annotations. The annotation provided by <code>@doc</code> will generate content for the corresponding <code>doc</code> field in metadata.json. If no annotation is required, this annotation can be used Omitted.</p>
 					</li>
 				</ol>
-				<a href="#基本组成" id="基本组成" style="color: inherit; text-decoration: none;">
-					<h3>基本组成</h3>
+				<a href="#basic-component" id="basic-component" style="color: inherit; text-decoration: none;">
+					<h3>basic component</h3>
 				</a>
-				<p>在Ask!的环境下, 依托于上述注解, 一个合约的完整结构大概是这样的:</p>
+				<p>In the environment of Ask!, relying on the above annotations, the complete structure of a contract is roughly like this:</p>
 				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
 <span class="hljs-keyword">class</span> HelloAsk {
     <span class="hljs-meta">@state</span> greeting: <span class="hljs-built_in">string</span>;
 
     <span class="hljs-meta">@constructor</span>
-    <span class="hljs-meta">@doc</span>({<span class="hljs-string">"desc"</span>: <span class="hljs-string">"this is a constructor method"</span>}) 
+    <span class="hljs-meta">@doc</span>({<span class="hljs-string">"desc"</span>: <span class="hljs-string">"this is a constructor method"</span>})
     <span class="hljs-keyword">default</span>(msg: <span class="hljs-built_in">string</span> = <span class="hljs-string">"hello ask"</span>) {
         <span class="hljs-keyword">this</span>.greeting = msg;
     }
 
-    <span class="hljs-meta">@message</span>({mutates: <span class="hljs-literal">false</span>})
+    <span class="hljs-meta">@message</span>({<span class="hljs-string">"mutates"</span>: <span class="hljs-literal">false</span>})
     <span class="hljs-meta">@doc</span>({<span class="hljs-string">"desc"</span>: <span class="hljs-string">"to get greeting message"</span>})
     getGreeting(): <span class="hljs-built_in">string</span> {
         <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.greeting;
@@ -202,12 +221,12 @@ $ npx ask-cli init</code></pre>
         <span class="hljs-keyword">this</span>.greeting = msg;
     }
 }</code></pre>
-				<a href="#事件注解符event" id="事件注解符event" style="color: inherit; text-decoration: none;">
-					<h3>事件注解符@event</h3>
+				<a href="#event-annotation-event" id="event-annotation-event" style="color: inherit; text-decoration: none;">
+					<h3>Event annotation @event</h3>
 				</a>
-				<p>事件是Ask!中通过<code>@event</code>注解的类.  </p>
-				<a href="#定义一个事件类" id="定义一个事件类" style="color: inherit; text-decoration: none;">
-					<h4>定义一个事件类</h4>
+				<p>Event is the class annotated by <code>@event</code> in Ask!.</p>
+				<a href="#define-an-event-class" id="define-an-event-class" style="color: inherit; text-decoration: none;">
+					<h4>Define an event class</h4>
 				</a>
 				<pre><code class="language-typescript"><span class="hljs-meta">@event</span>
 <span class="hljs-keyword">class</span> Approved <span class="hljs-keyword">extends</span> Event {
@@ -220,11 +239,11 @@ $ npx ask-cli init</code></pre>
         <span class="hljs-keyword">this</span>.amount = a;
     }
 }</code></pre>
-				<p>上面的示例代码, 定义了一个事件<code>Approved</code>, 它定义了两个成员<code>who</code>和<code>amount</code>. 其中<code>who</code>是一个<code>@topic</code>, 它与solidity事件中的<code>indexed</code>关键字作用一样. 到目前为止, 在一个事件class中, <code>@topic</code>的数量不超过4个.  </p>
-				<a href="#发送事件" id="发送事件" style="color: inherit; text-decoration: none;">
-					<h4>发送事件</h4>
+				<p>The sample code above defines an event <code>Approved</code>, which defines two members <code>who</code> and <code>amount</code>. Among them, <code>who</code> is a <code>@topic</code>, which functions with the <code>indexed</code> keyword in the solidity event Same. So far, in an event class, the number of <code>@topic</code> does not exceed 4.</p>
+				<a href="#send-event" id="send-event" style="color: inherit; text-decoration: none;">
+					<h4>Send event</h4>
 				</a>
-				<p>当事件类定义好之后, 你可以在需要的地方实例化它, 然后调用<code>emit</code>方法, 将事件发送出去.  </p>
+				<p>After the event class is defined, you can instantiate it where needed, and then call the <code>emit</code> method to send the event.</p>
 				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
 <span class="hljs-keyword">class</span> ERC20 {
     <span class="hljs-meta">@message</span>
@@ -234,10 +253,10 @@ $ npx ask-cli init</code></pre>
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   }
 }</code></pre>
-				<a href="#事件类继承" id="事件类继承" style="color: inherit; text-decoration: none;">
-					<h4>事件类继承</h4>
+				<a href="#event-class-inheritance" id="event-class-inheritance" style="color: inherit; text-decoration: none;">
+					<h4>Event class inheritance</h4>
 				</a>
-				<p>事件类和其它普通的类, 也支持继承, 只是继承链上的类, 都必须是<code>@event</code>. 特别要注意的是, 无论继承链有多长, 它的最终级父类必须是<code>Event</code>, 同时, 所有继承链上的事件类的<code>@topic</code>的数量的和, 不能超过4个.  </p>
+				<p>Event classes and other ordinary classes also support inheritance, but the classes on the inheritance chain must be <code>@event</code>. In particular, it should be noted that no matter how long the inheritance chain is, its final parent class must be <code>Event</code>At the same time, the sum of the number of <code>@topic</code> of all event classes on the inheritance chain cannot exceed 4.</p>
 				<pre><code class="language-typescript"><span class="hljs-meta">@event</span>
 <span class="hljs-keyword">class</span> AnotherApproved <span class="hljs-keyword">extends</span> Approved {
     <span class="hljs-meta">@topic</span> owner: Account;
@@ -257,72 +276,75 @@ $ npx ask-cli init</code></pre>
     <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
   }
 }</code></pre>
-				<a href="#合约继承" id="合约继承" style="color: inherit; text-decoration: none;">
-					<h3>合约继承</h3>
+				<a href="#contract-inheritance" id="contract-inheritance" style="color: inherit; text-decoration: none;">
+					<h3>Contract inheritance</h3>
 				</a>
-				<p>Ask!支持合约之间继承, 即: 具有@contract注解的合约类, 可以像普通类一样产生继承关系.  </p>
-				<p>相比较于普通类的继承, 合约类的继承主要是为继承链上的每一个合约的<code>@message</code>方法, 在metadata.json中生成入口. 在为具有继承关系的合约生成metadata.json的过程中, 将遵循以下原则:  </p>
+				<p>Ask! supports inheritance between contracts, that is: contract classes with @contract annotations can have inheritance relationships like ordinary classes.</p>
+				<p>Compared with the inheritance of ordinary classes, the inheritance of contract classes is mainly to generate the entry in metadata.json for the <code>@message</code> method of each contract on the inheritance chain. In the process of generating metadata.json for contracts with inheritance relationships In the process, the following principles will be followed:</p>
 				<ul>
-					<li>如果子类和父类中声明了名字相同的@message方法, 将只导出子类的@message方法.  </li>
-					<li>只导出子类的@constructor方法, 如果子类中未声明@constructor方法, 那么metadata.json中不会导出@constractor方法, 即使父类中声明了@constructor方法.  </li>
+					<li>If the @message method with the same name is declared in the subclass and the parent class, only the @message method of the subclass will be exported.</li>
+					<li>Only export the @constructor method of the subclass. If the @constructor method is not declared in the subclass, then the @constractor method will not be exported in metadata.json, even if the @constructor method is declared in the parent class.</li>
 				</ul>
-				<p>请参考<code>examples/erc20</code>了解合约继承的使用方法.  </p>
-				<a href="#使用dynamic声明外部合约接口进行跨合约调用" id="使用dynamic声明外部合约接口进行跨合约调用" style="color: inherit; text-decoration: none;">
-					<h3>使用@dynamic声明外部合约接口进行跨合约调用</h3>
+				<p>Please refer to <code>examples/erc20</code> to understand how to use contract inheritance.</p>
+				<a href="#use-dynamic-to-declare-external-contract-interfaces-for-cross-contract-calls" id="use-dynamic-to-declare-external-contract-interfaces-for-cross-contract-calls" style="color: inherit; text-decoration: none;">
+					<h3>Use @dynamic to declare external contract interfaces for cross-contract calls</h3>
 				</a>
-				<p><code>@dynamic</code>注解用来描述一个合约可供外部调用的message信息. 其它合约可以通过@dynamic声明, 与满足该声明的合约进行跨合约交互. 在语义上, <code>@dynamic</code>与solidity语言中<code>interface</code>声明的接口功能类似.<br>需要注意的是, <code>@dynamic</code>注解作用于class上面, 受限于<code>patractlabs-ask-transform</code>的功能, 对于@dynamic中声明的方法, 需要有完整的函数体. 如:  </p>
+				<p>The <code>@dynamic</code> annotation is used to describe the message information of a contract that can be called externally. Other contracts can interact with the contract that meets the statement through the @dynamic statement. Semantically, <code>@dynamic</code> and the solidity language<code>The interface function declared by interface</code> is similar.
+				It should be noted that the <code>@dynamic</code> annotation acts on the class and is limited by the function of <code>patractlabs-ask-transform</code>. For the method declared in @dynamic, a complete function body is required. For example:</p>
 				<pre><code class="language-typescript"><span class="hljs-meta">@dynamic</span>
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> Libadd {
 
-    add(a: i32, b: i32): i32 { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; }
+    add(a: i32, b: i32): i32 {<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;}
 }</code></pre>
-				<p>其中<code>add</code>方法的函数体和<code>return 0;</code>部分不可以省略. 函数体中也无须其它逻辑, 只要通满足编译器的语法检查即可.</p>
-				<p>关于使用@dynamic进行跨合约调用的示例, 请参考<code>examples/crosscall</code>示例.</p>
-				<a href="#ask常用组件说明" id="ask常用组件说明" style="color: inherit; text-decoration: none;">
-					<h2>Ask!常用组件说明</h2>
+				<p>The function body of the <code>add</code> method and the <code>return 0;</code> part cannot be omitted. There is no other logic in the function body, as long as the syntax check of the compiler is satisfied.</p>
+				<p>For an example of using @dynamic to make cross-contract calls, please refer to the <code>examples/crosscall</code> example.</p>
+				<a href="#ask-common-component-description" id="ask-common-component-description" style="color: inherit; text-decoration: none;">
+					<h2>Ask! Common component description</h2>
 				</a>
 				<a href="#account" id="account" style="color: inherit; text-decoration: none;">
 					<h3>Account</h3>
 				</a>
-				<p><code>Account</code>类是<code>AccountId</code>的封装类. 它可以表示一个EOA地址, 也可以表示一个合约地址.<br>它包括以下几个重要的属性和方法:  </p>
+				<p>The <code>Account</code> class is an encapsulation class of <code>AccountId</code>. It can represent an EOA address or a contract address.
+				It includes the following important properties and methods:</p>
 				<ul>
-					<li><code>Account.Null</code> : 这是一个值为<code>0</code>的地址, 它的值类似于solidity中的<code>address(0)</code>.  </li>
-					<li><code>Account.Self</code> : 代表当前合约的地址, 类似于solidity中的<code>address(this)</code>.  </li>
-					<li><code>transfer(value: Balance): void</code> : 这个方法用于本币转账操作, 即从<code>Account.Self</code>账号的余额, 向这个账号的地址转账.  </li>
-					<li><code>call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[]</code> : 用于调用外部合约的方法. 参考上一节中关于<strong>跨合约调用</strong>的部分.  </li>
+					<li><code>Account.Null</code>: This is an address with a value of <code>0</code>, and its value is similar to <code>address(0)</code> in solidity.</li>
+					<li><code>Account.Self</code>: Represents the address of the current contract, similar to <code>address(this)</code> in solidity.</li>
+					<li><code>transfer(value: Balance): void</code>: This method is used for local currency transfer operations, that is, transfer from the balance of the account of <code>Account.Self</code> to the address of this account.</li>
+					<li><code>call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[]</code>: method used to call external contracts. Refer to the previous section about <em>*Cross-Contract Calls</em> *part.</li>
 				</ul>
 				<a href="#msg" id="msg" style="color: inherit; text-decoration: none;">
 					<h3>Msg</h3>
 				</a>
-				<p><code>Msg</code>类封装了一次调用过程中附带的数据和信息. Ask!内部具有一个全局变量<code>msg</code>, 用于获取相关信息:  </p>
+				<p>The <code>Msg</code> class encapsulates the data and information attached to a call. Ask! has a global variable <code>msg</code> inside, which is used to obtain relevant information:</p>
 				<ul>
-					<li><code>msg.value</code>  : 一次调用中附带的value, <code>Balance</code>类型的数据.</li>
-					<li><code>msg.sender</code> : 一次调用的发起人账号, <code>Account</code>类型的数据.</li>
-					<li><code>msg.sig</code>    : 一次调用的方法的签名, <code>u8[]</code>类型的数据.</li>
-					<li><code>msg.data</code>   : 一次调用的方法的参数, 已经被序列化为<code>u8[]</code>类型.</li>
+					<li><code>msg.value</code>: The value attached in one call, the data of type <code>Balance</code>.</li>
+					<li><code>msg.sender</code>: The initiator account of a call, <code>Account</code> type data.</li>
+					<li><code>msg.sig</code>: The signature of the method called once, the data of type <code>u8[]</code>.</li>
+					<li><code>msg.data</code>: The parameters of the method called once, which have been serialized as <code>u8[]</code> type.</li>
 				</ul>
 				<a href="#block" id="block" style="color: inherit; text-decoration: none;">
 					<h3>Block</h3>
 				</a>
-				<p><code>Block</code>类封装了两个常用的系统参数. Ask!内部导出了一个全局变量<code>block</code>, 用于获取相关信息:  </p>
+				<p>The <code>Block</code> class encapsulates two commonly used system parameters. Ask! internally exports a global variable <code>block</code> to obtain relevant information:</p>
 				<ul>
-					<li><code>block.number</code> : 当前的块高.</li>
-					<li><code>block.timestamp</code> : 当前的时间截.</li>
+					<li><code>block.number</code>: The current block height.</li>
+					<li><code>block.timestamp</code>: The current time cutoff.</li>
 				</ul>
-				<a href="#spreadstorablearraypackedstorablearray和spreadstorablemappackedstorablemap" id="spreadstorablearraypackedstorablearray和spreadstorablemappackedstorablemap" style="color: inherit; text-decoration: none;">
-					<h3>SpreadStorableArray/PackedStorableArray和SpreadStorableMap/PackedStorableMap</h3>
+				<a href="#spreadstorablearraypackedstorablearray-and-spreadstorablemappackedstorablemap" id="spreadstorablearraypackedstorablearray-and-spreadstorablemappackedstorablemap" style="color: inherit; text-decoration: none;">
+					<h3>SpreadStorableArray/PackedStorableArray and SpreadStorableMap/PackedStorableMap</h3>
 				</a>
-				<p><code>SpreadStorableArray</code>, <code>PackedStorableArray</code>, <code>SpreadStorableMap</code>, <code>PackedStorableMap</code> 这四个类是用来存储集合类型的数据Array和Map. 但是在实现的细节上, 它们有一些区别.<br>名字中含有<code>Spread</code>的, 表示每一个存储的元素, 都会有一个独立的存储位置, 每次存取操作, 只操作这个元素本身; 而<code>Packed</code>则表示这个集合中所有的数据会被打包存储到同一个位置, 每次需要修改其中一个元素的时候, 都需要存取所有的元素, 所以它们适用于数据比较少的场景.</p>
-				<a href="#自定义ask环境变量类型" id="自定义ask环境变量类型" style="color: inherit; text-decoration: none;">
-					<h2>自定义Ask!环境变量类型</h2>
+				<p><code>SpreadStorableArray</code>, <code>PackedStorableArray</code>, <code>SpreadStorableMap</code>, <code>PackedStorableMap</code> These four classes are used to store collection type data Array and Map. But in the implementation details, they have some differences.
+				The name contains <code>Spread</code>, which means that each stored element has an independent storage location, and each access operation only operates on the element itself; while <code>Packed</code> means that all the data in this collection will be packed Stored to the same location, every time you need to modify one of the elements, you need to access all the elements, so they are suitable for scenarios with less data.</p>
+				<a href="#custom-ask-environment-variable-type" id="custom-ask-environment-variable-type" style="color: inherit; text-decoration: none;">
+					<h2>Custom Ask! Environment Variable Type</h2>
 				</a>
-				<p>基于Substrate开发的链, 它的FRAME中定义的环境变量类型, 主要是<code>Hash</code> <code>AccountId</code> <code>BlockNumber</code> <code>Balance</code>, 它们在Ask!中的定义如下:</p>
+				<p>Based on the chain developed by Substrate, the type of environment variables defined in its FRAME are mainly <code>Hash</code> <code>AccountId</code> <code>BlockNumber</code> <code>Balance</code>, and they are defined in Ask! as follows:</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">type</span> Balance = UInt128;
 <span class="hljs-keyword">type</span> BlockNumber = UInt32;
 <span class="hljs-keyword">type</span> AccountId = <span class="hljs-built_in">Array</span>&lt;u8&gt;(<span class="hljs-number">32</span>);
 <span class="hljs-keyword">type</span> Hash = <span class="hljs-built_in">Array</span>&lt;u8&gt;(<span class="hljs-number">32</span>);</code></pre>
-				<p>这些环境变量, 均实现了接口<code>Codec</code>, 用来序列化和反序列化数据.  </p>
-				<p>如果需要重新定义它们的数据类型, 只需要在<code>lang/assembly/env/CustomTypes.ts</code>中重新按照您的要求实现它们即可. 需要注意的是, <strong>无论你将它们定义为何种具体数据类型, 它们都需要实现Codec接口</strong>, 否则将无法工作.</p>
+				<p>These environment variables all implement the interface <code>Codec</code>, which is used to serialize and deserialize data.</p>
+				<p>If you need to redefine their data types, you only need to re-implement them according to your requirements in <code>lang/assembly/env/CustomTypes.ts</code>. It should be noted that <strong>no matter what specific data you define them Type, they all need to implement the Codec interface</strong>, otherwise they will not work.</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
