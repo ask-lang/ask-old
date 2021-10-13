@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ask-lang - v0.1.0</title>
+	<title>patractlabs-ask-lang - v0.1.0</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">ask-lang - v0.1.0</a>
+					<a href="index.html" class="title">patractlabs-ask-lang - v0.1.0</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -54,7 +54,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> ask-lang - v0.1.0</h1>
+			<h1> patractlabs-ask-lang - v0.1.0</h1>
 		</div>
 	</div>
 </header>
@@ -77,8 +77,7 @@
 				<a href="#安装依赖" id="安装依赖" style="color: inherit; text-decoration: none;">
 					<h2>安装依赖</h2>
 				</a>
-				<p>接下来, 请安装<code>ask-cli</code>:(你可以选择全局安装或者仅仅在项目中安装, 如果只在项目中使用, 请在项目目录下执行下面的安装语句)<br><code>npm install ask-cli</code>  </p>
-				<p><code>ask-cli</code>是Ask!的命令行管理工具, 用来管理合约编译的生命周期.  </p>
+				<p><code>patractlabs-ask-cli</code>是Ask!的命令行管理工具, 用来管理合约编译的生命周期.<br>以下我们使用<code>ask-cli</code>来指代<code>patractlabs-ask-cli</code>.  </p>
 				<a href="#ask-cli的基本用法" id="ask-cli的基本用法" style="color: inherit; text-decoration: none;">
 					<h2>ask-cli的基本用法</h2>
 				</a>
@@ -87,24 +86,65 @@
 					<h3>建立工程</h3>
 				</a>
 				<p>要建立并初始化一个Ask!工程, 需要新建一个目录, 并在这个目录中调用<code>init</code>命令. <code>init</code>命令将会检查Ask!和各依赖项的最新版本, 并通过npm将它们下载到本地:</p>
-				<pre><code class="language-bash">$ mkdir helloworld
-$ <span class="hljs-built_in">cd</span> helloworld
+				<pre><code class="language-bash">$ mkdir flipper
+$ <span class="hljs-built_in">cd</span> flipper
+$ npm init -y
+$ npm install patractlabs-ask-cli
 $ npx ask-cli init</code></pre>
-				<p>项目初始化成功之后, 将会在helloworld目录下生成如下的目录结构:</p>
-				<pre><code class="language-text">// TODO, 补充最终的项目目录结构</code></pre>
-				<a href="#编写hello-world合约" id="编写hello-world合约" style="color: inherit; text-decoration: none;">
-					<h3>编写Hello world合约</h3>
+				<p>项目初始化成功之后, 将会在flipper/目录下生成如下的目录结构:</p>
+				<pre><code class="language-text">.
+├── contracts
+├── node_modules
+└── package.json</code></pre>
+				<a href="#编写flipper合约" id="编写flipper合约" style="color: inherit; text-decoration: none;">
+					<h3>编写flipper合约</h3>
 				</a>
+				<p>接下来我们新建一个文件<code>contracts/flipper.ts</code>, 并编辑它的内容如下:  </p>
+				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
+<span class="hljs-keyword">class</span> Flipper {
+    <span class="hljs-meta">@state</span> flag: bool;
+
+    <span class="hljs-keyword">constructor</span>(<span class="hljs-params"></span>) {
+    }
+
+    <span class="hljs-meta">@constructor</span>
+    <span class="hljs-keyword">default</span>(initFlag: bool): <span class="hljs-built_in">void</span> {
+        <span class="hljs-keyword">this</span>.flag = initFlag;
+    }
+
+    <span class="hljs-meta">@message</span>
+    flip(): <span class="hljs-built_in">void</span> {
+        <span class="hljs-keyword">const</span> v = <span class="hljs-keyword">this</span>.flag;
+        <span class="hljs-keyword">this</span>.flag = !v;
+    }
+
+    <span class="hljs-meta">@message</span>({<span class="hljs-string">"mutates"</span>: <span class="hljs-literal">false</span>})
+    <span class="hljs-keyword">get</span>(): bool {
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.flag;
+    }
+}
+</code></pre>
+				<p>我们将在后续的章节中, 详细介绍代码中各部分的意义.  </p>
 				<a href="#编译合约" id="编译合约" style="color: inherit; text-decoration: none;">
 					<h3>编译合约</h3>
 				</a>
-				<p>合约编写完成之后, 可以使用<code>ask-cli</code>来编译指定的合约文件:<br><code>ask-cli compile contracts/helloworld.ts</code>  </p>
-				<p>编译成功之后, 会在项目的根目录下, 生成一个新的文件夹<code>build</code>, 并且生成最终部署时需要用到的文件: <code>helloworld.wasm</code>, <code>metadata.json</code>.  </p>
-				<p>默认情况下, <code>compile</code>命令使用<code>--release</code>模式进行编译. 如果需要生成<code>.wast</code>文件, 那么可以使用<code>ask-cli compile --debug contracts/helloworld.ts</code>命令进行编译. 在<code>debug</code>模式下, 将会在<code>wasm</code>文件中插入调试需要的头文件信息. 关于<code>--debug</code>模式的详细信息, 可以参考AssemblyScript的<a href="https://www.assemblyscript.org/compiler.html#command-line-options">debug编译选项</a>.  </p>
+				<p>合约编写完成之后, 可以使用<code>ask-cli</code>来编译指定的合约文件:<br><code>npx ask-cli compile contracts/flipper.ts</code>  </p>
+				<p>编译成功之后, 会在项目的根目录下, 生成一个新的文件夹<code>build</code>, 并且生成最终部署时需要用到的文件: <code>flipper.wasm</code>, <code>metadata.json</code>.  </p>
+				<p>默认情况下, <code>compile</code>命令使用<code>--release</code>模式进行编译. 如果需要生成<code>.wast</code>文件, 那么可以使用<code>npx ask-cli compile --debug contracts/flipper.ts</code>命令进行编译. 在<code>debug</code>模式下, 将会在<code>wasm</code>文件中插入调试需要的头文件信息. 关于<code>--debug</code>模式的详细信息, 可以参考AssemblyScript的<a href="https://www.assemblyscript.org/compiler.html#command-line-options">debug编译选项</a>.  </p>
 				<a href="#部署和调用合约方法" id="部署和调用合约方法" style="color: inherit; text-decoration: none;">
 					<h3>部署和调用合约方法</h3>
 				</a>
-				<p>// TODO: 描述Europa和polkadot.js两个项目中部署和调用合约的方法</p>
+				<p>我们使用<a href="https://github.com/patractlabs/europa">Europa</a>沙盒环境中部署和测试合约功能, 前端使用<a href="https://github.com/polkadot-js/apps">polkadot-js</a>作为交互界面.<br>测试步骤如下:  </p>
+				<ol>
+					<li><p>首先我们按照<code>Europa</code>和<code>plokadot-js</code>的说明, 启动节点和服务.  </p>
+					</li>
+					<li><p>在<code>polkadot-js</code>的合约界面中, 上传<code>build/</code>下的<code>metadata.json</code>和<code>flipper.wasm</code>文件.  </p>
+					</li>
+					<li><p>部署已经上传的合约, 调用<code>default</code>方法设置flag的初始值.  </p>
+					</li>
+					<li><p>调用<code>flip</code>, <code>get</code>方法, 查看合约执行效果.  </p>
+					</li>
+				</ol>
 				<a href="#ask合约的组成结构" id="ask合约的组成结构" style="color: inherit; text-decoration: none;">
 					<h2>Ask!合约的组成结构</h2>
 				</a>
@@ -116,9 +156,9 @@ $ npx ask-cli init</code></pre>
 				<ol>
 					<li><p>@contract<br>这个注解作用于<code>class</code>级别的对象上, 表示这个合约是一个contract. 只有文件中包含了<code>@contract</code>标注的class, 才能被<code>ask-cli compile</code>命令编译.  </p>
 					</li>
-					<li><p>@state<br>这个注解作用于<code>@contract</code>标注的class的成员变量, 表示这个成员变量是一个状态变量(state variable), 它有一个<code>lazy</code>选项.<br><code>@state</code>的完整定义方式为<code>@state({lazy: true})</code>或者<code>@state({lazy: false})</code>. <code>{lazy: true}</code>是默认值, 可以省略.<br>lazy的意义是, 在一次message的调用过程中, 每一次对状态变量的修改, 是否会立即同步到链上.<br>如果<code>{lazy: true}</code>, 表示将采用延迟模式保存数据, 只有在message执行完成之后, 才会将最终状态变量的值写入到链上;<br>而<code>{lazy: false}</code>表示每次修改状态变量的值, 都会立即写入到链上.</p>
+					<li><p>@state<br>这个注解作用于<code>@contract</code>标注的class的成员变量, 表示这个成员变量是一个状态变量(state variable), 它有一个<code>lazy</code>选项.<br><code>@state</code>的完整定义方式为<code>@state({&quot;lazy&quot;: true})</code>或者<code>@state({&quot;lazy&quot;: false})</code>. <code>{&quot;lazy&quot;: true}</code>是默认值, 可以省略.<br>lazy的意义是, 在一次message的调用过程中, 每一次对状态变量的修改, 是否会立即同步到链上.<br>如果<code>{&quot;lazy&quot;: true}</code>, 表示将采用延迟模式保存数据, 只有在message执行完成之后, 才会将最终状态变量的值写入到链上;<br>而<code>{&quot;lazy&quot;: false}</code>表示每次修改状态变量的值, 都会立即写入到链上.</p>
 					</li>
-					<li><p>@message<br>这个注解作用于<code>@contract</code>标注的class的成员函数, 表示这个方法可以被外部调用(external message).<br><code>@message</code>有几个参数可以设定, 用来控制外部调用时的行为.它的完整定义是这样的:  <code>@message({payable: false, mutates: true, selector: &quot;0xabcdef12&quot;})</code><br>下面我们分别描述这些选项的意义:</p>
+					<li><p>@message<br>这个注解作用于<code>@contract</code>标注的class的成员函数, 表示这个方法可以被外部调用(external message).<br><code>@message</code>有几个参数可以设定, 用来控制外部调用时的行为.它的完整定义是这样的:  <code>@message({&quot;payable&quot;: false, &quot;mutates&quot;: true, &quot;selector&quot;: &quot;0xabcdef12&quot;})</code><br>下面我们分别描述这些选项的意义:</p>
 						<ul>
 							<li><code>payable</code>选项表示调用这个方法时, 是否可以接受value, 它的值可以是<code>true</code>或<code>false</code>, 默认为false.  </li>
 							<li><code>mutates</code>选项表示方法是否能够改变状态变量的值. 它的值可以是<code>true</code>或<code>false</code>, 默认值为true, 并且可以省略. 如果需要控制这个方法是一个view方法的话, 可以将mutates的值设置为false.  </li>
@@ -146,13 +186,13 @@ $ npx ask-cli init</code></pre>
     <span class="hljs-meta">@state</span> greeting: <span class="hljs-built_in">string</span>;
 
     <span class="hljs-meta">@constructor</span>
-    <span class="hljs-meta">@doc</span>(<span class="hljs-string">"this is a constructor method"</span>) 
+    <span class="hljs-meta">@doc</span>({<span class="hljs-string">"desc"</span>: <span class="hljs-string">"this is a constructor method"</span>}) 
     <span class="hljs-keyword">default</span>(msg: <span class="hljs-built_in">string</span> = <span class="hljs-string">"hello ask"</span>) {
         <span class="hljs-keyword">this</span>.greeting = msg;
     }
 
     <span class="hljs-meta">@message</span>({mutates: <span class="hljs-literal">false</span>})
-    <span class="hljs-meta">@doc</span>(<span class="hljs-string">"to get greeting message"</span>)
+    <span class="hljs-meta">@doc</span>({<span class="hljs-string">"desc"</span>: <span class="hljs-string">"to get greeting message"</span>})
     getGreeting(): <span class="hljs-built_in">string</span> {
         <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.greeting;
     }
@@ -188,7 +228,6 @@ $ npx ask-cli init</code></pre>
 				<pre><code class="language-typescript"><span class="hljs-meta">@contract</span>
 <span class="hljs-keyword">class</span> ERC20 {
     <span class="hljs-meta">@message</span>
-    <span class="hljs-meta">@doc</span>(<span class="hljs-string">"to approve someone transfer your token"</span>)
     approve(spender: Account, amount: u128): bool {
         <span class="hljs-comment">// .....</span>
         (<span class="hljs-keyword">new</span> Approved(spender, amount)).emit();
@@ -227,9 +266,18 @@ $ npx ask-cli init</code></pre>
 					<li>如果子类和父类中声明了名字相同的@message方法, 将只导出子类的@message方法.  </li>
 					<li>只导出子类的@constructor方法, 如果子类中未声明@constructor方法, 那么metadata.json中不会导出@constractor方法, 即使父类中声明了@constructor方法.  </li>
 				</ul>
+				<p>请参考<code>examples/erc20</code>了解合约继承的使用方法.  </p>
 				<a href="#使用dynamic声明外部合约接口进行跨合约调用" id="使用dynamic声明外部合约接口进行跨合约调用" style="color: inherit; text-decoration: none;">
 					<h3>使用@dynamic声明外部合约接口进行跨合约调用</h3>
 				</a>
+				<p><code>@dynamic</code>注解用来描述一个合约可供外部调用的message信息. 其它合约可以通过@dynamic声明, 与满足该声明的合约进行跨合约交互. 在语义上, <code>@dynamic</code>与solidity语言中<code>interface</code>声明的接口功能类似.<br>需要注意的是, <code>@dynamic</code>注解作用于class上面, 受限于<code>patractlabs-ask-transform</code>的功能, 对于@dynamic中声明的方法, 需要有完整的函数体. 如:  </p>
+				<pre><code class="language-typescript"><span class="hljs-meta">@dynamic</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> Libadd {
+
+    add(a: i32, b: i32): i32 { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>; }
+}</code></pre>
+				<p>其中<code>add</code>方法的函数体和<code>return 0;</code>部分不可以省略. 函数体中也无须其它逻辑, 只要通满足编译器的语法检查即可.</p>
+				<p>关于使用@dynamic进行跨合约调用的示例, 请参考<code>examples/crosscall</code>示例.</p>
 				<a href="#ask常用组件说明" id="ask常用组件说明" style="color: inherit; text-decoration: none;">
 					<h2>Ask!常用组件说明</h2>
 				</a>

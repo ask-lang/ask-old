@@ -1,5 +1,5 @@
 {
-  "name": "ask-transform",
+  "name": "patractlabs-ask-transform",
   "version": "0.0.10",
   "description": "Build tool for building AssemblyScript projects",
   "license": "MIT",
@@ -16,6 +16,6 @@
     "assemblyscript": "0.18",
     "@polkadot/util-crypto": "^6.6",
     "handlebars": "4.7.6",
-    "contract-metadata": "0.1.0"
+    "patractlabs-contract-metadata": "file:../contract-metadata"
   }
 }

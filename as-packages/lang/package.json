@@ -1,14 +1,14 @@
 {
-  "name": "ask-lang",
+  "name": "patractlabs-ask-lang",
   "version": "0.1.0",
   "description": "Ask lang std lib",
   "main": "index.ts",
   "license": "MIT",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "dependencies": {
-    "as-contract-runtime": "0.1.1",
+    "patractlabs-contract-runtime": "file:../as-contract-runtime",
     "as-bignum": "^0.2.17",
-    "as-scale-codec": "0.2.1"
+    "patractlabs-as-scale-codec": "file:../as-scale-codec"
   },
   "devDependencies": {
     "assemblyscript": "0.18",
