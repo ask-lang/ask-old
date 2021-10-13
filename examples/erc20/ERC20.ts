@@ -35,27 +35,27 @@ export class ERC20 {
     this.totalSupply = u128.Zero;
   }
 
-  @message({mutates: false})
+  @message({"mutates": false})
   get name(): string {
     return this.name;
   }
 
-  @message({ mutates: false })
+  @message({ "mutates": false })
   get symbol(): string {
     return this.symbol;
   }
 
-  @message({ mutates: false })
+  @message({ "mutates": false })
   get decimal(): u8 {
     return this.decimal;
   }
 
-  @message({ mutates: false })
+  @message({ "mutates": false })
   get supply(): u128 {
     return this.totalSupply;
   }
 
-  @message({ mutates: false })
+  @message({ "mutates": false })
   balanceOf(account: Account): u128 {
     return this.balances.get(account).unwrap();
   }
@@ -67,7 +67,7 @@ export class ERC20 {
     return true;
   }
 
-  @message({ mutates: false })
+  @message({ "mutates": false })
   allowance(owner: Account, spender: Account): u128 {
     return this.allowances.get(owner).get(spender).unwrap();
   }

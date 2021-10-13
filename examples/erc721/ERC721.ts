@@ -89,7 +89,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721-ownerOf}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   ownerOf(tokenId: u128): Account {
     assert(this._exists(tokenId), "ERC721: owner query for nonexistent token")
     return this._tokenOwners.get(new UInt128(tokenId));
@@ -98,7 +98,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721Metadata-name}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   name(): string {
     return this._name;
   }
@@ -106,7 +106,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721Metadata-symbol}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   symbol(): string {
     return this._symbol;
   }
@@ -114,7 +114,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721Metadata-tokenURI}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   tokenURI(tokenId: u128): string {
     assert(this._exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
@@ -134,7 +134,7 @@ export class ERC721 {
   * automatically added as a prefix in {tokenURI} to each token's URI, or
   * to the token ID if no specific URI is set for that token ID.
   */
-  @message(mutates = false)
+  @message({"mutates": false})
   baseURI(): string {
     return this._baseURI;
   }
@@ -142,7 +142,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   tokenOfOwnerByIndex(owner: Account, index: i32): u128 {
     return this._holderTokens.get(owner).at(index).unwrap();
   }
@@ -150,7 +150,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721Enumerable-totalSupply}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   totalSupply(): i32 {
     // _tokenOwners are indexed by tokenIds, so .length() returns the number of tokenIds
     return this._tokenOwners.keys().length;
@@ -159,7 +159,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721Enumerable-tokenByIndex}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   tokenByIndex(index: i32): u128 {
     return this._tokenOwners.keys().at(index).unwrap();
   }
@@ -181,7 +181,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721-getApproved}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   getApproved(tokenId: u128): Account {
     assert(this._exists(tokenId), "ERC721: approved query for nonexistent token");
 
@@ -212,7 +212,7 @@ export class ERC721 {
   /**
    * @dev See {IERC721-isApprovedForAll}.
    */
-  @message(mutates = false)
+  @message({"mutates": false})
   isApprovedForAll(owner: Account, operator: Account): bool {
     return this._operatorApprovals.get(owner).get(operator).unwrap();
   }

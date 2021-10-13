@@ -21,7 +21,7 @@ class Incrementer {
         this.value = ++v;
     }
 
-    @message(mutates = false)
+    @message({"mutates": false})
     get(): u32 {
         return this.value;
     }
