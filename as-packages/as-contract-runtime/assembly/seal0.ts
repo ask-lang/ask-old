@@ -34,6 +34,9 @@ export enum ReturnCode {
     /// The contract that was called is either no contract at all (a plain account)
     /// or is a tombstone.
     NotCallable = 8,
+    /// The call to `seal_debug_message` had no effect because debug message
+    /// recording was disabled.
+    LoggingDisabled = 9,
 }
 
 // Set the value specified by the given key in the storage.
@@ -160,7 +163,9 @@ export declare function seal_instantiate(
     addressPtr: Ptr,
     addressLenPtr: Ptr,
     outputPtr: Ptr,
-    outputLenPtr: Ptr
+    outputLenPtr: Ptr,
+    saltPtr: Ptr,
+    saltLen: SizeT
 ): ReturnCode;
 
 // Remove the calling account and transfer remaining balance.
@@ -326,6 +331,22 @@ export declare function seal_tombstone_deposit(
     outLenPtr: Ptr
 ): void;
 
+// Stores the contract deposit into the supplied buffer.
+//
+// The value is stored to linear memory at the address pointed to by `out_ptr`.
+// `out_len_ptr` must point to a u32 value that describes the available space at
+// `out_ptr`. This call overwrites it with the size of the value. If the available
+// space at `out_ptr` is less than the size of the value a trap is triggered.
+//
+// The data is encoded as T::Balance.
+//
+// # Note
+//
+// The contract deposit is on top of the existential deposit. The sum
+// is commonly referred as subsistence threshold in code. No contract initiated
+// balance transfer can go below this threshold.
+export declare function seal_contract_deposit(outPtr: Ptr, outLenPtr: SizeT): void;
+
 // Try to restore the given destination contract sacrificing the caller.
 //
 // This export declare function will compute a tombstone hash from the caller's storage and the given code hash
@@ -402,6 +423,25 @@ export declare function seal_rent_allowance(outPtr: Ptr, outLenPtr: Ptr): void;
 // Only available on `--dev` chains.
 // This export declare function may be removed at any time, superseded by a more general contract debugging feature.
 export declare function seal_println(strPtr: Ptr, strLen: SizeT): void;
+
+// Emit a custom debug message.
+//
+// No newlines are added to the supplied message.
+// Specifying invalid UTF-8 triggers a trap.
+//
+// This is a no-op if debug message recording is disabled which is always the case
+// when the code is executing on-chain. The message is interpreted as UTF-8 and
+// appended to the debug buffer which is then supplied to the calling RPC client.
+//
+// # Note
+//
+// Even though no action is taken when debug message recording is disabled there is still
+// a non trivial overhead (and weight cost) associated with calling this function. Contract
+// languages should remove calls to this function (either at runtime or compile time) when
+// not being executed as an RPC. For example, they could allow users to disable logging
+// through compile time flags (cargo features) for on-chain deployment. Additionally, the
+// return value of this function can be cached in order to prevent further calls at runtime.
+export declare function seal_debug_message(strPtr: Ptr, strLen: SizeT): ReturnCode;
 
 // Stores the current block number of the current contract into the supplied buffer.
 //
