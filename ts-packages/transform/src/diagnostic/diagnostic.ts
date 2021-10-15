@@ -43,8 +43,6 @@ export class ProgramDiagnostic {
                 let currentSignature = `name:${item.name}signature:${item.declaration.signature.range.toString()}`.replaceAll(" ", "");
                 let existFun = messageMap.get(item.name)!;
                 let existSignature = `name:${existFun.name}signature:${existFun.declaration.signature.range.toString()}`.replaceAll(" ", "");
-                // let diagnostic = new ContractDiagnostic(DiagnosticCode.INHERIT_OVERRIDE_METHOD,
-                //     DiagnosticCategory.ERROR, "", item.declaration.signature.range, existFun.declaration.signature.range);
                 if (currentSignature != existSignature) {
                     throw new Error(`The contract has message: ${item.name} that has two difference signatures.`);
                 }
@@ -58,11 +56,11 @@ export class ProgramDiagnostic {
 
     private checkDuplicateStorableInstance(): void {
         let fields = this.contract.contract.fields;
-        let stores = this.contract.storages;
+        // let stores = this.contract.storages;
         let countInstanceMap = new Map<string, number>();
-        stores.forEach(item => {
-            countInstanceMap.set(item.element.internalName, 0);
-        });
+        // stores.forEach(item => {
+        //     countInstanceMap.set(item.element.internalName, 0);
+        // });
         fields.forEach(item => {
             let name = item.type.current.internalName;
             if (countInstanceMap.has(name)) {

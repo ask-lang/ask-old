@@ -9,6 +9,8 @@ import { ConstructorDef, MessageFunctionDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { TypeHelper } from "../utils/typeutil";
 import { MetadataUtil } from "../utils/metadatautil";
+import { Strings } from "../utils/primitiveutil";
+import { IndexSelector } from "../preprocess/selector";
 
 export class MetadataGenerator {
 
@@ -19,8 +21,9 @@ export class MetadataGenerator {
     }
 
     public createMetadata(): ContractMetadata {
-        let source = new Source("", CONFIG.language, CONFIG.language);
-        let contract = new Contract(this.contractInfo.contract!.camelName, CONFIG.metadataVersion);
+        let source = new Source("", CONFIG.language, CONFIG.compiler);
+        let contractName = Strings.lowerFirstCase(this.contractInfo.contract!.name);
+        let contract = new Contract(contractName, CONFIG.version);
         let contractSpec = this.getContractSpec();
         let types = this.createTypeMetadata();
         let layout = this.createStoreLayout();
@@ -43,13 +46,19 @@ export class MetadataGenerator {
 
     private createStoreLayout(): Layout {
         let layouts: FieldLayout[] = [];
-        this.contractInfo.storages.forEach(item => layouts = layouts.concat(item.createMetadata()));
+        let fields = this.contractInfo.contract.storeFields;
+        for (let i = 1; i <= fields.length; i++) {
+            let item = fields[fields.length - i];
+            item.selector = new IndexSelector(i);
+            layouts = layouts.concat(item.createMetadata());
+        }
         return new StructLayout(layouts);
     }
 
     private createTypeMetadata(): Type[] {
         let metadataTypes = new Array<Type>();
-        let exportedTypeMap = this.contractInfo.definedTypeMap;
+        let exportedTypeMap = this.contractInfo.typeDefByName;
+
         exportedTypeMap.forEach((type, _) => {
             if (TypeHelper.isPrimitiveType(type.typeKind)) {
                 metadataTypes.push(new PrimitiveDef(type.abiType));

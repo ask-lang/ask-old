@@ -68,6 +68,15 @@ export class ElementUtil {
         return false;
     }
 
+    /**
+     * Whether the element is field prototype.
+     * @param element 
+     * @returns 
+     */
+    static isField(element: Element): boolean {
+        return element.kind == ElementKind.FIELD_PROTOTYPE;
+    }
+
     static isExtendCodec(element: Element): boolean {
         if (element.kind == ElementKind.CLASS_PROTOTYPE) {
             return ElementUtil.impledInterfaces(<ClassPrototype>element).includes("Codec");

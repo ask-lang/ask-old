@@ -21,21 +21,24 @@ export class ContractProgram {
     contract!: ContractInterpreter;
     metatdata: ContractMetadata;
     events: EventInterpreter[] = [];
-    storages: StorageInterpreter[] = [];
+    // storages: StorageInterpreter[] = [];
     dynamics: DynamicIntercepter[] = [];
     codecs: ClassInterpreter[]  = [];
-    
-    public definedTypeMap: Map<string, NamedTypeNodeDef> = new Map<string, NamedTypeNodeDef>();
+    /**
+     * defined type map
+     */
+    typeDefByName: Map<string, NamedTypeNodeDef> = new Map<string, NamedTypeNodeDef>();
 
     constructor(program: Program) {
         this.program = program;
         this.resolveContract();
+        this.genTypeSequence();
         this.getToGenCodecClass();
         this.metatdata = this.createMetadata();
     }
 
     private getToGenCodecClass(): void {
-        this.definedTypeMap.forEach((item, key) => {
+        this.typeDefByName.forEach((item, key) => {
             if (item.typeKind == TypeKindEnum.USER_CLASS && !item.isCodec) {
                 let classInterpreter = new ClassInterpreter(<ClassPrototype>item.current);
                 classInterpreter.resolveFieldMembers();
@@ -75,18 +78,14 @@ export class ContractProgram {
                 this.dynamics.push(dynamicInterpreter);
             }
         });
-        this.setTypeSequence();
     }
 
-    private setTypeSequence(): void {
+    private genTypeSequence(): void {
         if (this.contract) {
-            this.contract.genTypeSequence(this.definedTypeMap);
+            this.contract.genTypeSequence(this.typeDefByName);
         }
-        this.storages.forEach(storage => {
-            storage.genTypeSequence(this.definedTypeMap);
-        });
         this.events.forEach(event => {
-            event.genTypeSequence(this.definedTypeMap);
+            event.genTypeSequence(this.typeDefByName);
         });
     }
 }

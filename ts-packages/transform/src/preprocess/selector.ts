@@ -1,14 +1,18 @@
 import { blake2AsHex  } from "@polkadot/util-crypto";
 export class KeySelector {
-    hex: string;
-    short: string;
-    shortArr: string;
-    hexArr: string;
-    key: string;
+    hex =  "";
+    short = "";
+    shortArr = "";
+    hexArr = "";
+    key = "";
     constructor(key: string) {
         this.key = key;
         // remove 0x
         let hexStr = blake2AsHex(key, 256).substring(2);
+        this.calculateVal(hexStr);
+    }
+
+    protected calculateVal(hexStr: string): void {
         let selectorArr = [];
         for (let index = 0; index < 32; index++) {
             selectorArr.push("0x" + hexStr.substring(index * 2, index * 2 + 2));
@@ -31,4 +35,17 @@ export class KeySelector {
         }
         return false;
     } 
+}
+
+function padLeft(num: number, size: number): string {
+    let s = Number(num).toString(16);
+    while (s.length < size) s = "0" + s;
+    return s;
+}
+export class IndexSelector extends KeySelector {
+    constructor(index: number) {
+        super("");
+        let hex = padLeft(index, 64);
+        this.calculateVal(hex);
+    }
 }

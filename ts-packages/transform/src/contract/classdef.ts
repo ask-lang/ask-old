@@ -59,7 +59,7 @@ export class ClassInterpreter extends Interpreter {
     resolveFieldMembers(): void {
         this.element.instanceMembers &&
             this.element.instanceMembers.forEach((element, _) => {
-                if (element.kind == ElementKind.FIELD_PROTOTYPE) {
+                if (ElementUtil.isField(element)) {
                     this.fields.push(new FieldDef(<FieldPrototype>element));
                 }
             });
@@ -92,9 +92,18 @@ export class ClassInterpreter extends Interpreter {
  * It indicate the contract interpreter
  */
 export class ContractInterpreter extends ClassInterpreter {
-    // The first case is lower.
+    /**
+     * The function that exported construction.
+     */
     cntrFuncDefs: FunctionDef[] = [];
+    /**
+     * The message that exported.
+     */
     msgFuncDefs: FunctionDef[] = [];
+    /**
+     * The store field
+     */
+    storeFields: FieldDef[] = [];
 
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
@@ -112,18 +121,31 @@ export class ContractInterpreter extends ClassInterpreter {
                     let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                     this.msgFuncDefs.push(msgFunc);
                 }
+                // ignore the field that not marked with state
+                if (ElementUtil.isField(instance)) {
+                    let fieldDef = new FieldDef(<FieldPrototype> instance);
+                    if (!fieldDef.decorators.ignore) {
+                        this.storeFields.push(fieldDef);
+                    }
+                }
             });
         this.resolveBaseClass(this.element);
     }
 
-    private resolveBaseClass(sonClassPrototype: ClassPrototype): void {
-        if (sonClassPrototype.basePrototype) {
-            let basePrototype = sonClassPrototype.basePrototype;
+    private resolveBaseClass(classPrototype: ClassPrototype): void {
+        if (classPrototype.basePrototype) {
+            let basePrototype = classPrototype.basePrototype;
             basePrototype.instanceMembers &&
                 basePrototype.instanceMembers.forEach((instance, _) => {
                     if (ElementUtil.isMessageFuncPrototype(instance)) {
                         let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                         this.msgFuncDefs.push(msgFunc);
+                    }
+                    if (ElementUtil.isField(instance)) {
+                        let fieldDef = new FieldDef(<FieldPrototype>instance);
+                        if (!fieldDef.decorators.ignore) {
+                            this.storeFields.push(fieldDef);
+                        }
                     }
                 });
             this.resolveBaseClass(basePrototype);
@@ -136,6 +158,11 @@ export class ContractInterpreter extends ClassInterpreter {
         });
         this.msgFuncDefs.forEach(funcDef => {
             funcDef.genTypeSequence(typeNodeMap);
+        });
+        this.storeFields.forEach(item => {
+            if (item.type) {
+                item.type.genTypeSequence(typeNodeMap);
+            }
         });
     }
 }
@@ -174,7 +201,6 @@ export class StorageInterpreter extends ClassInterpreter  {
             let layout = new CellLayout(field.selector.hex, field.type.index);
             return new FieldLayout(field.name, layout);
         } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
-            let argu = field.type.typeArguments[0];
             let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
             let lenFieldLayout = new FieldLayout("len", lenCellLayout);
 
