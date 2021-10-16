@@ -21,16 +21,16 @@ export class ContractProgram {
     contract!: ContractInterpreter;
     metatdata: ContractMetadata;
     events: EventInterpreter[] = [];
-    // storages: StorageInterpreter[] = [];
     dynamics: DynamicIntercepter[] = [];
     codecs: ClassInterpreter[]  = [];
     /**
-     * defined type map
+     * defined type map, that would be exported.
      */
     typeDefByName: Map<string, NamedTypeNodeDef> = new Map<string, NamedTypeNodeDef>();
 
     constructor(program: Program) {
         this.program = program;
+        this.setEntryContract();
         this.resolveContract();
         this.genTypeSequence();
         this.getToGenCodecClass();
@@ -51,7 +51,7 @@ export class ContractProgram {
         return new MetadataGenerator(this).createMetadata();
     }
     
-    private locateEntryContract(): void {
+    private setEntryContract(): void {
         let contractNum = 0;
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isTopContractClass(element)) {
@@ -60,13 +60,11 @@ export class ContractProgram {
             }
         });
         if (contractNum != 1) {
-            throw new Error(`The entry file should contain only one '@contract', in fact it has ${contractNum}`);
+            throw new Error(`The entry file should contain one '@contract', in fact it has ${contractNum}.`);
         }
     }
 
     private resolveContract(): void {
-        this.locateEntryContract();
-
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isEventClassPrototype(element)) {
                 let eventInterpreter = new EventInterpreter(<ClassPrototype>element);
@@ -80,6 +78,9 @@ export class ContractProgram {
         });
     }
 
+    /**
+     * 
+     */
     private genTypeSequence(): void {
         if (this.contract) {
             this.contract.genTypeSequence(this.typeDefByName);

@@ -108,10 +108,10 @@ export class ContractInterpreter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.resolveFieldMembers();
-        this.resolveContractClass();
+        this.resolveContractElement();
     }
 
-    private resolveContractClass(): void {
+    private resolveContractElement(): void {
         this.element.instanceMembers &&
             this.element.instanceMembers.forEach((instance, _) => {
                 if (ElementUtil.isCntrFuncPrototype(instance)) {

@@ -16,8 +16,6 @@ import {
     Range,
     CommonFlags
 } from "assemblyscript";
-import { getCustomDecoratorKind } from "../contract/decorator";
-import { DocDecoratorNodeDef } from "../contract/elementdef";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { DecoratorUtil } from "./decoratorutil";
 import { Strings } from "./primitiveutil";
@@ -215,6 +213,6 @@ export class AstUtil {
 }
 export class RangeUtil {
     public static location(range: Range): string {
-        return `source text: ${range.toString()}. Path:${range.source.normalizedPath} lineAt: ${range.source.lineAt(range.start)} columnAt: ${range.source.columnAt()} range: (${range.start.toString(10)} ${range.end.toString(10)}).`;
+        return `source text: ${range.toString()} in path:${range.source.normalizedPath} lineAt: ${range.source.lineAt(range.start)} columnAt: ${range.source.columnAt()} range: (${range.start.toString(10)} ${range.end.toString(10)}).`;
     }
 }

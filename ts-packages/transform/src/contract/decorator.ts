@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CharCode, DecoratorKind, DecoratorNode, Expression, IdentifierExpression, NodeKind } from "assemblyscript";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { DecoratorUtil } from "../utils/decoratorutil";
@@ -51,10 +50,26 @@ export function getCustomDecoratorKind(decorator: DecoratorNode): ContractDecora
     }
     let kind = fromNode(decorator.name);
     if (kind == ContractDecoratorKind.OTHER) {
-        throw new Error(`The contract don't support the decorator ${decorator.name.range.toString()}, please eheck ${RangeUtil.location(decorator.range)}`);
+        let name = getSimilarityDecorator(decorator.name.range.toString());
+        throw new Error(`Unsupported contract decorator ${decorator.name.range.toString()}, do you mean '@${name}'? Check ${RangeUtil.location(decorator.range)}`);
     }
     return kind;
 }
+
+export function getSimilarityDecorator(name: string): string {
+    let possibleDecorator = "";
+    let percentOfSimilar = 0;
+    let innerDecorators = ["contract", "constructor", "doc", "dynamic", "event", "message", "packed", "spread", "state", "topic"];
+    for (let decorator of innerDecorators) {
+        let similarity = Strings.similarity(decorator, name);
+        if (similarity > percentOfSimilar) {
+            percentOfSimilar = similarity;
+            possibleDecorator = decorator;
+        }
+    }
+    return possibleDecorator;
+}
+
 
 export function toPairs(decorator: DecoratorNode): Map<string, string> {
     let pairs = new Map<string, string>();
@@ -99,32 +114,46 @@ export class DecoratorNodeDef {
         this.jsonObj = this.parseToJson(decorator);
     }
 
-    parseToJson(decorator: DecoratorNode): any {
-        let numOfArgs = decorator.args?.length || 0;
-        if (numOfArgs == 0) {
+    private parseToJson(decorator: DecoratorNode): any {
+        if (!decorator.args) {
             return {};
         }
-        if (numOfArgs == 1) {
+        if (decorator.args?.length == 1) {
             try {
-                let exp = decorator.args[0].range.toString();
+                let exp = decorator.args![0].range.toString();
                 return JSON.parse(exp);
             } catch (e) {
-                throw new Error(`The decorator parameter isn't json format. Trace: Trace: ${RangeUtil.location(decorator.range)}.`);
+                throw new Error(`The decorator parameter isn't json format. Check ${RangeUtil.location(decorator.range)}.`);
             }
         }
-        throw new Error(`The decorator parameter isn't pre-defined format. Trace: Trace: ${RangeUtil.location(decorator.range)}.`);
+        throw new Error(`The decorator parameter isn't pre-defined format. Check ${RangeUtil.location(decorator.range)}.`);
     }
 
     hasProperty(key: string): boolean {
         return this.jsonObj.hasOwnProperty(key);
     }
 
-    getProperty(key: string): any {
+    getProperty(key: string, type = ""): any {
         if (this.hasProperty(key)) {
-            return this.jsonObj[key];
+            let obj = this.jsonObj[key];
+            if (type && !DecoratorUtil.checkObjType(obj, type)) {
+                throw new Error(`Decorator: ${this.decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(this.decorator.range)} `);
+            }
+            return obj;
         } else {
             DecoratorUtil.throwNoArguException(this.decorator, key);
         }
+    }
+
+    getIfAbsent(key: string, obj: any, type = ""): any {
+        if (this.hasProperty(key)) {
+            let obj = this.jsonObj[key];
+            if (type && !DecoratorUtil.checkObjType(obj, type)) {
+                throw new Error(`Decorator: ${this.decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(this.decorator.range)} `);
+            }
+            return obj;
+        }
+        return obj;
     }
 }
 
@@ -134,25 +163,20 @@ export class DecoratorNodeDef {
 export class DocDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public doc = "") {
         super(decorator);
-        this.doc = this.getProperty("desc");
+        this.doc = this.getProperty("desc", "string");
     }
 }
 export class MessageDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public payable = false,
-        public mutates = "true", public selector = "") {
+        public mutates = true, public selector = "") {
         super(decorator);
-        if (this.hasProperty('payable')) {
-            this.payable = true;
-        }
-        if (this.hasProperty('mutates')) {
-            this.mutates = this.getProperty('mutates');
-            DecoratorUtil.checkMutates(decorator, this.mutates);
-        }
+        this.payable = this.getIfAbsent("payable", false, "boolean");
+        this.mutates = this.getIfAbsent('mutates', true, "boolean");
         if (this.hasProperty('selector')) {
             this.selector = this.getProperty('selector');
             DecoratorUtil.checkSelector(decorator, this.selector);
         }
-        if (this.payable && this.mutates == 'false') {
+        if (this.payable && !this.mutates) {
             throw new Error(`Decorator: ${decorator.name.range.toString()} arguments mutates and payable can only exist one. Trace: ${RangeUtil.location(decorator.range)} `);
         }
     }
@@ -160,14 +184,11 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
 export class StateDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public lazy = true, public ignore = false) {
         super(decorator);
-        if (this.hasProperty("lazy")) {
-            this.lazy = this.getProperty("lazy");
-        }
+        this.lazy = this.getIfAbsent("lazy", true, "boolean");
     }
 }
 
 export function getDecoratorDef(decorator: DecoratorNode): DecoratorNodeDef {
-    // let pairs = toPairs(decorator);
     switch (getCustomDecoratorKind(decorator)) {
         case ContractDecoratorKind.STATE: {
             return new StateDecoratorNodeDef(decorator);

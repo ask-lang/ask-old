@@ -128,11 +128,11 @@ Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
     if (field.type.typeKind == TypeKindEnum.ARRAY) {
         code.push(`get ${field.name}(): ${field.type.plainTypeNode} {`);
         code.push(`     if (this.${field.varName} === null) {`);
-        code.push(`       this.${field.varName} = new ${field.type.instanceType}("${field.selector.key}", ${field.decorators.capacity});`);
+        code.push(`       this.${field.varName} = new ${field.type.instanceType}(new ${scope}Hash(${field.selector.hexArr}), ${String(field.decorators.isLazy)}, ${field.decorators.capacity});`);
     } else if (field.type.typeKind == TypeKindEnum.MAP) {
         code.push(`get ${field.name}(): ${field.type.plainTypeNode} {`);
         code.push(`     if (this.${field.varName} === null) {`);
-        code.push(`       this.${field.varName} = new ${field.type.instanceType}("${field.selector.key}");`);
+        code.push(`       this.${field.varName} = new ${field.type.instanceType}(new ${scope}Hash(${field.selector.hexArr}), ${String(field.decorators.isLazy)});`);
     } else {
         code.push(`get ${field.name}(): ${field.type.plainType} {`);
         code.push(`    if (this.${field.varName} === null) {`);

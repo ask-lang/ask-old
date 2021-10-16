@@ -108,11 +108,38 @@ export class FieldDef extends Interpreter {
     }
 
     createMetadata(): FieldLayout[] {
-        // TODO
-        // return this.fields.filter(item => item.decorators.ignore == false)
-        //     .map(field => this.getFiledLayout(field));
         return [this.getFiledLayout()];
     }
+
+
+    private getArrayLayout(field: FieldDef): FieldLayout {
+        let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
+        let lenFieldLayout = new FieldLayout("len", lenCellLayout);
+
+        let arrLayout = new ArrayLayout(field.selector.key, field.type.capacity, 1, lenCellLayout);
+        let arrFiledLayout = new FieldLayout("elems", arrLayout);
+
+        let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
+        return new FieldLayout(field.name, arrStruct);
+    }
+
+    private getMapLayout(field: FieldDef): FieldLayout {
+        let strategy = new HashingStrategy(CryptoHasher.Blake2x256,
+            field.selector.hex, "");
+        let valType = field.type.typeArguments[1];
+        let valLayout = new CellLayout(new KeySelector(field.selector.key + ".value").hex, valType.index);
+        let valHash = new HashLayout(field.selector.hex, strategy, valLayout);
+        let valFieldLayout = new FieldLayout("values", valHash);
+
+        let keyType = field.type.typeArguments[0];
+        let keyLayout = new CellLayout(new KeySelector(field.selector.key + ".key").hex, keyType.index);
+        let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout);
+        let keyFieldLayout = new FieldLayout("values", keyHash);
+
+        let mapLayout = new StructLayout([keyFieldLayout, valFieldLayout]);
+        return new FieldLayout(field.name, mapLayout);
+    }
+
 
     private getFiledLayout(): FieldLayout {
         let field = this;
@@ -120,14 +147,7 @@ export class FieldDef extends Interpreter {
             let layout = new CellLayout(field.selector.hex, field.type.index);
             return new FieldLayout(field.name, layout);
         } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
-            let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
-            let lenFieldLayout = new FieldLayout("len", lenCellLayout);
-
-            let arrLayout = new ArrayLayout(field.selector.key, field.type.capacity, 1, lenCellLayout);
-            let arrFiledLayout = new FieldLayout("elems", arrLayout);
-
-            let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
-            return new FieldLayout(field.name, arrStruct);
+            return this.getArrayLayout(field);
         } else if (field.type.typeKind == TypeKindEnum.USER_CLASS) {
             if (field.type.plainType == "Account") {
                 let lenCellLayout = new CellLayout(new KeySelector(field.selector.key + field.type.capacity).hex, field.type.index);
@@ -138,20 +158,7 @@ export class FieldDef extends Interpreter {
                 return new FieldLayout(field.name, arrStruct);
             }
         } else if (field.type.typeKind == TypeKindEnum.MAP) {
-            let strategy = new HashingStrategy(CryptoHasher.Blake2x256,
-                field.selector.hex, "");
-            let valType = field.type.typeArguments[1];
-            let valLayout = new CellLayout(new KeySelector(field.selector.key + ".value").hex, valType.index);
-            let valHash = new HashLayout(field.selector.hex, strategy, valLayout);
-            let valFieldLayout = new FieldLayout("values", valHash);
-
-            let keyType = field.type.typeArguments[0];
-            let keyLayout = new CellLayout(new KeySelector(field.selector.key + ".key").hex, keyType.index);
-            let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout);
-            let keyFieldLayout = new FieldLayout("values", keyHash);
-
-            let mapLayout = new StructLayout([keyFieldLayout, valFieldLayout]);
-            return new FieldLayout(field.name, mapLayout);
+            return this.getMapLayout(field);
         }
         let layout = new CellLayout(field.selector.hex, field.type.index);
         return new FieldLayout(field.name, layout);

@@ -37,11 +37,8 @@ export class DecoratorUtil {
         }
     }
 
-    public static checkMutates(decorator: DecoratorNode, val: string | boolean): void {
-        let isLegal = (val == 'false') || val == false;
-        if (!isLegal) {
-            throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(decorator.range)} `);
-        }
+    public static checkObjType(obj: any, typeName: string): boolean {
+        return typeof obj == typeName;
     }
 
     public static throwNoArguException(decorator: DecoratorNode, identifier: string): void {
