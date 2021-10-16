@@ -13,7 +13,6 @@ import {
 } from "assemblyscript";
 
 import { AstUtil, ElementUtil, RangeUtil } from "../utils/utils";
-import { Strings } from "../utils/primitiveutil";
 import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "contract-metadata/src";
 import { KeySelector } from "../preprocess/selector";
 import { MetadataUtil } from "../utils/metadatautil";
@@ -23,7 +22,7 @@ import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
 import { Interpreter } from "./interpreter";
 import { DecoratorUtil } from "../utils/decoratorutil";
-import { getCustomDecoratorKind, getDecoratorPairs } from "./decorator";
+import { getCustomDecoratorKind, getDecoratorDef, MessageDecoratorNodeDef, StateDecoratorNodeDef } from "./decorator";
 import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "contract-metadata/src/layouts";
 
 // export class DocDecoratorNodeDef
@@ -41,27 +40,24 @@ export class DecoratorsInfo {
             return ;
         }
         this.decorators = decorators;
-
         for (let decorator of this.decorators) {
+            let decoratorNode = getDecoratorDef(decorator);
             let kind = getCustomDecoratorKind(decorator);
             if (kind == ContractDecoratorKind.INTERNAL) {
                 continue;
             }
-            let pairs = getDecoratorPairs(decorator);
             if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
                 this.isTopic = true;
             }
             // if has no STATE decorator, ignore the field
             if (kind == ContractDecoratorKind.STATE) {
-                this.ignore = false;
-                this.isLazy = Strings.toBool(pairs.get("lazy")!);
-                // console.log(`ContractDecoratorKind.STATE: ${this.isLazy}`);
+                this.isLazy = (<StateDecoratorNodeDef>decoratorNode).lazy;
+                this.ignore = (<StateDecoratorNodeDef>decoratorNode).ignore;
             }
             if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.PACKED)) {
                 this.isPacked = true;
-                let decratorDef = new DecoratorNodeDef(decorator);
-                if (decratorDef.pairs.has("capacity")) {
-                    this.capacity = Number(decratorDef.pairs.get("capacity"));
+                if (decoratorNode.hasProperty("capacity")) {
+                    this.capacity = Number(decoratorNode.getProperty("capacity"));
                 }
             }
         }
@@ -186,47 +182,9 @@ export class ParameterNodeDef {
     }
 }
 
-export class DecoratorNodeDef {
-    constructor(decorator: DecoratorNode, public pairs: Map<string, string> = new Map<string, string>()) {
-        this.pairs = getDecoratorPairs(decorator);
-    }    
-}
 
-/**
- * Doc decorator info
- */
-export class DocDecoratorNodeDef extends DecoratorNodeDef {
-    constructor(decorator: DecoratorNode, public doc = "") {
-        super(decorator);
-        if (this.pairs.has("desc")) {
-            this.doc = Strings.removeQuotation(this.pairs.get("desc") || "");
-        } else {
-            DecoratorUtil.throwNoArguException(decorator, "desc");
-        }
-    }
-}
 
-export class MessageDecoratorNodeDef extends DecoratorNodeDef {
-    constructor(decorator: DecoratorNode, public payable = false,
-        public mutates = "true", public selector = "") {
-        super(decorator);
 
-        if (this.pairs.get('payable')) {
-            this.payable = true;
-        } else if (this.pairs.get('mutates')) {
-            this.mutates = this.pairs.get('mutates')!;
-            DecoratorUtil.checkMutates(decorator, this.mutates);
-        } else if (this.pairs.get('selector')) {
-            let selector = this.pairs.get('selector')!;
-            this.selector = Strings.removeQuotation(selector);
-            DecoratorUtil.checkSelector(decorator, this.selector);
-        }
-
-        if (this.payable && this.mutates == 'false') {
-            throw new Error(`Decorator: ${decorator.name.range.toString()} arguments mutates and payable can only exist one. Trace: ${RangeUtil.location(decorator.range)} `);
-        }
-    }
-}
 
 export class FunctionDef extends Interpreter {
     declaration: FunctionDeclaration;

@@ -1,5 +1,4 @@
 import { DeclaredElement, Range} from "assemblyscript";
-import { ContractDecoratorKind } from "../enums/decorator";
 import { DecoratorUtil } from "../utils/decoratorutil";
 import { getCustomDecoratorKind, getDecoratorPairs } from "./decorator";
 
@@ -18,14 +17,14 @@ export class Interpreter {
         this.doc = DecoratorUtil.getDoc(this.element.declaration);
     }
 
-    public getDecorator(kind: ContractDecoratorKind, key: string): string | boolean {
-        let val = "";
-        this.element.decoratorNodes?.filter(item => getCustomDecoratorKind(item) == kind).forEach(item => {
-            let pairs = getDecoratorPairs(item);
-            if (pairs.has(key)) {
-                val = pairs.get(key)!;
-            }
-        });
-        return val;
-    }
+    // public getDecorator(kind: ContractDecoratorKind, key: string): string | boolean {
+    //     let val = "";
+    //     this.element.decoratorNodes?.filter(item => getCustomDecoratorKind(item) == kind).forEach(item => {
+    //         let pairs = getDecoratorPairs(item);
+    //         if (pairs.has(key)) {
+    //             val = pairs.get(key)!;
+    //         }
+    //     });
+    //     return val;
+    // }
 }

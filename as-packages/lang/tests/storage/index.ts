@@ -6,13 +6,13 @@ class StorageTest {
   @state
   vi8: i8;
 
-  @state({lazy: false})
+  @state({"lazy": true})
   vbool: bool;
 
-  @state({lazy: false})
+  @state({"lazy": false})
   varr: SpreadStorableArray<UInt8>;
 
-  @state({lazy: true})
+  @state({"lazy": true})
   vmap: SpreadStorableMap<ScaleString, UInt8>;
 
   constructor() {}

@@ -10,7 +10,7 @@ import {
 import { ElementUtil } from "../utils/utils";
 
 import { ProgramAnalyzar } from "./analyzer";
-import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter, StorageInterpreter } from "./classdef";
+import { ClassInterpreter, ContractInterpreter, DynamicIntercepter, EventInterpreter } from "./classdef";
 import { NamedTypeNodeDef } from "./typedef";
 import { MetadataGenerator } from "../metadata/generator";
 import { ProgramDiagnostic } from "../diagnostic/diagnostic";

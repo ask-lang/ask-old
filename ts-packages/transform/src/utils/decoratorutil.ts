@@ -1,6 +1,5 @@
 import { DeclarationStatement, DecoratorNode } from "assemblyscript";
-import { getCustomDecoratorKind } from "../contract/decorator";
-import { DocDecoratorNodeDef } from "../contract/elementdef";
+import { DocDecoratorNodeDef, getCustomDecoratorKind } from "../contract/decorator";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { Strings } from "./primitiveutil";
 import { AstUtil, RangeUtil } from "./utils";
@@ -38,8 +37,8 @@ export class DecoratorUtil {
         }
     }
 
-    public static checkMutates(decorator: DecoratorNode, val: string): void {
-        let isLegal = (val == 'false');
+    public static checkMutates(decorator: DecoratorNode, val: string | boolean): void {
+        let isLegal = (val == 'false') || val == false;
         if (!isLegal) {
             throw new Error(`Decorator: ${decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(decorator.range)} `);
         }
