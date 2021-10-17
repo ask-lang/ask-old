@@ -48,7 +48,7 @@ export class MetadataGenerator {
         let layouts: FieldLayout[] = [];
         let fields = this.contractInfo.contract.storeFields;
         for (let i = 1; i <= fields.length; i++) {
-            let item = fields[fields.length - i];
+            let item = fields[i - 1];
             item.selector = new IndexSelector(i);
             layouts = layouts.concat(item.createMetadata());
         }

@@ -121,15 +121,16 @@ export class ContractInterpreter extends ClassInterpreter {
                     let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                     this.msgFuncDefs.push(msgFunc);
                 }
-                // ignore the field that not marked with state
-                if (ElementUtil.isField(instance)) {
-                    let fieldDef = new FieldDef(<FieldPrototype> instance);
-                    if (!fieldDef.decorators.ignore) {
-                        this.storeFields.push(fieldDef);
-                    }
-                }
+                
             });
         this.resolveBaseClass(this.element);
+        // ignore the field that not marked with state
+        this.fields.forEach(item => {
+            if (!item.decorators.ignore) {
+                this.storeFields.push(item);
+            }
+        });
+
     }
 
     private resolveBaseClass(classPrototype: ClassPrototype): void {
@@ -137,13 +138,6 @@ export class ContractInterpreter extends ClassInterpreter {
             let basePrototype = classPrototype.basePrototype;
             let parentContract = new ContractInterpreter(basePrototype);
             this.parentContracts.push(parentContract);
-
-            parentContract.fields.forEach(item => {
-                if (!item.decorators.ignore) {
-                    this.storeFields.push(item);
-                }
-            });
-
             basePrototype.instanceMembers &&
                 basePrototype.instanceMembers.forEach((instance, _) => {
                     if (ElementUtil.isMessageFuncPrototype(instance)) {
@@ -152,6 +146,13 @@ export class ContractInterpreter extends ClassInterpreter {
                     }
                 });
             this.resolveBaseClass(basePrototype);
+
+            
+            parentContract.fields.forEach(item => {
+                if (!item.decorators.ignore) {
+                    this.storeFields.push(item);
+                }
+            });
         }
     }
 
