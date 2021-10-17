@@ -140,7 +140,7 @@ export class ERC20 {
     this.totalSupply += amount;
     let leftValue = this.balances.get(account)!.unwrap() + amount;
     this.balances.set(account, new UInt128(leftValue));
-    (new Transfer(Account.Null, account, amount));
+    (new Transfer(Account.Null, account, amount)).emit();
   }
 
   protected _burn(account: Account, amount: u128): void {
@@ -150,7 +150,7 @@ export class ERC20 {
     let leftValue = balanceOfAccount - amount;
     this.balances.set(account, new UInt128(leftValue));
     this.totalSupply -= amount;
-    (new Transfer(account, Account.Null, amount));
+    (new Transfer(account, Account.Null, amount)).emit();
   }
 
   protected _approve(owner: Account, spender: Account, amount: u128): void {
@@ -159,7 +159,7 @@ export class ERC20 {
 
     let list = this.getAllowanceItem(owner);
     list.set(spender, new UInt128(amount));
-    (new Approval(owner, spender, amount));
+    (new Approval(owner, spender, amount)).emit();
   }
 
   protected _transfer(sender: Account, recipient: Account, amount: u128): void {
@@ -174,7 +174,7 @@ export class ERC20 {
 
     let recipientLeft = this.balances.get(recipient)!.unwrap() + amount;
     this.balances.set(recipient, new UInt128(recipientLeft));
-    (new Transfer(sender, recipient, amount));
+    (new Transfer(sender, recipient, amount)).emit();
   }
 
   private getAllowanceItem(key: Account): SpreadStorableMap<Account, UInt128> {

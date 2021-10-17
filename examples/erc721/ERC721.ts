@@ -1,14 +1,15 @@
-import { Account, Bool, Crypto, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
+import { Account, Bool, Crypto, Event, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
 
 /**
   * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
   */
-@event class Transfer {
+@event class Transfer extends Event{
   @topic from: Account = Account.Null;
   @topic to: Account = Account.Null;
   @topic tokenId: u128 = u128.Zero;
 
   constructor(from: Account, to: Account, tokenId: u128) {
+    super();
     this.from = from;
     this.to = to;
     this.tokenId = tokenId;
@@ -18,12 +19,13 @@ import { Account, Bool, Crypto, msg, NullHash, ScaleString, SpreadStorableArray,
 /**
  * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
  */
-@event class Approval {
+@event class Approval extends Event {
   @topic owner: Account;
   @topic approved: Account;
   @topic tokenId: u128;
 
   constructor(owner: Account, approved: Account, tokenId: u128) {
+    super();
     this.owner = owner;
     this.approved = approved;
     this.tokenId = tokenId;
@@ -289,7 +291,7 @@ export class ERC721 {
     this._getHolderTokens(to).push(new UInt128(tokenId));
     this._tokenOwners.set(new UInt128(tokenId), to);
 
-    (new Transfer(Account.Null, to, tokenId));
+    (new Transfer(Account.Null, to, tokenId)).emit();
   }
 
   /**
@@ -325,7 +327,7 @@ export class ERC721 {
 
     this._tokenOwners.delete(tid);
 
-    (new Transfer(owner, Account.Null, tokenId));
+    (new Transfer(owner, Account.Null, tokenId)).emit();
   }
 
 
@@ -371,7 +373,7 @@ export class ERC721 {
 
     this._tokenOwners.set(tid, to);
 
-    (new Transfer(from, to, tokenId));
+    (new Transfer(from, to, tokenId)).emit();
   }
 
   /**
@@ -397,6 +399,6 @@ export class ERC721 {
 
   protected _approve(to: Account, tokenId: u128): void {
     this._tokenApprovals.set(new UInt128(tokenId), to);
-    (new Approval(this.ownerOf(tokenId), to, tokenId));
+    (new Approval(this.ownerOf(tokenId), to, tokenId)).emit();
   }
 }
