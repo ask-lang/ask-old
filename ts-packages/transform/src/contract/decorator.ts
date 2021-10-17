@@ -136,6 +136,20 @@ export class DocDecoratorNodeDef extends DecoratorNodeDef {
         this.doc = this.getProperty("desc", "string");
     }
 }
+
+export class SpreadDecoratorNodeDef extends DecoratorNodeDef {
+    constructor(decorator: DecoratorNode, public capacity = 0) {
+        super(decorator);
+        this.capacity = this.getIfAbsent("capacity", 0, "number");
+    }
+}
+
+export class PackDecoratorNodeDef extends DecoratorNodeDef {
+    constructor(decorator: DecoratorNode, public capacity = 0) {
+        super(decorator);
+        this.capacity = this.getIfAbsent("capacity", 0, "number");
+    }
+}
 export class MessageDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public payable = false,
         public mutates = true, public selector = "") {
@@ -168,6 +182,12 @@ export function toDecoratorDef(decorator: DecoratorNode): DecoratorNodeDef {
         }
         case ContractDecoratorKind.MESSAGE: {
             return new MessageDecoratorNodeDef(decorator);
+        }
+        case ContractDecoratorKind.SPREAD: {
+            return new SpreadDecoratorNodeDef(decorator);
+        }
+        case ContractDecoratorKind.PACKED: {
+            return new PackDecoratorNodeDef(decorator);
         }
     }
     return new DecoratorNodeDef(decorator);

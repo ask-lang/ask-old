@@ -53,7 +53,11 @@ export class DecoratorInfo {
             }
             if (kind == ContractDecoratorKind.PACKED) {
                 this.isPacked = true;
-                this.capacity = Number(decoratorNode.getIfAbsent("capacity", 0, "number"));
+                this.capacity = decoratorNode.getIfAbsent("capacity", 0, "number");
+            }
+            if (kind == ContractDecoratorKind.SPREAD) {
+                this.isPacked = false;
+                this.capacity = decoratorNode.getIfAbsent("capacity", 0, "number");
             }
         }
     }
