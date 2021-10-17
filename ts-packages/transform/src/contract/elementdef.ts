@@ -7,7 +7,6 @@ import {
     Element,
     FieldPrototype,
     FunctionPrototype,
-    Range,
     DecoratorNode,
     FunctionDeclaration
 } from "assemblyscript";
@@ -21,13 +20,11 @@ import { FieldDefHelper, TypeHelper } from "../utils/typeutil";
 import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
 import { Interpreter } from "./interpreter";
-import { DecoratorUtil } from "../utils/decoratorutil";
-import { getCustomDecoratorKind, getDecoratorDef, MessageDecoratorNodeDef, StateDecoratorNodeDef } from "./decorator";
+import { toDecoratorDef, MessageDecoratorNodeDef, StateDecoratorNodeDef } from "./decorator";
 import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "contract-metadata/src/layouts";
 
-// export class DocDecoratorNodeDef
 
-export class DecoratorsInfo {
+export class DecoratorInfo {
     decorators: DecoratorNode[] = [];
     ignore = true;
     isTopic = false;
@@ -41,12 +38,12 @@ export class DecoratorsInfo {
         }
         this.decorators = decorators;
         for (let decorator of this.decorators) {
-            let decoratorNode = getDecoratorDef(decorator);
-            let kind = getCustomDecoratorKind(decorator);
+            let decoratorNode = toDecoratorDef(decorator);
+            let kind = decoratorNode.kind;
             if (kind == ContractDecoratorKind.INTERNAL) {
                 continue;
             }
-            if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.TOPIC)) {
+            if (kind == ContractDecoratorKind.TOPIC) {
                 this.isTopic = true;
             }
             // if has no STATE decorator, ignore the field
@@ -54,11 +51,9 @@ export class DecoratorsInfo {
                 this.isLazy = (<StateDecoratorNodeDef>decoratorNode).lazy;
                 this.ignore = (<StateDecoratorNodeDef>decoratorNode).ignore;
             }
-            if (DecoratorUtil.isDecoratorKind(decorator, ContractDecoratorKind.PACKED)) {
+            if (kind == ContractDecoratorKind.PACKED) {
                 this.isPacked = true;
-                if (decoratorNode.hasProperty("capacity")) {
-                    this.capacity = Number(decoratorNode.getProperty("capacity"));
-                }
+                this.capacity = Number(decoratorNode.getIfAbsent("capacity", 0, "number"));
             }
         }
     }
@@ -70,13 +65,13 @@ export class FieldDef extends Interpreter {
     varName: string;
     lazy = false;
     declaration: FieldDeclaration;
-    decorators: DecoratorsInfo;
+    decorators: DecoratorInfo;
 
     constructor(prototype: FieldPrototype) {
         super(prototype);
         this.declaration = <FieldDeclaration>prototype.declaration;
         this.varName = "_" + this.name;
-        this.decorators = new DecoratorsInfo(this.element.declaration.decorators);
+        this.decorators = new DecoratorInfo(this.element.declaration.decorators);
         let storeKey = this.element.internalName + this.name;
         this.selector = new KeySelector(storeKey);
         this.lazy = this.decorators.isLazy;
@@ -189,10 +184,6 @@ export class ParameterNodeDef {
     }
 }
 
-
-
-
-
 export class FunctionDef extends Interpreter {
     declaration: FunctionDeclaration;
     parameters: ParameterNodeDef[] = [];
@@ -262,7 +253,6 @@ export class ConstructorDef extends FunctionDef {
 
 export class MessageFunctionDef extends FunctionDef {
     messageDecorator: MessageDecoratorNodeDef;
-    bodyRange: Range;
     mutatable = true;
     selector: KeySelector;
     metadata: MessageSpec;
@@ -275,10 +265,8 @@ export class MessageFunctionDef extends FunctionDef {
         this.messageDecorator = new MessageDecoratorNodeDef(msgDecorator!);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.selector = new KeySelector(this.name);
-        this.bodyRange = this.element.bodyNode!.range;
-        if (this.messageDecorator.mutates == "false") {
-            this.mutatable = false;
-        } 
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.mutatable = this.messageDecorator.mutates;
         if (this.messageDecorator.selector) {
             this.selector.setShortHex(this.messageDecorator.selector);
         }

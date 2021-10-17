@@ -1,7 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.APIOptionImpl = void 0;
-const preprocess_1 = require("./preprocess");
+const preprocess_1 = require("./preprocess/preprocess");
 const mkdirp = require("assemblyscript/cli/util/mkdirp");
 const path = require("path");
 const fs = require("fs");

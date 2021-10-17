@@ -6,7 +6,7 @@ import { AstUtil, RangeUtil } from "./utils";
 
 export class DecoratorUtil {
 
-    static isDecoratorKind(decorator: DecoratorNode, kind: ContractDecoratorKind): boolean {
+    static matchKind(decorator: DecoratorNode, kind: ContractDecoratorKind): boolean {
         return kind == getCustomDecoratorKind(decorator);
     }
 
@@ -19,29 +19,33 @@ export class DecoratorUtil {
         return false;
     }
 
+    /**
+     * Get the decorator of doc
+     * @param statement 
+     * @returns 
+     */
     public static getDoc(statement: DeclarationStatement): string[] {
         let decortor = AstUtil.getDocDecorator(statement);
         return decortor == null ? [Strings.EMPTY] : [new DocDecoratorNodeDef(decortor).doc];
     }
 
+    /**
+     * Check the selector
+     * @param decorator 
+     * @param selector 
+     * @returns 
+     */
     public static checkSelector(decorator: DecoratorNode, selector: string): void {
-        let isLegal = false;
         if (selector) {
             var re = /0x[0-9A-Fa-f]{8}/g;
             if (re.test(selector)) {
-                isLegal = true;
+                return ;
             }
         }
-        if (!isLegal) {
-            throw new Error(`Decorator: ${decorator.name.range.toString()} argument selector value should be start with 0x hex string(4 Bytes). Trace: ${RangeUtil.location(decorator.range)} `);
-        }
-    }
-
-    public static checkObjType(obj: any, typeName: string): boolean {
-        return typeof obj == typeName;
+        throw new Error(`Decorator: ${decorator.name.range.toString()} argument selector should be start with 0x hex string(4 Bytes). Check ${RangeUtil.location(decorator.range)}.`);
     }
 
     public static throwNoArguException(decorator: DecoratorNode, identifier: string): void {
-        throw new Error(`Decorator: ${decorator.name.range.toString()} should not contain argument ${identifier}. Trace: ${RangeUtil.location(decorator.range)} `);
+        throw new Error(`Decorator: ${decorator.name.range.toString()} don't contain argument ${identifier}. Check ${RangeUtil.location(decorator.range)}.`);
     }
 }

@@ -6,7 +6,6 @@ import { RangeUtil } from "../utils/utils";
 export enum DiagnosticCode {
     INHERIT_OVERRIDE_METHOD,
 }
-
 export class ContractDiagnostic implements DiagnosticMessage {
     code: number;
     category: number;
@@ -56,11 +55,7 @@ export class ProgramDiagnostic {
 
     private checkDuplicateStorableInstance(): void {
         let fields = this.contract.contract.fields;
-        // let stores = this.contract.storages;
         let countInstanceMap = new Map<string, number>();
-        // stores.forEach(item => {
-        //     countInstanceMap.set(item.element.internalName, 0);
-        // });
         fields.forEach(item => {
             let name = item.type.current.internalName;
             if (countInstanceMap.has(name)) {

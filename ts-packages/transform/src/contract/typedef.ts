@@ -38,7 +38,7 @@ export class BaseNamedTypeDef {
  * Argument type is generic type
  */
 export class NamedTypeNodeDef extends BaseNamedTypeDef {
-    current!: Element;
+    current: Element;
     typeKind: TypeKindEnum;
     typeArguments: NamedTypeNodeDef[] = [];
     plainType: string; // Main type name
@@ -59,7 +59,7 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
         this.typeKind = this.getTypeKind();
         this.abiType = TypeHelper.getAbiType(this.plainType);
         this.codecType = TypeHelper.getCodecType(this.current.name);
-        this.codecTypeAlias = this.getNameSpace() + this.codecType;
+        this.codecTypeAlias = this.getNamespace() + this.codecType;
         if (this.typeKind != TypeKindEnum.ARRAY && this.typeKind != TypeKindEnum.MAP) {
             this.plainTypeNode = this.codecTypeAlias;
             this.definedCodeType = this.codecType;
@@ -80,8 +80,11 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
         return this.definedCodeType + this.capacity;
     }
 
-
-    public getNameSpace(): string {
+    /**
+     * 
+     * @returns namespace that class belong to.
+     */
+    public getNamespace(): string {
         return this.typeKind == TypeKindEnum.USER_CLASS || this.typeKind == TypeKindEnum.ARRAY ? "" : CONFIG.scope;
     }
 
@@ -130,7 +133,7 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
     }
 
     private getCurrentElement(): Element {
-        this.plainType = TypeHelper.renameArrayType(this.plainType);
+        this.plainType = TypeHelper.renameIfArray(this.plainType);
         let element = this.parent.lookup(this.plainType)!;
         if (element) {
             return this.findBuildinElement(element);
@@ -158,7 +161,7 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
             return new NodeTypeInfo(false, type);
 
         } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-            let type = TypeHelper.getTypeKindFromUnCodec(buildinElement.name);
+            let type = TypeHelper.getTypeKindFromUncodec(buildinElement.name);
             if (type) {
                 return new NodeTypeInfo(false, type);
 
@@ -212,7 +215,7 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
             let name = definitionNode.name.range.toString();
             return TypeHelper.getTypeKindByName(name);
         } else if (element.kind == ElementKind.CLASS_PROTOTYPE) {
-            let type = TypeHelper.getTypeKindFromUnCodec(element.name);
+            let type = TypeHelper.getTypeKindFromUncodec(element.name);
             if (type) {
                 this.isCodec = false;
                 return type;

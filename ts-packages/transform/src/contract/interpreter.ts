@@ -1,6 +1,5 @@
 import { DeclaredElement, Range} from "assemblyscript";
 import { DecoratorUtil } from "../utils/decoratorutil";
-import { getCustomDecoratorKind, getDecoratorPairs } from "./decorator";
 
 export class Interpreter {
     element: DeclaredElement;
@@ -16,15 +15,4 @@ export class Interpreter {
         this.name = element.name;
         this.doc = DecoratorUtil.getDoc(this.element.declaration);
     }
-
-    // public getDecorator(kind: ContractDecoratorKind, key: string): string | boolean {
-    //     let val = "";
-    //     this.element.decoratorNodes?.filter(item => getCustomDecoratorKind(item) == kind).forEach(item => {
-    //         let pairs = getDecoratorPairs(item);
-    //         if (pairs.has(key)) {
-    //             val = pairs.get(key)!;
-    //         }
-    //     });
-    //     return val;
-    // }
 }

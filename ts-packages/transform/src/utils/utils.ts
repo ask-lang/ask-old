@@ -116,6 +116,7 @@ export class ElementUtil {
     }
 }
 export class AstUtil {
+
     static isVoid(type: NamedTypeNode): boolean {
         return type.name.range.toString() == "void";
     }
@@ -155,7 +156,7 @@ export class AstUtil {
     static getSpecifyDecorator(statement: DeclarationStatement, kind: ContractDecoratorKind): DecoratorNode | null {
         if (statement.decorators) {
             for (let decorator of statement.decorators) {
-                if (DecoratorUtil.isDecoratorKind(decorator, kind)) {
+                if (DecoratorUtil.matchKind(decorator, kind)) {
                     return decorator;
                 }
             }
@@ -168,16 +169,15 @@ export class AstUtil {
        * If the type name is string[], so the basic type name is string
        * @param declareType
        */
-    static getArrayTypeArgument(declareType: string): string {
+    static getArrayArgument(declareType: string): string {
         var bracketIndex = declareType.indexOf("[");
         if (bracketIndex != -1) {
-            let index = declareType.indexOf(" ") == -1 ? bracketIndex : declareType.indexOf(" ");
-            return declareType.substring(0, index);
+            return declareType.substring(0, bracketIndex).trim();
         }
         bracketIndex = declareType.indexOf("<");
         if (bracketIndex != -1) {
             let endIndex = declareType.indexOf(">");
-            return declareType.substring(bracketIndex + 1, endIndex);
+            return declareType.substring(bracketIndex + 1, endIndex).trim();
         }
         return declareType;
     }
@@ -207,7 +207,7 @@ export class AstUtil {
 
     static checkPublicModifier(declaration: DeclarationStatement): void {
         if (declaration.isAny(CommonFlags.PRIVATE)) {
-            throw new Error(`Method: ${declaration.name.range.toString()} should be public. Trace: ${RangeUtil.location(declaration.range)}.`);
+            throw new Error(`Decorator[@message] should mark on public method(Method: ${declaration.name.range.toString()} isn't public method). Check ${RangeUtil.location(declaration.range)}.`);
         }
     }
 }

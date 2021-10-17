@@ -26,13 +26,13 @@ function convertToCodec(typeNode: NamedTypeNodeDef, varname: string): string {
 
 function createDefaultCodec(typeNode: NamedTypeNodeDef): string {
     if (typeNode.typeKind == TypeKindEnum.NUMBER) {
-        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+        return `new ${typeNode.getNamespace()}${typeNode.codecType}()`;
     } else if (typeNode.typeKind == TypeKindEnum.STRING) {
-        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+        return `new ${typeNode.getNamespace()}${typeNode.codecType}()`;
     } else if (typeNode.typeKind == TypeKindEnum.BIG_NUM) {
-        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+        return `new ${typeNode.getNamespace()}${typeNode.codecType}()`;
     } else {
-        return `new ${typeNode.getNameSpace()}${typeNode.codecType}()`;
+        return `new ${typeNode.getNamespace()}${typeNode.codecType}()`;
     }
 }
 
@@ -137,11 +137,11 @@ Handlebars.registerHelper("storeGetter", function (field: FieldDef) {
         code.push(`get ${field.name}(): ${field.type.plainType} {`);
         code.push(`    if (this.${field.varName} === null) {`);
         if (field.decorators.ignore) {
-            code.push(`    this.${field.varName} = new ${field.type.getNameSpace()}${field.type.codecType}(); `);
+            code.push(`    this.${field.varName} = new ${field.type.getNamespace()}${field.type.codecType}(); `);
         } else {
             code.push(`         const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);
-            code.push(`         let val = st.load<${field.type.getNameSpace()}${field.type.codecType}>();`);
-            code.push(`         if (!val) this.${field.varName} = new ${field.type.getNameSpace()}${field.type.codecType}(); `);
+            code.push(`         let val = st.load<${field.type.getNamespace()}${field.type.codecType}>();`);
+            code.push(`         if (!val) this.${field.varName} = new ${field.type.getNamespace()}${field.type.codecType}(); `);
             code.push(`         else this.${field.varName} = val;`);
         }  
     }
@@ -172,7 +172,7 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
     let code: string[] = [];
     // ARRAY & MAP wasn't generated `set` method.
     if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
-        return code.join("\n");
+        return code.join(EOL);
     }
     code.push(`set ${field.name}(v: ${field.type.plainType}) {`);
 
@@ -195,7 +195,7 @@ Handlebars.registerHelper("storeSetter", function (field: FieldDef) {
         code.push(` }`);
     }
 
-    return code.join("\n");
+    return code.join(EOL);
 });
 
 /**
@@ -214,7 +214,7 @@ Handlebars.registerHelper("genCommitLazy", function (field: FieldDef) {
         code.push(`     st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
     }
     code.push(`      }`);
-    return code.join("\n");
+    return code.join(EOL);
 });
 
 
@@ -223,8 +223,8 @@ Handlebars.registerHelper("genCommitLazy", function (field: FieldDef) {
  *
  */
 Handlebars.registerHelper("constructor", function(event: EventInterpreter) {
-    if (event.constructorFun) {
-        return event.constructorFun.declaration.range.toString();
+    if (event.constructorFunc) {
+        return event.constructorFunc.declaration.range.toString();
     } else {
         let code =[];
         code.push(` constructor() {`);

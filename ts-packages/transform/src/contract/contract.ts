@@ -18,7 +18,7 @@ import { TypeKindEnum } from "../enums/customtype";
 
 export class ContractProgram {
     program: Program;
-    contract!: ContractInterpreter;
+    contract: ContractInterpreter;
     metatdata: ContractMetadata;
     events: EventInterpreter[] = [];
     dynamics: DynamicIntercepter[] = [];
@@ -30,7 +30,7 @@ export class ContractProgram {
 
     constructor(program: Program) {
         this.program = program;
-        this.setEntryContract();
+        this.contract = this.getEntryContract();
         this.resolveContract();
         this.genTypeSequence();
         this.getToGenCodecClass();
@@ -51,17 +51,19 @@ export class ContractProgram {
         return new MetadataGenerator(this).createMetadata();
     }
     
-    private setEntryContract(): void {
+    private getEntryContract(): ContractInterpreter {
         let contractNum = 0;
+        let contract: ContractInterpreter | null = null;
         this.program.elementsByName.forEach((element, _) => {
             if (ElementUtil.isTopContractClass(element)) {
                 contractNum++;
-                this.contract = new ContractInterpreter(<ClassPrototype>element);
+                contract = new ContractInterpreter(<ClassPrototype>element);
             }
         });
-        if (contractNum != 1) {
-            throw new Error(`The entry file should contain one '@contract', in fact it has ${contractNum}.`);
+        if (contract && contractNum == 1) {
+            return contract;
         }
+        throw new Error(`The entry file should contain one '@contract', in fact it has ${contractNum}.`);
     }
 
     private resolveContract(): void {
@@ -82,9 +84,7 @@ export class ContractProgram {
      * 
      */
     private genTypeSequence(): void {
-        if (this.contract) {
-            this.contract.genTypeSequence(this.typeDefByName);
-        }
+        this.contract.genTypeSequence(this.typeDefByName);
         this.events.forEach(event => {
             event.genTypeSequence(this.typeDefByName);
         });

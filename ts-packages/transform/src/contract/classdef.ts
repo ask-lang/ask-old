@@ -18,11 +18,7 @@ import {
 import { ElementUtil } from "../utils/utils";
 
 import { ConstructorDef, FieldDef, FunctionDef , MessageFunctionDef} from "./elementdef";
-import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "contract-metadata/src/layouts";
 import { NamedTypeNodeDef } from "./typedef";
-import { TypeHelper } from "../utils/typeutil";
-import { TypeKindEnum } from "../enums/customtype";
-import { KeySelector } from "../preprocess/selector";
 import { Interpreter } from "./interpreter";
 
 export interface Matadata {
@@ -37,10 +33,10 @@ export class ClassInterpreter extends Interpreter {
     instanceName: string;
     fields: FieldDef[] = [];
     functions: FunctionDef[] = [];
-    variousPrefix = "_";
+    varPrefix = "_";
     export = "";
     lastRange: Range;
-    constructorFun: FunctionDef | null = null;
+    constructorFunc: FunctionDef | null = null;
 
     constructor(public element: ClassPrototype) {
         super(element);
@@ -48,9 +44,9 @@ export class ClassInterpreter extends Interpreter {
         if (this.declaration.isAny(CommonFlags.EXPORT)) {
             this.export = "export ";
         }
-        this.instanceName = this.variousPrefix + this.name.toLowerCase();
+        this.instanceName = this.varPrefix + this.name.toLowerCase();
         if (this.element.constructorPrototype != null) {
-            this.constructorFun = new FunctionDef(this.element.constructorPrototype);
+            this.constructorFunc = new FunctionDef(this.element.constructorPrototype);
         }
         let len = this.declaration.members.length;
         this.lastRange = this.declaration.members[len -1].range;
@@ -73,7 +69,7 @@ export class ClassInterpreter extends Interpreter {
                     if (!func.isConstructor) {
                         this.functions.push(func);
                     } else {
-                        this.constructorFun = func;
+                        this.constructorFunc = func;
                     }
                 }
             });
@@ -184,62 +180,6 @@ export class EventInterpreter extends ClassInterpreter implements Matadata {
         return new EventSpec(this.name, eventParams, []);
     }
 }
-
-export class StorageInterpreter extends ClassInterpreter  {
-    constructor(clzPrototype: ClassPrototype) {
-        super(clzPrototype);
-        this.resolveFieldMembers();
-    }
-
-    createMetadata(): FieldLayout[] {
-        return this.fields.filter(item => item.decorators.ignore == false)
-            .map(field => this.getFiledLayout(field));
-    }
-
-    private getFiledLayout(field: FieldDef): FieldLayout {
-        if (TypeHelper.isPrimitiveType(field.type.typeKind)) {
-            let layout = new CellLayout(field.selector.hex, field.type.index);
-            return new FieldLayout(field.name, layout);
-        } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
-            let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
-            let lenFieldLayout = new FieldLayout("len", lenCellLayout);
-
-            let arrLayout = new ArrayLayout(field.selector.key, field.type.capacity, 1, lenCellLayout);
-            let arrFiledLayout = new FieldLayout("elems", arrLayout);
-
-            let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
-            return new FieldLayout(field.name, arrStruct);
-        } else if (field.type.typeKind == TypeKindEnum.USER_CLASS) {
-            if (field.type.plainType == "Account") {
-                let lenCellLayout = new CellLayout(new KeySelector(field.selector.key + field.type.capacity).hex, field.type.index);
-                let lenFieldLayout = new FieldLayout("len", lenCellLayout);
-                let arrLayout = new ArrayLayout(new KeySelector(field.selector.key + ".length").hex, field.type.capacity, 1, lenCellLayout);
-                let arrFiledLayout = new FieldLayout("elems", arrLayout);
-                let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
-                return new FieldLayout(field.name, arrStruct);
-            }
-        } else if (field.type.typeKind == TypeKindEnum.MAP) {
-            let strategy = new HashingStrategy(CryptoHasher.Blake2x256,
-                field.selector.hex, "");
-            let valType = field.type.typeArguments[1];
-            let valLayout = new CellLayout(new KeySelector(field.selector.key + ".value").hex, valType.index);
-            let valHash = new HashLayout(field.selector.hex, strategy, valLayout);
-            let valFieldLayout = new FieldLayout("values", valHash);
-
-            let keyType = field.type.typeArguments[0];
-            let keyLayout = new CellLayout(new KeySelector(field.selector.key + ".key").hex, keyType.index);
-            let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout);
-            let keyFieldLayout = new FieldLayout("values", keyHash);
-
-            let mapLayout = new StructLayout([keyFieldLayout, valFieldLayout]);
-            return new FieldLayout(field.name, mapLayout);
-        }
-        let layout = new CellLayout(field.selector.hex, field.type.index);
-        return new FieldLayout(field.name, layout);
-    }
-
-}
-
 export class DynamicIntercepter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);

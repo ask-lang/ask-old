@@ -2,7 +2,7 @@ import { CharCode, DecoratorKind, DecoratorNode, Expression, IdentifierExpressio
 import { ContractDecoratorKind } from "../enums/decorator";
 import { DecoratorUtil } from "../utils/decoratorutil";
 import { Strings } from "../utils/primitiveutil";
-import { AstUtil, RangeUtil } from "../utils/utils";
+import { RangeUtil } from "../utils/utils";
 
 function fromNode(nameNode: Expression): ContractDecoratorKind {
     if (nameNode.kind == NodeKind.IDENTIFIER) {
@@ -69,48 +69,14 @@ export function getSimilarityDecorator(name: string): string {
     }
     return possibleDecorator;
 }
-
-
-export function toPairs(decorator: DecoratorNode): Map<string, string> {
-    let pairs = new Map<string, string>();
-
-    decorator.args && decorator.args.forEach(expression => {
-        if (expression.kind == NodeKind.BINARY) {
-            let identifier = AstUtil.getIdentifier(expression);
-            let val = AstUtil.getBinaryExprRight(expression);
-            pairs.set(identifier, val.trim());
-        }
-        // Todo using the strict logical
-        if (expression.kind == NodeKind.LITERAL) {
-            let exp = expression.range.toString().trim();
-            let regex = new RegExp(/{|}|,/);
-            regex.test(exp);
-            let result = Strings.splitString(exp, regex);
-            for (let item of result) {
-                let pairItem = item.split(/:/);
-                pairs.set(pairItem[0].trim(), pairItem[1].trim());
-            }
-        }
-    });
-    return pairs;
-}
-
-function checkDecoratorField(map: Map<string, string>, key: string, required: boolean, regex: RegExp, defaultVal: string): void {
-    if (required && !map.has(key)) {
-        throw Error(`field ${key} is not exist.`);
-    }
-    if (map.has(key)) {
-        let val = map.get(key)!;
-        if (!regex.test(val)) {
-            throw Error(`filed ${key} should match the pattern ${regex}`);
-        }
-    } else {
-        map.set(key, defaultVal);
-    }
-}
 export class DecoratorNodeDef {
     jsonObj: any;
+    kind: ContractDecoratorKind;
     constructor(public decorator: DecoratorNode) {
+        this.kind = getCustomDecoratorKind(decorator);
+        if (this.kind == ContractDecoratorKind.INTERNAL) {
+            return ;
+        }
         this.jsonObj = this.parseToJson(decorator);
     }
 
@@ -129,6 +95,10 @@ export class DecoratorNodeDef {
         throw new Error(`The decorator parameter isn't pre-defined format. Check ${RangeUtil.location(decorator.range)}.`);
     }
 
+    isTypeOf(obj: any, typeName: string): boolean {
+        return typeof obj == typeName;
+    }
+
     hasProperty(key: string): boolean {
         return this.jsonObj.hasOwnProperty(key);
     }
@@ -136,7 +106,7 @@ export class DecoratorNodeDef {
     getProperty(key: string, type = ""): any {
         if (this.hasProperty(key)) {
             let obj = this.jsonObj[key];
-            if (type && !DecoratorUtil.checkObjType(obj, type)) {
+            if (type && !this.isTypeOf(obj, type)) {
                 throw new Error(`Decorator: ${this.decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(this.decorator.range)} `);
             }
             return obj;
@@ -145,15 +115,15 @@ export class DecoratorNodeDef {
         }
     }
 
-    getIfAbsent(key: string, obj: any, type = ""): any {
+    getIfAbsent(key: string, defaultVal: any, type = ""): any {
         if (this.hasProperty(key)) {
             let obj = this.jsonObj[key];
-            if (type && !DecoratorUtil.checkObjType(obj, type)) {
+            if (type && !this.isTypeOf(obj, type)) {
                 throw new Error(`Decorator: ${this.decorator.name.range.toString()} argument mutates value should be false. Trace: ${RangeUtil.location(this.decorator.range)} `);
             }
             return obj;
         }
-        return obj;
+        return defaultVal;
     }
 }
 
@@ -188,7 +158,7 @@ export class StateDecoratorNodeDef extends DecoratorNodeDef {
     }
 }
 
-export function getDecoratorDef(decorator: DecoratorNode): DecoratorNodeDef {
+export function toDecoratorDef(decorator: DecoratorNode): DecoratorNodeDef {
     switch (getCustomDecoratorKind(decorator)) {
         case ContractDecoratorKind.STATE: {
             return new StateDecoratorNodeDef(decorator);

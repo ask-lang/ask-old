@@ -6,7 +6,7 @@ import { AstUtil } from "./utils";
 
 export class TypeHelper {
 
-    static codecTypes = ["Int8", "Int16", "Int32", "Int64", "Int128", "UInt8", "UInt16", "UInt32", "UInt64"];
+    private static codecTypes = ["Int8", "Int16", "Int32", "Int64", "Int128", "UInt8", "UInt16", "UInt32", "UInt64"];
 
     static nativeType = ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "boolean"];
 
@@ -38,7 +38,7 @@ export class TypeHelper {
      * @param name 
      * @returns 
      */
-    static renameArrayType(name: string): string {
+    static renameIfArray(name: string): string {
         if (name.replace(/ /g, "") == `[]`) {
             return 'Array';
         }
@@ -111,7 +111,7 @@ export class TypeHelper {
      * @param typeName 
      * @returns 
      */
-    static getTypeKindFromUnCodec(typeName: string): TypeKindEnum | null {
+    static getTypeKindFromUncodec(typeName: string): TypeKindEnum | null {
         if (typeName == "void") {
             return TypeKindEnum.VOID;
         }
@@ -161,7 +161,6 @@ export class TypeHelper {
         if (TypeHelper.bigNumCodecType.includes(typeName)) {
             return TypeKindEnum.BIG_NUM;
         }
-
         return TypeKindEnum.USER_CLASS;
     }
 }
@@ -190,7 +189,7 @@ export class FieldDefHelper {
      */
     static getStorableExport(field: FieldDef): string {
         let typeArgs = field.type.typeArguments.map(item => item.codecType).join(",");
-        let plainVarious = `${field.type.getNameSpace()}${field.type.plainType}<${typeArgs}>`;
+        let plainVarious = `${field.type.getNamespace()}${field.type.plainType}<${typeArgs}>`;
         return plainVarious;
     }
 }
