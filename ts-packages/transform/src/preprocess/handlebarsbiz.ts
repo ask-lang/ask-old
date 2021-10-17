@@ -1,6 +1,6 @@
 import Handlebars from "./handlebarsfunc";
 import { CONFIG } from "../config/compile";
-import { ClassInterpreter, EventInterpreter } from "../contract/classdef";
+import { ClassInterpreter, ContractInterpreter, EventInterpreter } from "../contract/classdef";
 import { FieldDef, FunctionDef } from "../contract/elementdef";
 import { NamedTypeNodeDef } from "../contract/typedef";
 import { TypeKindEnum } from "../enums/customtype";
@@ -214,6 +214,18 @@ Handlebars.registerHelper("genCommitLazy", function (field: FieldDef) {
         code.push(`     st.store<${field.type.codecTypeAlias}>(this.${field.varName}!);`);
     }
     code.push(`      }`);
+    return code.join(EOL);
+});
+
+
+/**
+ * Generate the commit storage command
+ * 
+ */
+Handlebars.registerHelper("commitParent", function (contract: ContractInterpreter) {
+    if (contract.parentContract.length == 0) return "";
+    let code: string[] = [];
+    code.push("super.__commit_storage__();");
     return code.join(EOL);
 });
 

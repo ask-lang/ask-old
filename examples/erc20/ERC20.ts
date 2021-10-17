@@ -33,8 +33,8 @@ class Transfer extends Event {
 
 @contract
 export class ERC20 {
-  // @state balances: SpreadStorableMap<Account, UInt128>;
-  // @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
+//   @state balances: SpreadStorableMap<Account, UInt128>;
+//   @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
   @state balances: SpreadStorableMap<Account, UInt128> = new SpreadStorableMap<Account, UInt128>();
   @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
 

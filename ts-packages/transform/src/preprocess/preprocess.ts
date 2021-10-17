@@ -62,9 +62,15 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     console.log(store + storeCommit);
     sourceModifier.addModifyPoint(new ModifyPoint(contractInfo.contract.lastRange, ModifyType.INSERT, store + storeCommit));
     
-    contractInfo.contract.fields.forEach(item => {
+    contractInfo.contract.storeFields.forEach(item => {
         let field = Handlebars.compile(storeFieldTpl)(item);
         sourceModifier.addModifyPoint(new ModifyPoint(item.range, ModifyType.REPLACE, field));
+    });
+
+    contractInfo.contract.parentContract.forEach(item => {
+        let store = Handlebars.compile(storeTpl)(item);
+        let storeCommit = Handlebars.compile(storeCommitTpl)(item);
+        sourceModifier.addModifyPoint(new ModifyPoint(item.lastRange, ModifyType.INSERT, store + storeCommit));
     });
 
     contractInfo.events.forEach(event => {

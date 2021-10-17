@@ -9,7 +9,9 @@ export const storeTpl = `
 export const storeFieldTpl = `private {{varName}}: {{{type.plainTypeNode}}} | null = null`;
 
 export const storeCommitTpl = `
-  __commit_storage__(): void {
+  __commit_storage__(): void {    
+    {{{commitParent .}}}
+
     {{#each fields}}
     {{{genCommitLazy .}}}
     {{/each}}

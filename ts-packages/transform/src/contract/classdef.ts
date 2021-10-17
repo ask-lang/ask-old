@@ -101,6 +101,8 @@ export class ContractInterpreter extends ClassInterpreter {
      */
     storeFields: FieldDef[] = [];
 
+    parentContract: ContractInterpreter[] = [];
+
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.resolveFieldMembers();
@@ -131,6 +133,7 @@ export class ContractInterpreter extends ClassInterpreter {
     private resolveBaseClass(classPrototype: ClassPrototype): void {
         if (classPrototype.basePrototype) {
             let basePrototype = classPrototype.basePrototype;
+            this.parentContract.push(new ContractInterpreter(basePrototype));
             basePrototype.instanceMembers &&
                 basePrototype.instanceMembers.forEach((instance, _) => {
                     if (ElementUtil.isMessageFuncPrototype(instance)) {
