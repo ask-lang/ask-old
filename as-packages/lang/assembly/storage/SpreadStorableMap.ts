@@ -67,7 +67,7 @@ class MapStorage<K extends Codec, V extends Codec> {
     delete(key: K): bool {
         let k = this.findKeyInner(key);
         if (k) {
-            this.valueSlots.delete(k!); // sure
+            this.valueSlots.delete(k); // sure
             this.statusSlots.set(k, STATUS_DELETED);
         }
 

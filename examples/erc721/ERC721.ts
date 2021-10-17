@@ -1,4 +1,4 @@
-import { Account, Bool, msg, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
+import { Account, Bool, Crypto, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
 
 /**
   * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
@@ -49,21 +49,21 @@ import { Account, Bool, msg, ScaleString, SpreadStorableArray, SpreadStorableMap
 @contract
 export class ERC721 {
   // Mapping from holder address to their (enumerable) set of owned tokens
-  @state _holderTokens: SpreadStorableMap<Account, SpreadStorableArray<UInt128>>;
+  @state _holderTokens: SpreadStorableMap<Account, SpreadStorableArray<UInt128>> = new SpreadStorableMap<Account, SpreadStorableArray<UInt128>>();
   // Enumerable mapping from token ids to their owners
-  @state _tokenOwners: SpreadStorableMap<UInt128, Account>;
+  @state _tokenOwners: SpreadStorableMap<UInt128, Account> = new SpreadStorableMap<UInt128, Account>();
   // Mapping from token ID to approved address
-  @state _tokenApprovals: SpreadStorableMap<UInt128, Account>;
+  @state _tokenApprovals: SpreadStorableMap<UInt128, Account> = new SpreadStorableMap<UInt128, Account>();
   // Mapping from owner to operator approvals
-  @state _operatorApprovals: SpreadStorableMap<Account, SpreadStorableMap<Account, Bool>>;
+  @state _operatorApprovals: SpreadStorableMap<Account, SpreadStorableMap<Account, Bool>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, Bool>>();
   // Token name
-  @state _name: string;
+  @state _name: string = "";
   // Token symbol
-  @state _symbol: string;
+  @state _symbol: string = "";
   // Optional mapping for token URIs
-  @state _tokenURIs: SpreadStorableMap<UInt128, ScaleString>;
+  @state _tokenURIs: SpreadStorableMap<UInt128, ScaleString> = new SpreadStorableMap<UInt128, ScaleString>();
   // Base URI
-  @state _baseURI: string;
+  @state _baseURI: string = "";
 
   constructor() {
   }
@@ -83,7 +83,7 @@ export class ERC721 {
   balanceOf(owner: Account): i32 {
     assert(owner.notEq(Account.Null), "ERC721: balance query for the zero address");
 
-    return this._holderTokens.get(owner).length;
+    return this._holderTokens.get(owner)!.length;
   }
 
   /**
@@ -92,7 +92,7 @@ export class ERC721 {
   @message({"mutates": false})
   ownerOf(tokenId: u128): Account {
     assert(this._exists(tokenId), "ERC721: owner query for nonexistent token")
-    return this._tokenOwners.get(new UInt128(tokenId));
+    return this._tokenOwners.get(new UInt128(tokenId))!;
   }
 
   /**
@@ -119,7 +119,7 @@ export class ERC721 {
     assert(this._exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
     let id = new UInt128(tokenId);
-    let tokenURI = this._tokenURIs.get(id).toString();
+    let tokenURI = this._tokenURIs.get(id)!.toString();
 
     // If there is no base URI, return the token URI.
     if (this._baseURI.length == 0) return tokenURI;
@@ -144,7 +144,7 @@ export class ERC721 {
    */
   @message({"mutates": false})
   tokenOfOwnerByIndex(owner: Account, index: i32): u128 {
-    return this._holderTokens.get(owner).at(index).unwrap();
+    return this._holderTokens.get(owner)!.at(index)!.unwrap();
   }
 
   /**
@@ -185,7 +185,7 @@ export class ERC721 {
   getApproved(tokenId: u128): Account {
     assert(this._exists(tokenId), "ERC721: approved query for nonexistent token");
 
-    return this._tokenApprovals.get(new UInt128(tokenId));
+    return this._tokenApprovals.get(new UInt128(tokenId))!;
   }
 
   /**
@@ -193,9 +193,9 @@ export class ERC721 {
    */
   private _getOperatorApprovals(operator: Account): SpreadStorableMap<Account, Bool> {
     let approvals = this._operatorApprovals.get(operator);
-    if (approvals.entryKey == "") {
-      let key = this._operatorApprovals.entryKey + operator.toString();
-      approvals = new SpreadStorableMap<Account, Bool>(key);
+    if (!approvals || approvals.entryKey == NullHash) {
+      let key = this._operatorApprovals.entryKey.toString() + operator.toString();
+      approvals = new SpreadStorableMap<Account, Bool>(Crypto.blake256s(key));
       this._operatorApprovals.set(operator, approvals);
     }
     return approvals;
@@ -214,7 +214,7 @@ export class ERC721 {
    */
   @message({"mutates": false})
   isApprovedForAll(owner: Account, operator: Account): bool {
-    return this._operatorApprovals.get(owner).get(operator).unwrap();
+    return this._operatorApprovals.get(owner)!.get(operator)!.unwrap();
   }
 
   /**
@@ -310,14 +310,14 @@ export class ERC721 {
 
     // Clear metadata (if any)
     let tid = new UInt128(tokenId);
-    let uri = this._tokenURIs.get(tid).toString();
+    let uri = this._tokenURIs.get(tid)!.toString();
     if (uri.length != 0) {
       this._tokenURIs.delete(tid);
     }
 
     let tokensOfOwner = this._getHolderTokens(owner);
     for (let i = 0; i < tokensOfOwner.length; i++) {
-      if (tokensOfOwner[i].eq(tid)) {
+      if (tokensOfOwner[i]!.eq(tid)) {
         tokensOfOwner.delete(i);
         break;
       }
@@ -342,9 +342,9 @@ export class ERC721 {
    */
   private _getHolderTokens(to: Account): SpreadStorableArray<UInt128> {
     let list = this._holderTokens.get(to);
-    if (list.entryKey == "") {
-      let key = this._holderTokens.entryKey + to.toString();
-      list = new SpreadStorableArray<UInt128>(key);
+    if (!list || list.entryKey == NullHash) {
+      let key = this._holderTokens.entryKey.toString() + to.toString();
+      list = new SpreadStorableArray<UInt128>(Crypto.blake256s(key));
       this._holderTokens.set(to, list);
     }
     return list;
@@ -360,7 +360,7 @@ export class ERC721 {
     let tid = new UInt128(tokenId);
     let tokensOfOwner = this._getHolderTokens(from);
     for (let i = 0; i < tokensOfOwner.length; i++) {
-      if (tokensOfOwner[i].eq(tid)) {
+      if (tokensOfOwner[i]!.eq(tid)) {
         tokensOfOwner.delete(i);
         break;
       }

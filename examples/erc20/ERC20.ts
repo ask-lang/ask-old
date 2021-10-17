@@ -33,10 +33,10 @@ class Transfer extends Event {
 
 @contract
 export class ERC20 {
-  @state balances: SpreadStorableMap<Account, UInt128>;
-  @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
-  // @state balances: SpreadStorableMap<Account, UInt128> = new SpreadStorableMap<Account, UInt128>();
-  // @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
+  // @state balances: SpreadStorableMap<Account, UInt128>;
+  // @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
+  @state balances: SpreadStorableMap<Account, UInt128> = new SpreadStorableMap<Account, UInt128>();
+  @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
 
   @state totalSupply: u128 = u128.Zero;
   @state name_: string = "";
@@ -44,8 +44,8 @@ export class ERC20 {
   @state decimal_: u8 = 0;
 
   constructor() {
-    this.balances = new SpreadStorableMap<Account, UInt128>();
-    this.allowances = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
+    // this.balances = new SpreadStorableMap<Account, UInt128>();
+    // this.allowances = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
   }
 
   @constructor

@@ -100,7 +100,7 @@ export class SpreadStorableArray<T extends Codec> implements Codec {
     [key: number]: T;
 
     protected keyPrefix: Hash;
-    protected arrayStorage: ArrayStorage<T>;
+    protected arrayStorage: ArrayStorage<T> = new ArrayStorage(0, 0);
     protected isLazy: bool;
 
     constructor(prefix: Hash = NullHash, lazy: bool = true, capacity: i32 = 0) {
