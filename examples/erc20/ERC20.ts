@@ -59,22 +59,22 @@ export class ERC20 {
   }
 
   @message({"mutates": false})
-  get name(): string {
+  name(): string {
     return this.name_;
   }
 
   @message({ "mutates": false })
-  get symbol(): string {
+  symbol(): string {
     return this.symbol_;
   }
 
   @message({ "mutates": false })
-  get decimal(): u8 {
+  decimal(): u8 {
     return this.decimal_;
   }
 
   @message({ "mutates": false })
-  get supply(): u128 {
+  supply(): u128 {
     return this.totalSupply;
   }
 
