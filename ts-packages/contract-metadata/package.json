@@ -1,5 +1,5 @@
 {
-  "name": "patractlabs-contract-metadata",
+  "name": "contract-metadata",
   "version": "0.1.0",
   "description": "Metadata specs for substrate smart contract",
   "main": "index.js",

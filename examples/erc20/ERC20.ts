@@ -1,6 +1,6 @@
-import { Account, SpreadStorableMap, u128, UInt128, msg } from "ask-lang";
+import { Account, SpreadStorableMap, u128, UInt128, msg, Event, NullHash, Crypto } from "ask-lang";
 @event
-class Approval {
+class Approval extends Event {
     @topic owner: Account;
     @topic spender: Account;
 
@@ -8,9 +8,26 @@ class Approval {
 
 
     constructor(owner: Account, spender: Account, value: u128) {
-        this.owner = owner;
-        this.spender = spender;
-        this.value = value;
+      super();
+      this.owner = owner;
+      this.spender = spender;
+      this.value = value;
+    }
+}
+
+@event
+class Transfer extends Event {
+    @topic from: Account;
+    @topic to: Account;
+
+    amount: u128;
+
+
+    constructor(from: Account, to: Account, amount: u128) {
+      super();
+      this.from = from;
+      this.to = to;
+      this.amount = amount;
     }
 }
 
@@ -18,36 +35,42 @@ class Approval {
 export class ERC20 {
   @state balances: SpreadStorableMap<Account, UInt128>;
   @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
+  // @state balances: SpreadStorableMap<Account, UInt128> = new SpreadStorableMap<Account, UInt128>();
+  // @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
 
-  @state totalSupply: u128 = 0;
-  @state name: string = "";
-  @state symbol: string = ""
-  @state decimal: u8 = 0;
+  @state totalSupply: u128 = u128.Zero;
+  @state name_: string = "";
+  @state symbol_: string = ""
+  @state decimal_: u8 = 0;
 
   constructor() {
+    this.balances = new SpreadStorableMap<Account, UInt128>();
+    this.allowances = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
   }
 
   @constructor
   default(name: string = "", symbol: string = ""): void {
-    this.name = name;
-    this.symbol = symbol;
-    this.decimal = 18;
+    // this.balances = new SpreadStorableMap<Account, UInt128>();
+    // this.allowances = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
+    this.name_ = name;
+    this.symbol_ = symbol;
+    this.decimal_ = 18;
     this.totalSupply = u128.Zero;
   }
 
   @message({"mutates": false})
   get name(): string {
-    return this.name;
+    return this.name_;
   }
 
   @message({ "mutates": false })
   get symbol(): string {
-    return this.symbol;
+    return this.symbol_;
   }
 
   @message({ "mutates": false })
   get decimal(): u8 {
-    return this.decimal;
+    return this.decimal_;
   }
 
   @message({ "mutates": false })
@@ -57,7 +80,7 @@ export class ERC20 {
 
   @message({ "mutates": false })
   balanceOf(account: Account): u128 {
-    return this.balances.get(account).unwrap();
+    return this.balances.get(account)!.unwrap();
   }
 
   @message
@@ -69,7 +92,7 @@ export class ERC20 {
 
   @message({ "mutates": false })
   allowance(owner: Account, spender: Account): u128 {
-    return this.allowances.get(owner).get(spender).unwrap();
+    return this.allowances.get(owner)!.get(spender)!.unwrap();
   }
 
   @message
@@ -82,7 +105,7 @@ export class ERC20 {
   transferFrom(sender: Account, recipient: Account, amount: u128): bool {
     this._transfer(sender, recipient, amount);
     let allow = this.getAllowanceItem(sender);
-    let leftAllowance: u128 = allow.get(msg.sender).unwrap();
+    let leftAllowance: u128 = allow.get(msg.sender)!.unwrap();
     assert(leftAllowance >= amount, "allowance overflow");
     leftAllowance = leftAllowance - amount;
     this._approve(sender, msg.sender, leftAllowance);
@@ -92,7 +115,7 @@ export class ERC20 {
   @message
   increaseAllowance(spender: Account, addedValue: u128): bool {
     let info = this.getAllowanceItem(msg.sender);
-    let leftAllowance: u128 = info.get(spender).unwrap();
+    let leftAllowance: u128 = info.get(spender)!.unwrap();
     leftAllowance = leftAllowance + addedValue;
     this._approve(msg.sender, spender, leftAllowance);
     return true;
@@ -100,7 +123,7 @@ export class ERC20 {
 
   @message
   decreaseAllowance(spender: Account, subtractedValue: u128): bool {
-    let info = this.getAllowanceItem(msg.sender)!;
+    let info = this.getAllowanceItem(msg.sender);
     let leftAllowance: u128 = info.get(spender)!.unwrap();
     assert(leftAllowance >= subtractedValue, "substract value over flow.");
     leftAllowance = leftAllowance - subtractedValue;
@@ -109,7 +132,7 @@ export class ERC20 {
   }
 
   protected _setupDecimals(decimals_: u8): void {
-    this.decimal = decimals_;
+    this.decimal_ = decimals_;
   }
 
   protected _mint(account: Account, amount: u128): void {
@@ -156,8 +179,8 @@ export class ERC20 {
 
   private getAllowanceItem(key: Account): SpreadStorableMap<Account, UInt128> {
     let item = this.allowances.get(key)!;
-    if (item.entryKey == "") {
-      item.entryKey = key.toString();
+    if (item.entryKey == NullHash) {
+      item.entryKey = Crypto.blake256(key);
       this.allowances.set(key, item);
     }
     return item;

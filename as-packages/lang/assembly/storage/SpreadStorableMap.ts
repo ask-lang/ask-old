@@ -28,7 +28,11 @@ class MapStorage<K extends Codec, V extends Codec> {
 
     size(): i32 { return this.keys().length; }
 
-    contains(key: K): bool { return this.findKeyInner(key) != null; }
+    contains(key: K): bool {
+        let k = this.findKeyInner(key);
+        if (k) return true;
+        else return false;
+    }
 
     findKeyInner(key: K): K | null {
         let keysInner = this.keys();
