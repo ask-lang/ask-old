@@ -207,7 +207,7 @@ Handlebars.registerHelper("genCommitLazy", function (field: FieldDef) {
     let code: string[] = [];
     if (field.type.typeKind == TypeKindEnum.ARRAY || field.type.typeKind == TypeKindEnum.MAP) {
         code.push(`      if (this.${field.varName} !== null) {`);
-        code.push(`          this.${field.varName}.__commit_storage__();`);
+        code.push(`          this.${field.varName}!.__commit_storage__();`);
     } else {
         code.push(`      if (this.${field.varName} !== null) {`);
         code.push(`     const st = new ${scope}Storage(new ${scope}Hash(${field.selector.hexArr}));`);

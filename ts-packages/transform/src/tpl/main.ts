@@ -23,6 +23,9 @@ export function deploy(): i32 {
 
 export function call(): i32 {
   const {{contract.instanceName}} = new {{contract.name}}();
+
+  do {
+
   {{#each contract.msgFuncDefs}}
   const {{name}}Selector: u8[] = {{selector.shortArr}};
   if (${scope}msg.isSelector({{name}}Selector)) {
@@ -43,7 +46,10 @@ export function call(): i32 {
     {{#unless isReturnable}}
     {{../contract.instanceName}}.{{name}}({{#joinParams parameters}}{{/joinParams}});
     {{/unless}}
+    break;
   }
   {{/each}}
+  } while(0);
+  {{contract.instanceName}}.__commit_storage__();
   return 0;
 }`;
