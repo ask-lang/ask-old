@@ -50,13 +50,13 @@ export function getCustomDecoratorKind(decorator: DecoratorNode): ContractDecora
     }
     let kind = fromNode(decorator.name);
     if (kind == ContractDecoratorKind.OTHER) {
-        let name = getSimilarityDecorator(decorator.name.range.toString());
+        let name = getSimilarDecorator(decorator.name.range.toString());
         throw new Error(`Unsupported contract decorator ${decorator.name.range.toString()}, do you mean '@${name}'? Check ${RangeUtil.location(decorator.range)}`);
     }
     return kind;
 }
 
-export function getSimilarityDecorator(name: string): string {
+export function getSimilarDecorator(name: string): string {
     let possibleDecorator = "";
     let percentOfSimilar = 0;
     let innerDecorators = ["contract", "constructor", "doc", "dynamic", "event", "message", "packed", "spread", "state", "topic"];

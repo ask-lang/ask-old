@@ -1,5 +1,4 @@
-import { AstUtil } from "../transform/src/utils/utils";
-
+import { AstUtil } from "../utils/utils";
 
 describe("Test AstUtil", () => {
 

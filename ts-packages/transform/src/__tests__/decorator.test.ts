@@ -1,5 +1,5 @@
-import { getSimilarityDecorator } from "../transform/src/contract/decorator";
-import { Strings } from "../transform/src/utils/primitiveutil";
+import { getSimilarDecorator } from "../contract/decorator";
+import { Strings } from "../utils/primitiveutil";
 
 describe("Test Decorator", () => {
     
@@ -15,7 +15,7 @@ describe("Test Decorator", () => {
     });
 
     test("test decorator similarity", () => {
-        let rst = getSimilarityDecorator("massage");
+        let rst = getSimilarDecorator("massage");
         expect(rst).toBe("message");
     });
 });

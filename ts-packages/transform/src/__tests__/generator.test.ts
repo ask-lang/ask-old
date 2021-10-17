@@ -1,6 +1,6 @@
-import { TypeKindEnum } from "../transform/src/enums/customtype";
-import { IndexSelector } from "../transform/src/preprocess/selector";
-import { TypeHelper } from "../transform/src/utils/typeutil";
+import { TypeKindEnum } from "../enums/customtype";
+import { IndexSelector } from "../preprocess/selector";
+import { TypeHelper } from "../utils/typeutil";
 
 describe("Test generator", () => {
 
