@@ -223,7 +223,7 @@ Handlebars.registerHelper("genCommitLazy", function (field: FieldDef) {
  * 
  */
 Handlebars.registerHelper("commitParent", function (contract: ContractInterpreter) {
-    if (contract.parentContract.length == 0) return "";
+    if (contract.parentContracts.length == 0) return "";
     let code: string[] = [];
     code.push("super.__commit_storage__();");
     return code.join(EOL);

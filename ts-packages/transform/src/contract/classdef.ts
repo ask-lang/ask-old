@@ -100,8 +100,10 @@ export class ContractInterpreter extends ClassInterpreter {
      * The store field
      */
     storeFields: FieldDef[] = [];
-
-    parentContract: ContractInterpreter[] = [];
+    /**
+     * the parent interprecter
+     */
+    parentContracts: ContractInterpreter[] = [];
 
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
@@ -133,18 +135,20 @@ export class ContractInterpreter extends ClassInterpreter {
     private resolveBaseClass(classPrototype: ClassPrototype): void {
         if (classPrototype.basePrototype) {
             let basePrototype = classPrototype.basePrototype;
-            this.parentContract.push(new ContractInterpreter(basePrototype));
+            let parentContract = new ContractInterpreter(basePrototype);
+            this.parentContracts.push(parentContract);
+
+            parentContract.fields.forEach(item => {
+                if (!item.decorators.ignore) {
+                    this.storeFields.push(item);
+                }
+            });
+
             basePrototype.instanceMembers &&
                 basePrototype.instanceMembers.forEach((instance, _) => {
                     if (ElementUtil.isMessageFuncPrototype(instance)) {
                         let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                         this.msgFuncDefs.push(msgFunc);
-                    }
-                    if (ElementUtil.isField(instance)) {
-                        let fieldDef = new FieldDef(<FieldPrototype>instance);
-                        if (!fieldDef.decorators.ignore) {
-                            this.storeFields.push(fieldDef);
-                        }
                     }
                 });
             this.resolveBaseClass(basePrototype);
