@@ -105,7 +105,8 @@ export class HashLayout implements Layout {
     constructor(
         public readonly offset: LayoutKey,
         public readonly strategy: HashingStrategy,
-        public readonly layout: Layout
+        public readonly layout: Layout,
+        public readonly storemode: string | null
     ) {}
 
     public layoutKind(): LayoutKind {
@@ -117,6 +118,7 @@ export class HashLayout implements Layout {
             offset: this.offset,
             strategy: this.strategy.toMetadata(),
             layout: this.layout.toMetadata(),
+            storemode: this.storemode
         };
     }
 }
@@ -129,7 +131,8 @@ export class ArrayLayout implements Layout {
         public readonly offset: LayoutKey,
         public readonly len: number,
         public readonly cellsPerElem: number,
-        public readonly layout: Layout
+        public readonly layout: Layout,
+        public readonly storemode = 'spread'
     ) {}
 
     public layoutKind(): LayoutKind {

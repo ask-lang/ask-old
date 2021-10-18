@@ -5,7 +5,7 @@ import {
     Element,
     ElementKind,
     TypeDefinition,
-    ClassPrototype,
+    ClassPrototype
 } from "assemblyscript";
 
 
@@ -15,9 +15,10 @@ import { ClassInterpreter } from "./classdef";
 import { Strings } from "../utils/primitiveutil";
 import { CONFIG } from "../config/compile";
 import { ElementUtil } from "../utils/utils";
-export class NodeTypeInfo {
-    constructor(public isCodec: boolean = false, public type: TypeKindEnum) {}
-}
+import { Collections } from "../utils/collectionutil";
+// export class NodeTypeInfo {
+//     constructor(public isCodec: boolean = false, public type: TypeKindEnum) {}
+// }
 
 export class BaseNamedTypeDef {
     protected parent: Element;
@@ -71,13 +72,32 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
      * Export all codec type
      * @returns
      */
-    getTypeKey(): string {
+    getMetadataType(): string {
         if (TypeHelper.isPrimitiveType(this.typeKind)) {
             return this.codecType;
         } else if (this.typeKind == TypeKindEnum.ARRAY) {
-            return this.isCodec + this.definedCodeType + this.capacity;
+            return this.isCodec + this.definedCodeType + this.getAppendCapacity();
+        } else if (this.isAccountClass()) {
+            return "trueArray<u8>32";
         }
-        return this.definedCodeType + this.capacity;
+        return this.definedCodeType + this.getAppendCapacity();
+    }
+
+    isAccountClass(): boolean {
+        // console.log(`this.current.internalName: ${this.current.internalName}`);
+        if (this.typeKind == TypeKindEnum.USER_CLASS) {
+            // Using internal name is properly.
+            return this.current.name == 'Account' || this.current.name == "AccountId";
+        }
+        return false;
+    }
+
+    /**
+     * 
+     * @returns 
+     */
+    private getAppendCapacity(): string {
+        return this.capacity == 0 ? "" : this.capacity + "";
     }
 
     /**
@@ -88,22 +108,32 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
         return this.typeKind == TypeKindEnum.USER_CLASS || this.typeKind == TypeKindEnum.ARRAY ? "" : CONFIG.scope;
     }
 
-    // TODO
-    public genTypeSequence(definedTypeMap: Map<string, NamedTypeNodeDef>): void {
-        let typeName = this.getTypeKey();
-        if (definedTypeMap.has(typeName)) {
-            let typeDef = definedTypeMap.get(typeName);
+    public genSeqOfMetadataType(namedTypeByName: Map<string, NamedTypeNodeDef>): void {
+        let typeName = this.getMetadataType();
+        if (namedTypeByName.has(typeName)) {
+            let typeDef = namedTypeByName.get(typeName);
+            this.index = typeDef!.index;
+            return ;
+        } 
+        if (this.isAccountClass()) {
+            let interpreter = new ClassInterpreter(<ClassPrototype>this.current);
+            interpreter.fields.forEach(item => {
+                if (item.type.typeKind == TypeKindEnum.ARRAY) {
+                    item.type.capacity = 32;
+                }
+                item.type.genSeqOfMetadataType(namedTypeByName);
+            });
+            let typeDef = namedTypeByName.get(this.getMetadataType());
             this.index = typeDef!.index;
         } else {
-            this.index = definedTypeMap.size + 1;
-            definedTypeMap.set(typeName, this);
-        }
-        if (this.typeKind == TypeKindEnum.USER_CLASS) {
-            this.resolveClassType(<ClassPrototype>this.current, definedTypeMap);
-        } else if (this.typeKind == TypeKindEnum.ARRAY) {
-            this.typeArguments.forEach(item => item.genTypeSequence(definedTypeMap));
-        } else if (this.typeKind == TypeKindEnum.MAP) {
-            this.typeArguments.forEach(item => item.genTypeSequence(definedTypeMap));
+            if (this.typeKind == TypeKindEnum.USER_CLASS) {
+                this.resolveClassType(namedTypeByName);
+            }
+            if (!Collections.isEmptyArray(this.typeArguments)) {
+                this.typeArguments.forEach(item => item.genSeqOfMetadataType(namedTypeByName));
+            }
+            this.index = namedTypeByName.size + 1;
+            namedTypeByName.set(typeName, this);
         }
     }
 
@@ -113,23 +143,11 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
      * @param typeMap
      * @returns
      */
-    private resolveClassType(clzPrototype: ClassPrototype, typeMap: Map<string, NamedTypeNodeDef>): boolean {
-        let interpreter = new ClassInterpreter(clzPrototype);
-        interpreter.resolveFieldMembers();
-        if (clzPrototype.name === 'AccountId') {
-            interpreter.fields.forEach(item => {
-                if (item.type.typeKind == TypeKindEnum.ARRAY) {
-                    item.type.capacity = 32;
-                }
-                item.type.genTypeSequence(typeMap);
-            });
-            return true;
-        } else {
-            interpreter.fields.forEach(item => {
-                item.type.genTypeSequence(typeMap);
-            });
-        }
-        return false;
+    private resolveClassType(typeMap: Map<string, NamedTypeNodeDef>): void {
+        let interpreter = new ClassInterpreter(<ClassPrototype>this.current);
+        interpreter.fields.forEach(item => {
+            item.type.genSeqOfMetadataType(typeMap);
+        });        
     }
 
     private getCurrentElement(): Element {
@@ -141,41 +159,41 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
         return element;
     }
 
-    private getNodeTypeInfo(buildinElement: Element): NodeTypeInfo {
-        if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
-            return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
-        } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
-            if (buildinElement.name == Strings.VOID) {
-                return new NodeTypeInfo(false, TypeKindEnum.VOID);
-            } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
-                return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
-            }
-            // TODO
-            // console.log(`type info: ${buildinElement.name}`);
-            let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
-            let definitionNode = <NamedTypeNode>declaration.type;
-            // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
-            let name = definitionNode.name.range.toString();
-            let type = TypeHelper.getTypeKindByName(name);
+    // private getNodeTypeInfo(buildinElement: Element): NodeTypeInfo {
+    //     if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
+    //         return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
+    //     } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
+    //         if (buildinElement.name == Strings.VOID) {
+    //             return new NodeTypeInfo(false, TypeKindEnum.VOID);
+    //         } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
+    //             return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
+    //         }
+    //         // TODO
+    //         // console.log(`type info: ${buildinElement.name}`);
+    //         let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
+    //         let definitionNode = <NamedTypeNode>declaration.type;
+    //         // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
+    //         let name = definitionNode.name.range.toString();
+    //         let type = TypeHelper.getTypeKindByName(name);
 
-            return new NodeTypeInfo(false, type);
+    //         return new NodeTypeInfo(false, type);
 
-        } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-            let type = TypeHelper.getTypeKindFromUncodec(buildinElement.name);
-            if (type) {
-                return new NodeTypeInfo(false, type);
+    //     } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
+    //         let type = TypeHelper.getTypeKindFromUncodec(buildinElement.name);
+    //         if (type) {
+    //             return new NodeTypeInfo(false, type);
 
-            }
-            let classTypeKind = TypeHelper.getTypeKindByName(buildinElement.name);
-            if (classTypeKind == TypeKindEnum.USER_CLASS) {
-                this.isCodec = ElementUtil.isExtendCodec(buildinElement);
-                return new NodeTypeInfo(true, classTypeKind);
+    //         }
+    //         let classTypeKind = TypeHelper.getTypeKindByName(buildinElement.name);
+    //         if (classTypeKind == TypeKindEnum.USER_CLASS) {
+    //             this.isCodec = ElementUtil.isExtendCodec(buildinElement);
+    //             return new NodeTypeInfo(true, classTypeKind);
 
-            }
-            return new NodeTypeInfo(false, classTypeKind);
-        }
-        return new NodeTypeInfo(false, TypeKindEnum.USER_CLASS);
-    }
+    //         }
+    //         return new NodeTypeInfo(false, classTypeKind);
+    //     }
+    //     return new NodeTypeInfo(false, TypeKindEnum.USER_CLASS);
+    // }
 
 
     /**

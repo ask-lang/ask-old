@@ -56,6 +56,7 @@ export interface IHashLayout {
     readonly offset: string;
     readonly strategy: IHashingStrategy;
     readonly layout: ILayout;
+    readonly storemode: string | null;
 }
 
 export interface IHashingStrategy {

@@ -34,20 +34,19 @@ export class ContractProgram {
         this.resolveContract();
         this.genTypeSequence();
         this.getToGenCodecClass();
-        this.metatdata = this.createMetadata();
+        this.metatdata = this.genMetadata();
     }
 
     private getToGenCodecClass(): void {
         this.typeDefByName.forEach((item, key) => {
             if (item.typeKind == TypeKindEnum.USER_CLASS && !item.isCodec) {
                 let classInterpreter = new ClassInterpreter(<ClassPrototype>item.current);
-                classInterpreter.resolveFieldMembers();
                 this.codecs.push(classInterpreter);
             }
         });
     }
 
-    private createMetadata(): ContractMetadata {
+    private genMetadata(): ContractMetadata {
         return new MetadataGenerator(this).createMetadata();
     }
     
@@ -84,9 +83,9 @@ export class ContractProgram {
      * 
      */
     private genTypeSequence(): void {
-        this.contract.genTypeSequence(this.typeDefByName);
+        this.contract.genSeqOfMetadataType(this.typeDefByName);
         this.events.forEach(event => {
-            event.genTypeSequence(this.typeDefByName);
+            event.genSeqOfMetadataType(this.typeDefByName);
         });
     }
 }

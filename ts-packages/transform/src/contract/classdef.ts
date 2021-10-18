@@ -50,6 +50,7 @@ export class ClassInterpreter extends Interpreter {
         }
         let len = this.declaration.members.length;
         this.lastRange = this.declaration.members[len -1].range;
+        this.resolveFieldMembers();
     }
 
     resolveFieldMembers(): void {
@@ -75,10 +76,10 @@ export class ClassInterpreter extends Interpreter {
             });
     }
 
-    genTypeSequence(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
+    genSeqOfMetadataType(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
         this.fields.forEach(item => {
             if (item.type) {
-                item.type.genTypeSequence(typeNodeMap);
+                item.type.genSeqOfMetadataType(typeNodeMap);
             }
         });
     }
@@ -107,7 +108,6 @@ export class ContractInterpreter extends ClassInterpreter {
 
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.resolveFieldMembers();
         this.resolveContractElement();
     }
 
@@ -155,7 +155,7 @@ export class ContractInterpreter extends ClassInterpreter {
         }
     }
 
-    public genTypeSequence(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
+    public genSeqOfMetadataType(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
         this.cntrFuncDefs.forEach(funcDef => {
             funcDef.genTypeSequence(typeNodeMap);
         });
@@ -164,7 +164,7 @@ export class ContractInterpreter extends ClassInterpreter {
         });
         this.storeFields.forEach(item => {
             if (item.type) {
-                item.type.genTypeSequence(typeNodeMap);
+                item.type.genSeqOfMetadataType(typeNodeMap);
             }
         });
     }
@@ -173,7 +173,6 @@ export class EventInterpreter extends ClassInterpreter implements Matadata {
     index = 0;
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.resolveFieldMembers();
         this.resolveFunctionMembers();
     }
 
@@ -190,7 +189,6 @@ export class EventInterpreter extends ClassInterpreter implements Matadata {
 export class DynamicIntercepter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
-        this.resolveFieldMembers();
         this.resolveFunctionMembers();
     }
 }

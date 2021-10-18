@@ -11,6 +11,7 @@ import { TypeHelper } from "../utils/typeutil";
 import { MetadataUtil } from "../utils/metadatautil";
 import { Strings } from "../utils/primitiveutil";
 import { IndexSelector } from "../preprocess/selector";
+import { NamedTypeNodeDef } from "../contract/typedef";
 
 export class MetadataGenerator {
 
@@ -25,8 +26,8 @@ export class MetadataGenerator {
         let contractName = Strings.lowerFirstCase(this.contractInfo.contract!.name);
         let contract = new Contract(contractName, CONFIG.version);
         let contractSpec = this.getContractSpec();
-        let types = this.createTypeMetadata();
-        let layout = this.createStoreLayout();
+        let types = this.genMetadataTypes();
+        let layout = this.genMetadataStoreLayout();
         return new ContractMetadata(source, contract, contractSpec, types, layout);
     }
 
@@ -44,7 +45,7 @@ export class MetadataGenerator {
         return new ContractSpec(contract, message, events, this.contractInfo.contract.doc);
     }
 
-    private createStoreLayout(): Layout {
+    private genMetadataStoreLayout(): Layout {
         let layouts: FieldLayout[] = [];
         let fields = this.contractInfo.contract.storeFields;
         for (let i = 1; i <= fields.length; i++) {
@@ -55,46 +56,22 @@ export class MetadataGenerator {
         return new StructLayout(layouts);
     }
 
-    private createTypeMetadata(): Type[] {
+    private genMetadataTypes(): Type[] {
         let metadataTypes = new Array<Type>();
-        let exportedTypeMap = this.contractInfo.typeDefByName;
+        let typeDefByName = this.contractInfo.typeDefByName;
 
-        exportedTypeMap.forEach((type, _) => {
+        typeDefByName.forEach((type, _) => {
             if (TypeHelper.isPrimitiveType(type.typeKind)) {
                 metadataTypes.push(new PrimitiveDef(type.abiType));
             } else if (type.typeKind == TypeKindEnum.USER_CLASS) {
                 let classType: ClassPrototype = <ClassPrototype>type.current;
                 let interpreter = new ClassInterpreter(classType);
-                interpreter.resolveFieldMembers();
-                let fieldArr = new Array<Field>();
-                if (interpreter.name === "AccountId") {
-                    interpreter.fields.forEach(classField => {
-                        if (classField.type.typeKind == TypeKindEnum.ARRAY) {
-                            classField.type.capacity = 32;
-                        }
-                        let fieldTypeName = classField.type.getTypeKey();
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        let fieldType = exportedTypeMap.get(fieldTypeName)!;
-                        let field = new Field(null, fieldType.index);
-                        fieldArr.push(field);
-                    });
-                    let compositeDef = new CompositeDef(fieldArr);
-                    metadataTypes.push(compositeDef);
-                    return ;
-                }
-                interpreter.fields.forEach(classField => {
-                    let name = classField.name;
-                    let fieldTypeName = classField.type.getTypeKey();
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    let fieldType = exportedTypeMap.get(fieldTypeName)!;
-                    let field = new Field(name, fieldType.index);
-                    fieldArr.push(field);
-                });
-                let compositeDef = new CompositeDef(fieldArr);
+                let fieldTypeArr = this.toClassFieldArr(interpreter);
+                let compositeDef = new CompositeDef(fieldTypeArr);
                 metadataTypes.push(compositeDef);
             } else if (type.typeKind == TypeKindEnum.ARRAY) {
                 let argumentType = type.typeArguments[0];
-                let arguType = exportedTypeMap.get(argumentType.getTypeKey())!;
+                let arguType = this.getNamedTypeNodeDefByKey(argumentType.getMetadataType());
                 if (type.capacity == 0) {
                     let sequence = new SequenceDef(arguType.index);
                     metadataTypes.push(sequence);
@@ -103,9 +80,8 @@ export class MetadataGenerator {
                     metadataTypes.push(arr);
                 }
             } else if (type.typeKind == TypeKindEnum.MAP) {
-                let keyArgu = exportedTypeMap.get(type.typeArguments[0].getTypeKey())!;
-                let valArgu = exportedTypeMap.get(type.typeArguments[1].getTypeKey())!;
-
+                let keyArgu = this.getNamedTypeNodeDefByKey(type.typeArguments[0].getMetadataType());
+                let valArgu = this.getNamedTypeNodeDefByKey(type.typeArguments[1].getMetadataType());
                 let keyField = new Field("key_index", keyArgu.index);
                 let valField = new Field("value", valArgu.index);
                 let compositeDef = new CompositeDef([keyField, valField]);
@@ -113,5 +89,22 @@ export class MetadataGenerator {
             }
         });
         return metadataTypes;
+    }
+
+    private toClassFieldArr(interpreter: ClassInterpreter): Array<Field> {
+        let fieldTypeArr = new Array<Field>();
+        interpreter.fields.forEach(classField => {
+            let name = classField.name;
+            let fieldTypeName = classField.type.getMetadataType();
+            let fieldType = this.getNamedTypeNodeDefByKey(fieldTypeName);
+            let field = new Field(name, fieldType.index);
+            fieldTypeArr.push(field);
+        });
+        return fieldTypeArr;
+    }
+
+    private getNamedTypeNodeDefByKey(key: string): NamedTypeNodeDef {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.contractInfo.typeDefByName.get(key)!;
     }
 }
