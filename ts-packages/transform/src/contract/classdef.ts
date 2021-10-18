@@ -120,8 +120,7 @@ export class ContractInterpreter extends ClassInterpreter {
                 if (ElementUtil.isMessageFuncPrototype(instance)) {
                     let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
                     this.msgFuncDefs.push(msgFunc);
-                }
-                
+                }     
             });
         this.resolveBaseClass(this.element);
         // ignore the field that not marked with state

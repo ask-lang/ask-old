@@ -67,13 +67,12 @@ export class MetadataGenerator {
                 let interpreter = new ClassInterpreter(classType);
                 interpreter.resolveFieldMembers();
                 let fieldArr = new Array<Field>();
-                if (interpreter.name === "Account") {
+                if (interpreter.name === "AccountId") {
                     interpreter.fields.forEach(classField => {
                         if (classField.type.typeKind == TypeKindEnum.ARRAY) {
                             classField.type.capacity = 32;
                         }
                         let fieldTypeName = classField.type.getTypeKey();
-                        // console.log(`fieldTypeName: ${fieldTypeName}`);
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         let fieldType = exportedTypeMap.get(fieldTypeName)!;
                         let field = new Field(null, fieldType.index);

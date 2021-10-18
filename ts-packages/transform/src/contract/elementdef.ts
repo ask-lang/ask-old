@@ -110,7 +110,6 @@ export class FieldDef extends Interpreter {
         return [this.getFiledLayout()];
     }
 
-
     private getArrayLayout(field: FieldDef): FieldLayout {
         let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
         let lenFieldLayout = new FieldLayout("len", lenCellLayout);
@@ -126,14 +125,14 @@ export class FieldDef extends Interpreter {
         let strategy = new HashingStrategy(CryptoHasher.Blake2x256,
             field.selector.hex, "");
         let valType = field.type.typeArguments[1];
-        let valLayout = new CellLayout(new KeySelector(field.selector.key + ".value").hex, valType.index);
+        let valLayout = new CellLayout(field.selector.hex, valType.index);
         let valHash = new HashLayout(field.selector.hex, strategy, valLayout);
         let valFieldLayout = new FieldLayout("values", valHash);
 
         let keyType = field.type.typeArguments[0];
-        let keyLayout = new CellLayout(new KeySelector(field.selector.key + ".key").hex, keyType.index);
+        let keyLayout = new CellLayout(field.selector.hex, keyType.index);
         let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout);
-        let keyFieldLayout = new FieldLayout("values", keyHash);
+        let keyFieldLayout = new FieldLayout("key", keyHash);
 
         let mapLayout = new StructLayout([keyFieldLayout, valFieldLayout]);
         return new FieldLayout(field.name, mapLayout);
@@ -148,7 +147,7 @@ export class FieldDef extends Interpreter {
         } else if (field.type.typeKind == TypeKindEnum.ARRAY) {
             return this.getArrayLayout(field);
         } else if (field.type.typeKind == TypeKindEnum.USER_CLASS) {
-            if (field.type.plainType == "Account") {
+            if (field.type.plainType == "AccountId") {
                 let lenCellLayout = new CellLayout(new KeySelector(field.selector.key + field.type.capacity).hex, field.type.index);
                 let lenFieldLayout = new FieldLayout("len", lenCellLayout);
                 let arrLayout = new ArrayLayout(new KeySelector(field.selector.key + ".length").hex, field.type.capacity, 1, lenCellLayout);
@@ -164,13 +163,11 @@ export class FieldDef extends Interpreter {
     }
 }
 export class TopicFieldDef extends FieldDef {
-
     isTopic = false;
     constructor(field: FieldPrototype) {
         super(field);
         this.isTopic = ElementUtil.isTopicField(field);
     }
-
 }
 export class ParameterNodeDef {
     private parameterNode: ParameterNode;
