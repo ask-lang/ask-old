@@ -168,9 +168,9 @@ export class SpreadStorableMap<K extends Codec, V extends Codec> implements Code
   set(key: K, value: V): this {
       this.mapStorage.set(key, value);
 
-      if (!this.isLazy) {
-          this.storeItemToNative(key, value);
-      }
+      //   if (!this.isLazy) {
+      this.storeItemToNative(key, value);
+      //   }
 
       return this;
   }

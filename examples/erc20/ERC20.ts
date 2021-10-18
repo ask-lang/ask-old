@@ -33,8 +33,6 @@ class Transfer extends Event {
 
 @contract
 export class ERC20 {
-//   @state balances: SpreadStorableMap<Account, UInt128>;
-//   @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>;
   @state balances: SpreadStorableMap<Account, UInt128> = new SpreadStorableMap<Account, UInt128>();
   @state allowances: SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
 
@@ -44,14 +42,10 @@ export class ERC20 {
   @state decimal_: u8 = 0;
 
   constructor() {
-    // this.balances = new SpreadStorableMap<Account, UInt128>();
-    // this.allowances = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
   }
 
   @constructor
   default(name: string = "", symbol: string = ""): void {
-    // this.balances = new SpreadStorableMap<Account, UInt128>();
-    // this.allowances = new SpreadStorableMap<Account, SpreadStorableMap<Account, UInt128>>();
     this.name_ = name;
     this.symbol_ = symbol;
     this.decimal_ = 18;
@@ -80,7 +74,9 @@ export class ERC20 {
 
   @message({ "mutates": false })
   balanceOf(account: Account): u128 {
-    return this.balances.get(account)!.unwrap();
+    let balance =  this.balances.get(account);//!.unwrap();
+    if (balance) return balance.unwrap();
+    else return u128.Zero;
   }
 
   @message
@@ -92,7 +88,13 @@ export class ERC20 {
 
   @message({ "mutates": false })
   allowance(owner: Account, spender: Account): u128 {
-    return this.allowances.get(owner)!.get(spender)!.unwrap();
+    let o = this.allowances.get(owner);
+    if (!o) return u128.Zero;
+
+    let s = o.get(spender);
+    if (!s) return u128.Zero;
+
+    return s.unwrap();
   }
 
   @message
@@ -138,14 +140,14 @@ export class ERC20 {
   protected _mint(account: Account, amount: u128): void {
     assert(account.notEq(Account.Null), "ERC20: mint to the zero address");
     this.totalSupply += amount;
-    let leftValue = this.balances.get(account)!.unwrap() + amount;
+    let leftValue = this.balanceOf(account) + amount;
     this.balances.set(account, new UInt128(leftValue));
     (new Transfer(Account.Null, account, amount)).emit();
   }
 
   protected _burn(account: Account, amount: u128): void {
     assert(account.notEq(Account.Null), "ERC20: burn from the zero address");
-    let balanceOfAccount = this.balances.get(account)!.unwrap();
+    let balanceOfAccount = this.balanceOf(account);
     assert(balanceOfAccount >= amount, "ERC20: not enough balance to bure.");
     let leftValue = balanceOfAccount - amount;
     this.balances.set(account, new UInt128(leftValue));
@@ -166,22 +168,29 @@ export class ERC20 {
     assert(sender.notEq(Account.Null), "ERC20: transfer from the zero address");
     assert(recipient.notEq(Account.Null), "ERC20: transfer to the zero address");
 
-    let spenderBalance = this.balances.get(sender)!.unwrap();
+    let spenderBalance =this.balanceOf(sender);
     assert(spenderBalance >= amount, "ERC20: transfer amount exceeds balance");
 
     let senderLeft = spenderBalance - amount;
     this.balances.set(sender, new UInt128(senderLeft));
 
-    let recipientLeft = this.balances.get(recipient)!.unwrap() + amount;
+    let recipientLeft = this.balanceOf(recipient) + amount;
     this.balances.set(recipient, new UInt128(recipientLeft));
     (new Transfer(sender, recipient, amount)).emit();
   }
 
   private getAllowanceItem(key: Account): SpreadStorableMap<Account, UInt128> {
-    let item = this.allowances.get(key)!;
-    if (item.entryKey == NullHash) {
-      item.entryKey = Crypto.blake256(key);
+    let item = this.allowances.get(key);
+    if (item == null) {
+      let entryKey = Crypto.blake256(key);
+      item = new SpreadStorableMap<Account, UInt128>(entryKey)
       this.allowances.set(key, item);
+    } else {
+      if (item.entryKey == NullHash) {
+        let entryKey = Crypto.blake256(key);
+        item.entryKey = entryKey;
+        this.allowances.set(key, item);
+      }
     }
     return item;
   }

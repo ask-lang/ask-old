@@ -18,6 +18,7 @@ export function deploy(): i32 {
     {{../contract.instanceName}}.{{name}}({{#joinParams parameters}}{{/joinParams}}{{ctrDefaultVals}});
   }
   {{/each}}
+  {{contract.instanceName}}.__commit_storage__();
   return 0;
 }
 
@@ -31,7 +32,7 @@ export function call(): i32 {
   if (${scope}msg.isSelector({{name}}Selector)) {
     {{#eq messageDecorator.mutates 'false'}}
     ${scope}Storage.mode = ${scope}StoreMode.R;
-    {{/eq}}  
+    {{/eq}}
     {{#neq parameters.length 0}}
     const fnParameters = new ${scope}FnParameters(${scope}msg.data);
     {{/neq}}
