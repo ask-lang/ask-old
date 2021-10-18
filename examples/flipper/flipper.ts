@@ -3,12 +3,10 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Account } from "ask-lang";
 
 @contract
 class Flipper {
     @state flag: bool;
-    @state account: Account;
 
     constructor() {
     }

@@ -1,4 +1,4 @@
-import { Account, Bool, Crypto, Event, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
+import { Account, Bool, Crypto, Event, Log, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
 
 /**
   * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
@@ -35,13 +35,14 @@ import { Account, Bool, Crypto, Event, msg, NullHash, ScaleString, SpreadStorabl
 /**
  * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
  */
-@event class ApprovalForAll {
+@event class ApprovalForAll extends Event {
   @topic owner: Account;
   @topic operator: Account;
 
   approved: bool;
 
   constructor(owner: Account, operator: Account, approved: bool) {
+    super();
     this.owner = owner;
     this.operator = operator;
     this.approved = approved;
@@ -85,7 +86,9 @@ export class ERC721 {
   balanceOf(owner: Account): i32 {
     assert(owner.notEq(Account.Null), "ERC721: balance query for the zero address");
 
-    return this._holderTokens.get(owner)!.length;
+    let tokens = this._holderTokens.get(owner);
+    if (!tokens) return 0;
+    return tokens.length;
   }
 
   /**
@@ -93,8 +96,10 @@ export class ERC721 {
    */
   @message({"mutates": false})
   ownerOf(tokenId: u128): Account {
-    assert(this._exists(tokenId), "ERC721: owner query for nonexistent token")
-    return this._tokenOwners.get(new UInt128(tokenId))!;
+    // assert(this._exists(tokenId), "ERC721: owner query for nonexistent token")
+    let o = this._tokenOwners.get(new UInt128(tokenId));
+    if (!o) return Account.Null;
+    return o;
   }
 
   /**
@@ -121,7 +126,9 @@ export class ERC721 {
     assert(this._exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
     let id = new UInt128(tokenId);
-    let tokenURI = this._tokenURIs.get(id)!.toString();
+    let u = this._tokenURIs.get(id);
+    if (!u) return "";
+    let tokenURI = u.toString();
 
     // If there is no base URI, return the token URI.
     if (this._baseURI.length == 0) return tokenURI;
@@ -146,7 +153,13 @@ export class ERC721 {
    */
   @message({"mutates": false})
   tokenOfOwnerByIndex(owner: Account, index: i32): u128 {
-    return this._holderTokens.get(owner)!.at(index)!.unwrap();
+    let o = this._holderTokens.get(owner);
+    if (!o) return u128.Zero;
+
+    let idx = o.at(index);
+    if (!idx) return u128.Zero;
+
+    return idx.unwrap();
   }
 
   /**
@@ -186,8 +199,9 @@ export class ERC721 {
   @message({"mutates": false})
   getApproved(tokenId: u128): Account {
     assert(this._exists(tokenId), "ERC721: approved query for nonexistent token");
-
-    return this._tokenApprovals.get(new UInt128(tokenId))!;
+    let o = this._tokenApprovals.get(new UInt128(tokenId));
+    if (!o) return Account.Null;
+    return o;
   }
 
   /**
@@ -208,7 +222,7 @@ export class ERC721 {
 
     let approvals = this._getOperatorApprovals(msg.sender);
     approvals.set(operator, new Bool(approved));
-    (new ApprovalForAll(msg.sender, operator, approved));
+    (new ApprovalForAll(msg.sender, operator, approved)).emit();
   }
 
   /**
@@ -216,7 +230,13 @@ export class ERC721 {
    */
   @message({"mutates": false})
   isApprovedForAll(owner: Account, operator: Account): bool {
-    return this._operatorApprovals.get(owner)!.get(operator)!.unwrap();
+    let o = this._operatorApprovals.get(owner);
+    if (!o) return false;
+
+    let p = o.get(operator);
+    if (!p) return false;
+
+    return p.unwrap();
   }
 
   /**
@@ -252,9 +272,12 @@ export class ERC721 {
    * - `tokenId` must exist.
    */
   protected _isApprovedOrOwner(spender: Account, tokenId: u128): bool {
-    assert(this._exists(tokenId), "ERC721: operator query for nonexistent token");
+    // assert(this._exists(tokenId), "ERC721: operator query for nonexistent token");
     let owner = this.ownerOf(tokenId);
-    return (spender.eq(owner) || this.getApproved(tokenId).eq(spender) || this.isApprovedForAll(owner, spender));
+    if (spender.eq(owner)) return true;
+    let approval = this.getApproved(tokenId);
+    if (spender.eq(approval)) return true;
+    return this.isApprovedForAll(owner, spender);
   }
 
   /**
@@ -344,7 +367,7 @@ export class ERC721 {
    */
   private _getHolderTokens(to: Account): SpreadStorableArray<UInt128> {
     let list = this._holderTokens.get(to);
-    if (!list || list.entryKey == NullHash) {
+    if (!list) {
       let key = this._holderTokens.entryKey.toString() + to.toString();
       list = new SpreadStorableArray<UInt128>(Crypto.blake256s(key));
       this._holderTokens.set(to, list);
@@ -360,13 +383,13 @@ export class ERC721 {
     this._approve(Account.Null, tokenId);
 
     let tid = new UInt128(tokenId);
-    let tokensOfOwner = this._getHolderTokens(from);
-    for (let i = 0; i < tokensOfOwner.length; i++) {
-      if (tokensOfOwner[i]!.eq(tid)) {
-        tokensOfOwner.delete(i);
-        break;
-      }
-    }
+    // let tokensOfOwner = this._getHolderTokens(from);
+    // for (let i = 0; i < tokensOfOwner.length; i++) {
+    //   if (tokensOfOwner[i]!.eq(tid)) {
+    //     tokensOfOwner.delete(i);
+    //     break;
+    //   }
+    // }
 
     let holderTokens = this._getHolderTokens(to);
     holderTokens.push(tid);
