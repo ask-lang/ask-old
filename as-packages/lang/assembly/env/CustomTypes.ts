@@ -21,7 +21,7 @@ const BytesCount = 32;
  * @class AccountId
  * @implements {Codec}
  */
-export class AccountId implements Codec {
+export class Account implements Codec {
   private _id: Array<u8>;
 
   constructor(bytes: u8[] = []) {
@@ -33,8 +33,8 @@ export class AccountId implements Codec {
       );
   }
 
-  static from(uarr: u8[]): AccountId {
-      return new AccountId(uarr);
+  static from(uarr: u8[]): Account {
+      return new Account(uarr);
   }
 
   toU8a(): u8[] {
@@ -53,7 +53,7 @@ export class AccountId implements Codec {
       this._id = bytes.slice(index, index + BytesCount);
   }
 
-  eq(other: AccountId): bool {
+  eq(other: Account): bool {
       return (
           memory.compare(
               this._id.dataStart,
@@ -63,7 +63,7 @@ export class AccountId implements Codec {
       );
   }
 
-  notEq(other: AccountId): bool {
+  notEq(other: Account): bool {
       return (
           memory.compare(
               this._id.dataStart,

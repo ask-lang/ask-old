@@ -1,14 +1,14 @@
-import { Account, Bool, Crypto, Event, Log, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
+import { AccountId, Bool, Crypto, Event, Log, msg, NullHash, ScaleString, SpreadStorableArray, SpreadStorableMap, u128, UInt128 } from "ask-lang";
 
 /**
   * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
   */
 @event class Transfer extends Event{
-  @topic from: Account = Account.Null;
-  @topic to: Account = Account.Null;
+  @topic from: AccountId = AccountId.Null;
+  @topic to: AccountId = AccountId.Null;
   @topic tokenId: u128 = u128.Zero;
 
-  constructor(from: Account, to: Account, tokenId: u128) {
+  constructor(from: AccountId, to: AccountId, tokenId: u128) {
     super();
     this.from = from;
     this.to = to;
@@ -20,11 +20,11 @@ import { Account, Bool, Crypto, Event, Log, msg, NullHash, ScaleString, SpreadSt
  * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
  */
 @event class Approval extends Event {
-  @topic owner: Account;
-  @topic approved: Account;
+  @topic owner: AccountId;
+  @topic approved: AccountId;
   @topic tokenId: u128;
 
-  constructor(owner: Account, approved: Account, tokenId: u128) {
+  constructor(owner: AccountId, approved: AccountId, tokenId: u128) {
     super();
     this.owner = owner;
     this.approved = approved;
@@ -36,12 +36,12 @@ import { Account, Bool, Crypto, Event, Log, msg, NullHash, ScaleString, SpreadSt
  * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
  */
 @event class ApprovalForAll extends Event {
-  @topic owner: Account;
-  @topic operator: Account;
+  @topic owner: AccountId;
+  @topic operator: AccountId;
 
   approved: bool;
 
-  constructor(owner: Account, operator: Account, approved: bool) {
+  constructor(owner: AccountId, operator: AccountId, approved: bool) {
     super();
     this.owner = owner;
     this.operator = operator;
@@ -52,13 +52,13 @@ import { Account, Bool, Crypto, Event, Log, msg, NullHash, ScaleString, SpreadSt
 @contract
 export class ERC721 {
   // Mapping from holder address to their (enumerable) set of owned tokens
-  @state _holderTokens: SpreadStorableMap<Account, SpreadStorableArray<UInt128>> = new SpreadStorableMap<Account, SpreadStorableArray<UInt128>>();
+  @state _holderTokens: SpreadStorableMap<AccountId, SpreadStorableArray<UInt128>> = new SpreadStorableMap<AccountId, SpreadStorableArray<UInt128>>();
   // Enumerable mapping from token ids to their owners
-  @state _tokenOwners: SpreadStorableMap<UInt128, Account> = new SpreadStorableMap<UInt128, Account>();
+  @state _tokenOwners: SpreadStorableMap<UInt128, AccountId> = new SpreadStorableMap<UInt128, AccountId>();
   // Mapping from token ID to approved address
-  @state _tokenApprovals: SpreadStorableMap<UInt128, Account> = new SpreadStorableMap<UInt128, Account>();
+  @state _tokenApprovals: SpreadStorableMap<UInt128, AccountId> = new SpreadStorableMap<UInt128, AccountId>();
   // Mapping from owner to operator approvals
-  @state _operatorApprovals: SpreadStorableMap<Account, SpreadStorableMap<Account, Bool>> = new SpreadStorableMap<Account, SpreadStorableMap<Account, Bool>>();
+  @state _operatorApprovals: SpreadStorableMap<AccountId, SpreadStorableMap<AccountId, Bool>> = new SpreadStorableMap<AccountId, SpreadStorableMap<AccountId, Bool>>();
   // Token name
   @state _name: string = "";
   // Token symbol
@@ -83,8 +83,8 @@ export class ERC721 {
   }
 
   @message({"mutates": false})
-  balanceOf(owner: Account): i32 {
-    assert(owner.notEq(Account.Null), "ERC721: balance query for the zero address");
+  balanceOf(owner: AccountId): i32 {
+    assert(owner.notEq(AccountId.Null), "ERC721: balance query for the zero address");
 
     let tokens = this._holderTokens.get(owner);
     if (!tokens) return 0;
@@ -95,10 +95,10 @@ export class ERC721 {
    * @dev See {IERC721-ownerOf}.
    */
   @message({"mutates": false})
-  ownerOf(tokenId: u128): Account {
+  ownerOf(tokenId: u128): AccountId {
     // assert(this._exists(tokenId), "ERC721: owner query for nonexistent token")
     let o = this._tokenOwners.get(new UInt128(tokenId));
-    if (!o) return Account.Null;
+    if (!o) return AccountId.Null;
     return o;
   }
 
@@ -152,7 +152,7 @@ export class ERC721 {
    * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
    */
   @message({"mutates": false})
-  tokenOfOwnerByIndex(owner: Account, index: i32): u128 {
+  tokenOfOwnerByIndex(owner: AccountId, index: i32): u128 {
     let o = this._holderTokens.get(owner);
     if (!o) return u128.Zero;
 
@@ -182,7 +182,7 @@ export class ERC721 {
      * @dev See {IERC721-approve}.
      */
   @message
-  approve(to: Account, tokenId: u128): void {
+  approve(to: AccountId, tokenId: u128): void {
     let owner = this.ownerOf(tokenId);
     assert(to.notEq(owner), "ERC721: approval to current owner");
 
@@ -197,27 +197,27 @@ export class ERC721 {
    * @dev See {IERC721-getApproved}.
    */
   @message({"mutates": false})
-  getApproved(tokenId: u128): Account {
+  getApproved(tokenId: u128): AccountId {
     assert(this._exists(tokenId), "ERC721: approved query for nonexistent token");
     let o = this._tokenApprovals.get(new UInt128(tokenId));
-    if (!o) return Account.Null;
+    if (!o) return AccountId.Null;
     return o;
   }
 
   /**
    * @dev See {IERC721-setApprovalForAll}.
    */
-  private _getOperatorApprovals(operator: Account): SpreadStorableMap<Account, Bool> {
+  private _getOperatorApprovals(operator: AccountId): SpreadStorableMap<AccountId, Bool> {
     let approvals = this._operatorApprovals.get(operator);
     if (!approvals || approvals.entryKey == NullHash) {
       let key = this._operatorApprovals.entryKey.toString() + operator.toString();
-      approvals = new SpreadStorableMap<Account, Bool>(Crypto.blake256s(key));
+      approvals = new SpreadStorableMap<AccountId, Bool>(Crypto.blake256s(key));
       this._operatorApprovals.set(operator, approvals);
     }
     return approvals;
   }
 
-  @message setApprovalForAll(operator: Account, approved: bool): void {
+  @message setApprovalForAll(operator: AccountId, approved: bool): void {
     assert(operator.notEq(msg.sender), "ERC721: approve to caller");
 
     let approvals = this._getOperatorApprovals(msg.sender);
@@ -229,7 +229,7 @@ export class ERC721 {
    * @dev See {IERC721-isApprovedForAll}.
    */
   @message({"mutates": false})
-  isApprovedForAll(owner: Account, operator: Account): bool {
+  isApprovedForAll(owner: AccountId, operator: AccountId): bool {
     let o = this._operatorApprovals.get(owner);
     if (!o) return false;
 
@@ -243,7 +243,7 @@ export class ERC721 {
    * @dev See {IERC721-transferFrom}.
    */
   @message
-  transferFrom(from: Account, to: Account, tokenId: u128): void {
+  transferFrom(from: AccountId, to: AccountId, tokenId: u128): void {
     //solhint-disable-next-line max-line-length
     let isApproved = this._isApprovedOrOwner(msg.sender, tokenId);
     assert(isApproved, "ERC721: transfer caller is not owner nor approved");
@@ -255,13 +255,13 @@ export class ERC721 {
    * @dev See {IERC721-safeTransferFrom}.
    */
   @message
-  safeTransferFrom(from: Account, to: Account, tokenId: u128, _data: string): void {
+  safeTransferFrom(from: AccountId, to: AccountId, tokenId: u128, _data: string): void {
     let isApproved = this._isApprovedOrOwner(msg.sender, tokenId);
     assert(isApproved, "ERC721: transfer caller is not owner nor approved");
     this._safeTransfer(from, to, tokenId, _data);
   }
 
-  protected _safeTransfer(from: Account, to: Account, tokenId: u128, _data: string): void {
+  protected _safeTransfer(from: AccountId, to: AccountId, tokenId: u128, _data: string): void {
     this._transfer(from, to, tokenId);
   }
   /**
@@ -271,7 +271,7 @@ export class ERC721 {
    *
    * - `tokenId` must exist.
    */
-  protected _isApprovedOrOwner(spender: Account, tokenId: u128): bool {
+  protected _isApprovedOrOwner(spender: AccountId, tokenId: u128): bool {
     // assert(this._exists(tokenId), "ERC721: operator query for nonexistent token");
     let owner = this.ownerOf(tokenId);
     if (spender.eq(owner)) return true;
@@ -290,7 +290,7 @@ export class ERC721 {
    *
    * Emits a {Transfer} event.
    */
-  protected _safeMint(to: Account, tokenId: u128, data: string): void {
+  protected _safeMint(to: AccountId, tokenId: u128, data: string): void {
     this._mint(to, tokenId);
     // require(_checkOnERC721Received(address(0), to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
   }
@@ -307,14 +307,14 @@ export class ERC721 {
    *
    * Emits a {Transfer} event.
    */
-  protected _mint(to: Account, tokenId: u128): void {
-    assert(to.notEq(Account.Null), "ERC721: mint to the zero address");
+  protected _mint(to: AccountId, tokenId: u128): void {
+    assert(to.notEq(AccountId.Null), "ERC721: mint to the zero address");
     assert(!this._exists(tokenId), "ERC721: token already minted");
 
     this._getHolderTokens(to).push(new UInt128(tokenId));
     this._tokenOwners.set(new UInt128(tokenId), to);
 
-    (new Transfer(Account.Null, to, tokenId)).emit();
+    (new Transfer(AccountId.Null, to, tokenId)).emit();
   }
 
   /**
@@ -331,7 +331,7 @@ export class ERC721 {
     let owner = this.ownerOf(tokenId);
 
     // Clear approvals
-    this._approve(Account.Null, tokenId);
+    this._approve(AccountId.Null, tokenId);
 
     // Clear metadata (if any)
     let tid = new UInt128(tokenId);
@@ -350,7 +350,7 @@ export class ERC721 {
 
     this._tokenOwners.delete(tid);
 
-    (new Transfer(owner, Account.Null, tokenId)).emit();
+    (new Transfer(owner, AccountId.Null, tokenId)).emit();
   }
 
 
@@ -365,7 +365,7 @@ export class ERC721 {
    *
    * Emits a {Transfer} event.
    */
-  private _getHolderTokens(to: Account): SpreadStorableArray<UInt128> {
+  private _getHolderTokens(to: AccountId): SpreadStorableArray<UInt128> {
     let list = this._holderTokens.get(to);
     if (!list) {
       let key = this._holderTokens.entryKey.toString() + to.toString();
@@ -375,12 +375,12 @@ export class ERC721 {
     return list;
   }
 
-  protected _transfer(from: Account, to: Account, tokenId: u128): void {
+  protected _transfer(from: AccountId, to: AccountId, tokenId: u128): void {
     assert(this.ownerOf(tokenId).eq(from), "ERC721: transfer of token that is not own");
-    assert(to.notEq(Account.Null), "ERC721: transfer to the zero address");
+    assert(to.notEq(AccountId.Null), "ERC721: transfer to the zero address");
 
     // Clear approvals from the previous owner
-    this._approve(Account.Null, tokenId);
+    this._approve(AccountId.Null, tokenId);
 
     let tid = new UInt128(tokenId);
     // let tokensOfOwner = this._getHolderTokens(from);
@@ -420,7 +420,7 @@ export class ERC721 {
     this._baseURI = baseURI_;
   }
 
-  protected _approve(to: Account, tokenId: u128): void {
+  protected _approve(to: AccountId, tokenId: u128): void {
     this._tokenApprovals.set(new UInt128(tokenId), to);
     (new Approval(this.ownerOf(tokenId), to, tokenId)).emit();
   }

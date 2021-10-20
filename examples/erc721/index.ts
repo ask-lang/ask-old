@@ -1,4 +1,4 @@
-import { Account, u128, msg } from "ask-lang";
+import { AccountId, u128, msg } from "ask-lang";
 import { ERC721 } from "./ERC721";
 
 @contract
@@ -13,12 +13,12 @@ class MyERC721 extends ERC721 {
   }
 
   @message
-  mint(to: Account, tokenId: u128): void {
+  mint(to: AccountId, tokenId: u128): void {
     this._mint(to, tokenId);
   }
 
   @message
-  transfer(to: Account, tokenId: u128): void {
+  transfer(to: AccountId, tokenId: u128): void {
     this._transfer(msg.sender, to, tokenId);
   }
 

@@ -8,7 +8,7 @@ import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_caller, seal_value_transferred } from "as-contract-runtime";
 import { MessageInputReader } from "../primitives/inputdata";
 import { UInt128 } from "as-scale-codec";
-import { Account } from ".";
+import { AccountId } from ".";
 /**
  * This class is used by retrieving informations for current call.
  * like object `msg` in Solidity.
@@ -16,7 +16,7 @@ import { Account } from ".";
  * @class Msg
  */
 class Msg {
-    private _sender: Account | null = null;
+    private _sender: AccountId | null = null;
     private _value: UInt128 | null = null;
     private _sig: u8[] | null = null;
     private _data: u8[] | null = null;
@@ -45,14 +45,14 @@ class Msg {
      * To get the account of sender of current call.
      *
      * @readonly
-     * @type {Account}
+     * @type {AccountId}
      * @memberof Msg
      */
-    get sender(): Account {
+    get sender(): AccountId {
         if (this._sender === null) {
             let readbuf = new ReadBuffer(32);
             seal_caller(readbuf.valueBuffer, readbuf.sizeBuffer);
-            this._sender = Account.from(readbuf.valueBytes);
+            this._sender = AccountId.from(readbuf.valueBytes);
         }
 
         return this._sender!;

@@ -2,7 +2,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Account, Bool, Int8, PackedStorableArray, SpreadStorableMap } from "ask-lang";
+import { AccountId, Bool, Int8, PackedStorableArray, SpreadStorableMap } from "ask-lang";
 
 class ArrayTypes {
 
@@ -44,8 +44,8 @@ export class MapUsages {
      }
 
      @message
-     pushAccountId(account: Account): void {
-         let map = new SpreadStorableMap<Account, Bool>();
+     pushAccountId(account: AccountId): void {
+         let map = new SpreadStorableMap<AccountId, Bool>();
          //  this.arr._operatorApprovals.set(account, map);
      }
 }

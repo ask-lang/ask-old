@@ -158,10 +158,10 @@ Event is the class annotated by `@event` in Ask!.
 ```typescript
 @event
 class Approved extends Event {
-    @topic who: Account;
+    @topic who: AccountId;
     amount: u128;
 
-    constructor(w: Account, a: u128) {
+    constructor(w: AccountId, a: u128) {
         super();
         this.who = w;
         this.amount = a;
@@ -176,7 +176,7 @@ After the event class is defined, you can instantiate it where needed, and then 
 @contract
 class ERC20 {
     @message
-    approve(spender: Account, amount: u128): bool {
+    approve(spender: AccountId, amount: u128): bool {
         // .....
         (new Approved(spender, amount)).emit();
     return true;
@@ -189,9 +189,9 @@ Event classes and other ordinary classes also support inheritance, but the class
 ```typescript
 @event
 class AnotherApproved extends Approved {
-    @topic owner: Account;
+    @topic owner: AccountId;
 
-    constructor(owner: Account, spender: Account, amount: u128) {
+    constructor(owner: AccountId, spender: AccountId, amount: u128) {
         super(spender, amount);
         this.owner = owner;
     }
@@ -200,7 +200,7 @@ class AnotherApproved extends Approved {
 @contract
 class ERC20 {
     @message
-    approve(spender: Account, amount: u128): bool {
+    approve(spender: AccountId, amount: u128): bool {
         // .....
         (new AnotherApproved(msg.sender, spender, amount)).emit();
     return true;
@@ -232,18 +232,18 @@ The function body of the `add` method and the `return 0;` part cannot be omitted
 For an example of using @dynamic to make cross-contract calls, please refer to the `examples/crosscall` example.
 
 ## Ask! Common component description
-### Account
-The `Account` class is an encapsulation class of `AccountId`. It can represent an EOA address or a contract address.
+### AccountId
+The `AccountId` class is an encapsulation class of `Account`. It can represent an EOA address or a contract address.
 It includes the following important properties and methods:
-* `Account.Null`: This is an address with a value of `0`, and its value is similar to `address(0)` in solidity.
-* `Account.Self`: Represents the address of the current contract, similar to `address(this)` in solidity.
-* `transfer(value: Balance): void`: This method is used for local currency transfer operations, that is, transfer from the balance of the account of `Account.Self` to the address of this account.
+* `AccountId.Null`: This is an address with a value of `0`, and its value is similar to `address(0)` in solidity.
+* `AccountId.Self`: Represents the address of the current contract, similar to `address(this)` in solidity.
+* `transfer(value: Balance): void`: This method is used for local currency transfer operations, that is, transfer from the balance of the account of `AccountId.Self` to the address of this account.
 * `call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[]`: method used to call external contracts. Refer to the previous section about **Cross-Contract Calls* *part.
 
 ### Msg
 The `Msg` class encapsulates the data and information attached to a call. Ask! has a global variable `msg` inside, which is used to obtain relevant information:
 * `msg.value`: The value attached in one call, the data of type `Balance`.
-* `msg.sender`: The initiator account of a call, `Account` type data.
+* `msg.sender`: The initiator account of a call, `AccountId` type data.
 * `msg.sig`: The signature of the method called once, the data of type `u8[]`.
 * `msg.data`: The parameters of the method called once, which have been serialized as `u8[]` type.
 
@@ -257,11 +257,11 @@ The `Block` class encapsulates two commonly used system parameters. Ask! interna
 The name contains `Spread`, which means that each stored element has an independent storage location, and each access operation only operates on the element itself; while `Packed` means that all the data in this collection will be packed Stored to the same location, every time you need to modify one of the elements, you need to access all the elements, so they are suitable for scenarios with less data.
 
 ## Custom Ask! Environment Variable Type
-Based on the chain developed by Substrate, the type of environment variables defined in its FRAME are mainly `Hash` `AccountId` `BlockNumber` `Balance`, and they are defined in Ask! as follows:
+Based on the chain developed by Substrate, the type of environment variables defined in its FRAME are mainly `Hash` `Account` `BlockNumber` `Balance`, and they are defined in Ask! as follows:
 ```typescript
 type Balance = UInt128;
 type BlockNumber = UInt32;
-type AccountId = Array<u8>(32);
+type Account = Array<u8>(32);
 type Hash = Array<u8>(32);
 ```
 

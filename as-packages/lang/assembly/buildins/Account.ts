@@ -6,7 +6,7 @@
 import { Callable } from "./Callable";
 import { u128 } from "as-bignum";
 import { ReturnCode, seal_address, seal_transfer } from "as-contract-runtime";
-import { AccountId, Balance } from "../env";
+import { Account, Balance } from "../env";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { Codec } from "as-scale-codec";
 import { ReadBuffer } from "../primitives/readbuffer";
@@ -16,7 +16,7 @@ import { ReadBuffer } from "../primitives/readbuffer";
  */
 
 function SendBalance(
-    destination: AccountId,
+    destination: Account,
     value: Balance
 ): bool {
     let destBuffer = new WriteBuffer(destination.toU8a());
@@ -33,7 +33,7 @@ function SendBalance(
 }
 
 function TransferBalance(
-    destination: AccountId,
+    destination: Account,
     value: Balance
 ): void {
     let status = SendBalance(destination, value);
@@ -47,16 +47,16 @@ function TransferBalance(
  * @class Account
  * @implements {Codec}
  */
-export class Account implements Codec{
+export class AccountId implements Codec{
 
-    private static _Self: Account;
-    private static _Null: Account;
+    private static _Self: AccountId;
+    private static _Null: AccountId;
 
-    private _id: AccountId;
+    private _id: Account;
 
-    static from(uarr: u8[]): Account {
-        let account = new Account();
-        account._id = AccountId.from(uarr);
+    static from(uarr: u8[]): AccountId {
+        let account = new AccountId();
+        account._id = Account.from(uarr);
         return account;
     }
     /**
@@ -64,33 +64,33 @@ export class Account implements Codec{
      *
      * @readonly
      * @static
-     * @type {Account}
+     * @type {AccountId}
      * @memberof Account
      */
-    static get Null(): Account {
-        if (Account._Null === null) {
-            Account._Null = new Account();
+    static get Null(): AccountId {
+        if (AccountId._Null === null) {
+            AccountId._Null = new AccountId();
         }
-        return Account._Null;
+        return AccountId._Null;
     }
     /**
      * Get the Account of the contact which executing with.
      *
      * @readonly
      * @static
-     * @type {Account}
+     * @type {AccountId}
      * @memberof Account
      */
-    static get Self(): Account {
-        if (Account._Self === null) {
+    static get Self(): AccountId {
+        if (AccountId._Self === null) {
             let readbuf = new ReadBuffer(32);
             seal_address(readbuf.valueBuffer, readbuf.sizeBuffer);
-            Account._Self = Account.from(readbuf.valueBytes);
+            AccountId._Self = AccountId.from(readbuf.valueBytes);
         }
-        return Account._Self;
+        return AccountId._Self;
     }
 
-    constructor(id: AccountId = new AccountId(new Array<u8>(32).fill(0))) {
+    constructor(id: Account = new Account(new Array<u8>(32).fill(0))) {
         this._id = id;
     }
     /**
@@ -98,10 +98,10 @@ export class Account implements Codec{
      * AccountId is a customized data type, which defined by the FRAME of substrate.
      *
      * @readonly
-     * @type {AccountId}
+     * @type {Account}
      * @memberof Account
      */
-    get id(): AccountId { return this._id; }
+    get id(): Account { return this._id; }
 
     /**
      * To transfer from Account.Self to this account.
@@ -137,12 +137,12 @@ export class Account implements Codec{
     }
 
     @inline @operator("==")
-    static __eq(lhs: Account, rhs: Account): bool {
+    static __eq(lhs: AccountId, rhs: AccountId): bool {
         return lhs._id.eq(rhs._id);
     }
 
     @inline @operator("!=")
-    static __neq(lhs: Account, rhs: Account): bool {
+    static __neq(lhs: AccountId, rhs: AccountId): bool {
         return lhs._id.notEq(rhs._id);
     }
 
@@ -158,11 +158,11 @@ export class Account implements Codec{
         this._id.populateFromBytes(bytes, index);
     }
 
-    eq(other: Account): bool {
+    eq(other: AccountId): bool {
         return this._id.eq(other._id);
     }
 
-    notEq(other: Account): bool {
+    notEq(other: AccountId): bool {
         return this._id.notEq(other._id);
     }
 }

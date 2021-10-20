@@ -158,10 +158,10 @@ class HelloAsk {
 ```typescript
 @event
 class Approved extends Event {
-    @topic who: Account;
+    @topic who: AccountId;
     amount: u128;
 
-    constructor(w: Account, a: u128) {
+    constructor(w: AccountId, a: u128) {
         super();
         this.who = w;
         this.amount = a;
@@ -176,7 +176,7 @@ class Approved extends Event {
 @contract
 class ERC20 {
     @message
-    approve(spender: Account, amount: u128): bool {
+    approve(spender: AccountId, amount: u128): bool {
         // .....
         (new Approved(spender, amount)).emit();
     return true;
@@ -189,9 +189,9 @@ class ERC20 {
 ```typescript
 @event
 class AnotherApproved extends Approved {
-    @topic owner: Account;
+    @topic owner: AccountId;
 
-    constructor(owner: Account, spender: Account, amount: u128) {
+    constructor(owner: AccountId, spender: AccountId, amount: u128) {
         super(spender, amount);
         this.owner = owner;
     }
@@ -200,7 +200,7 @@ class AnotherApproved extends Approved {
 @contract
 class ERC20 {
     @message
-    approve(spender: Account, amount: u128): bool {
+    approve(spender: AccountId, amount: u128): bool {
         // .....
         (new AnotherApproved(msg.sender, spender, amount)).emit();
     return true;
@@ -232,18 +232,18 @@ export class Libadd {
 关于使用@dynamic进行跨合约调用的示例, 请参考`examples/crosscall`示例.
 
 ## Ask!常用组件说明
-### Account
-`Account`类是`AccountId`的封装类. 它可以表示一个EOA地址, 也可以表示一个合约地址.  
+### AccountId
+`AccountId`类是`Account`的封装类. 它可以表示一个EOA地址, 也可以表示一个合约地址.  
 它包括以下几个重要的属性和方法:  
-* `Account.Null` : 这是一个值为`0`的地址, 它的值类似于solidity中的`address(0)`.  
-* `Account.Self` : 代表当前合约的地址, 类似于solidity中的`address(this)`.  
-* `transfer(value: Balance): void` : 这个方法用于本币转账操作, 即从`Account.Self`账号的余额, 向这个账号的地址转账.  
+* `AccountId.Null` : 这是一个值为`0`的地址, 它的值类似于solidity中的`address(0)`.  
+* `AccountId.Self` : 代表当前合约的地址, 类似于solidity中的`address(this)`.  
+* `transfer(value: Balance): void` : 这个方法用于本币转账操作, 即从`AccountId.Self`账号的余额, 向这个账号的地址转账.  
 * `call(data: u8[], gas: u64 = 0, value: u128 = u128.Zero): u8[]` : 用于调用外部合约的方法. 参考上一节中关于**跨合约调用**的部分.  
 
 ### Msg
 `Msg`类封装了一次调用过程中附带的数据和信息. Ask!内部具有一个全局变量`msg`, 用于获取相关信息:  
 * `msg.value`  : 一次调用中附带的value, `Balance`类型的数据.
-* `msg.sender` : 一次调用的发起人账号, `Account`类型的数据.
+* `msg.sender` : 一次调用的发起人账号, `AccountId`类型的数据.
 * `msg.sig`    : 一次调用的方法的签名, `u8[]`类型的数据.
 * `msg.data`   : 一次调用的方法的参数, 已经被序列化为`u8[]`类型.
 
@@ -257,11 +257,11 @@ export class Libadd {
 名字中含有`Spread`的, 表示每一个存储的元素, 都会有一个独立的存储位置, 每次存取操作, 只操作这个元素本身; 而`Packed`则表示这个集合中所有的数据会被打包存储到同一个位置, 每次需要修改其中一个元素的时候, 都需要存取所有的元素, 所以它们适用于数据比较少的场景.
 
 ## 自定义Ask!环境变量类型
-基于Substrate开发的链, 它的FRAME中定义的环境变量类型, 主要是`Hash` `AccountId` `BlockNumber` `Balance`, 它们在Ask!中的定义如下:
+基于Substrate开发的链, 它的FRAME中定义的环境变量类型, 主要是`Hash` `Account` `BlockNumber` `Balance`, 它们在Ask!中的定义如下:
 ```typescript
 type Balance = UInt128;
 type BlockNumber = UInt32;
-type AccountId = Array<u8>(32);
+type Account = Array<u8>(32);
 type Hash = Array<u8>(32);
 ```
 
