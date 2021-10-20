@@ -229,7 +229,6 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
             // TODO
             let declaration = <TypeDeclaration>(<TypeDefinition>element).declaration;
             let definitionNode = <NamedTypeNode>declaration.type;
-            // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
             let name = definitionNode.name.range.toString();
             return TypeHelper.getTypeKindByName(name);
         } else if (element.kind == ElementKind.CLASS_PROTOTYPE) {

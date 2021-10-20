@@ -145,6 +145,7 @@ export class ArrayLayout implements Layout {
             len: this.len,
             cellsPerElem: this.cellsPerElem,
             layout: this.layout.toMetadata(),
+            storemode: this.storemode
         };
     }
 }

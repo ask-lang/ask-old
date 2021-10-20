@@ -112,16 +112,15 @@ export class ContractInterpreter extends ClassInterpreter {
     }
 
     private resolveContractElement(): void {
-        this.element.instanceMembers &&
-            this.element.instanceMembers.forEach((instance, _) => {
-                if (ElementUtil.isCntrFuncPrototype(instance)) {
-                    this.cntrFuncDefs.push(new ConstructorDef(<FunctionPrototype>instance));
-                }
-                if (ElementUtil.isMessageFuncPrototype(instance)) {
-                    let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
-                    this.msgFuncDefs.push(msgFunc);
-                }     
-            });
+        this.element.instanceMembers && this.element.instanceMembers.forEach((instance, _) => {
+            if (ElementUtil.isCntrFuncPrototype(instance)) {
+                this.cntrFuncDefs.push(new ConstructorDef(<FunctionPrototype>instance));
+            }
+            if (ElementUtil.isMessageFuncPrototype(instance)) {
+                let msgFunc = new MessageFunctionDef(<FunctionPrototype>instance);
+                this.msgFuncDefs.push(msgFunc);
+            }
+        });
         this.resolveBaseClass(this.element);
         // ignore the field that not marked with state
         this.fields.forEach(item => {
@@ -145,8 +144,7 @@ export class ContractInterpreter extends ClassInterpreter {
                     }
                 });
             this.resolveBaseClass(basePrototype);
-
-            
+            // recursive get store layout
             parentContract.fields.forEach(item => {
                 if (!item.decorators.ignore) {
                     this.storeFields.push(item);

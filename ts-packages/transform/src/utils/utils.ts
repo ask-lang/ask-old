@@ -182,29 +182,6 @@ export class AstUtil {
         return declareType;
     }
 
-    /**
-       * Test the declare type whether is array type or not.
-       * @param declareType The declare type
-       */
-    static isArrayType(declareType: string): boolean {
-        return declareType == "[]"
-            || declareType == "Array"
-            || declareType == "StorableArray"
-            || declareType == "SpreadStorableArray"
-            || declareType == "PackedStorableArray";
-    }
-
-    /**
-       * Whether the declare type is map
-       * @param declareType the declare type
-       */
-    static isMapType(declareType: string): boolean {
-        return declareType == "Map"
-            || declareType == "StorableMap"
-            || declareType == "SpreadStorableMap"
-            || declareType == "PackedStorableMap";
-    }
-
     static checkPublicModifier(declaration: DeclarationStatement): void {
         if (declaration.isAny(CommonFlags.PRIVATE)) {
             throw new Error(`Decorator[@message] should mark on public method(Method: ${declaration.name.range.toString()} isn't public method). Check ${RangeUtil.location(declaration.range)}.`);

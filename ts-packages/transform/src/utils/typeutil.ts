@@ -2,7 +2,6 @@ import { CONFIG } from "../config/compile";
 import { FieldDef } from "../contract/elementdef";
 import { TypeKindEnum } from "../enums/customtype";
 import { Strings } from "./primitiveutil";
-import { AstUtil } from "./utils";
 
 export class TypeHelper {
 
@@ -32,6 +31,35 @@ export class TypeHelper {
         ["Array", "ScaleArray"],
         ["Map", "ScaleMap"]
     ]);
+
+
+    /**
+       * Test the declare type whether is array type or not.
+       * @param declareType The declare type
+       */
+    static isArrayType(declareType: string): boolean {
+        return declareType == "[]"
+            || declareType == "Array"
+            || declareType == "StorableArray"
+            || declareType == "SpreadStorableArray"
+            || declareType == "PackedStorableArray";
+    }
+
+    static getStoreMode(declareType: string): string {
+        let isPack = declareType == "PackedStorableArray" || declareType == "PackedStorableMap";
+        return isPack ? "pack" : "spread";
+    }
+
+    /**
+       * Whether the declare type is map
+       * @param declareType the declare type
+       */
+    static isMapType(declareType: string): boolean {
+        return declareType == "Map"
+            || declareType == "StorableMap"
+            || declareType == "SpreadStorableMap"
+            || declareType == "PackedStorableMap";
+    }
 
     /**
      * If the type is [], rename the array type to 'Array'
@@ -140,10 +168,10 @@ export class TypeHelper {
         if (Strings.isString(typeName)) {
             return TypeKindEnum.STRING;
         }
-        if (AstUtil.isArrayType(typeName)) {
+        if (TypeHelper.isArrayType(typeName)) {
             return TypeKindEnum.ARRAY;
         }
-        if (AstUtil.isMapType(typeName)) {
+        if (TypeHelper.isMapType(typeName)) {
             return TypeKindEnum.MAP;
         }
         if (TypeHelper.nativeType.includes(typeName)) {
@@ -174,10 +202,6 @@ export class FieldDefHelper {
      * @returns 
      */
     static getConcreteStorable(field: FieldDef): string {
-        // let typeArgs = field.type.typeArguments.map(item => item.codecType).join(",");
-        // let plainType = field.type.plainType;
-        // let arrayType = field.decorators.isPacked ? "Packed" : "Spread" ;
-        // let arrayType = "";
         let plainVarious = `${CONFIG.scope}${field.type.plainTypeNode}`;
         return plainVarious;
     }

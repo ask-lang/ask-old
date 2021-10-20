@@ -110,15 +110,14 @@ export class FieldDef extends Interpreter {
         return [this.getFiledLayout()];
     }
 
-    public storemode(): string {
-        return this.decorators.isPacked ? "pack" : "spread";
-    }
-
     private getArrayLayout(field: FieldDef): FieldLayout {
+
+        let storemode = TypeHelper.getStoreMode(field.type.plainType);
+
         let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
         let lenFieldLayout = new FieldLayout("len", lenCellLayout);
 
-        let arrLayout = new ArrayLayout(field.selector.hex, field.type.capacity, 1, lenCellLayout, field.storemode());
+        let arrLayout = new ArrayLayout(field.selector.hex, field.type.capacity, 1, lenCellLayout, storemode);
         let arrFiledLayout = new FieldLayout("elems", arrLayout);
 
         let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
@@ -126,16 +125,17 @@ export class FieldDef extends Interpreter {
     }
 
     private getMapLayout(field: FieldDef): FieldLayout {
+        let storemode = TypeHelper.getStoreMode(field.type.plainType);
         let strategy = new HashingStrategy(CryptoHasher.Blake2x256,
             field.selector.hex, "");
         let valType = field.type.typeArguments[1];
         let valLayout = new CellLayout(field.selector.hex, valType.index);
-        let valHash = new HashLayout(field.selector.hex, strategy, valLayout, field.storemode());
+        let valHash = new HashLayout(field.selector.hex, strategy, valLayout, storemode);
         let valFieldLayout = new FieldLayout("values", valHash);
 
         let keyType = field.type.typeArguments[0];
         let keyLayout = new CellLayout(field.selector.hex, keyType.index);
-        let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout, field.storemode());
+        let keyHash = new HashLayout(field.selector.hex, strategy, keyLayout, storemode);
         let keyFieldLayout = new FieldLayout("key", keyHash);
 
         let mapLayout = new StructLayout([keyFieldLayout, valFieldLayout]);
@@ -151,12 +151,7 @@ export class FieldDef extends Interpreter {
             return this.getArrayLayout(field);
         } else if (field.type.typeKind == TypeKindEnum.USER_CLASS) {
             if (field.type.plainType == "Account") {
-                let lenCellLayout = new CellLayout(field.selector.hex, field.type.index);
-                let lenFieldLayout = new FieldLayout("len", lenCellLayout);
-                let arrLayout = new ArrayLayout(field.selector.hex, field.type.capacity, 1, lenCellLayout, field.storemode());
-                let arrFiledLayout = new FieldLayout("elems", arrLayout);
-                let arrStruct = new StructLayout([lenFieldLayout, arrFiledLayout]);
-                return new FieldLayout(field.name, arrStruct);
+                return this.getArrayLayout(field);
             }
         } else if (field.type.typeKind == TypeKindEnum.MAP) {
             return this.getMapLayout(field);

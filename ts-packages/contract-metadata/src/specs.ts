@@ -25,7 +25,7 @@ interface Def<T> {
     readonly def: T;
 }
 
-export type ILayout = IStructLayout | ICellLayout | IHashLayout | IArrayLayout | StructLayout;
+export type ILayout = IStructLayout | ICellLayout | IHashLayout | IArrayLayout;
 
 export interface IStructLayout {
     struct: ArrayFieldLayout;
@@ -45,6 +45,7 @@ export interface IArrayLayout {
     readonly len: number;
     readonly cellsPerElem: number;
     readonly layout: ILayout;
+    readonly storemode: string;
 }
 
 export interface IFieldLayout {
