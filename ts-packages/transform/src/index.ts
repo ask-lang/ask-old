@@ -29,11 +29,11 @@ export class AskTransform extends Transform {
         const baseDir = path.dirname(source.normalizedPath);
         out.entryDir = baseDir;
         process.sourceModifier = out;
-        const abiPath = path.join(process.outputDir, "metadata.json");
+        const dirPath = process.outputDir;
+        const abiPath = path.resolve(dirPath, "metadata.json");
         if (!fs.existsSync(path.dirname(abiPath))) {
-            mkdirp(path.dirname(abiPath));
+            fs.mkdirSync(path.dirname(abiPath));
         }
         fs.writeFileSync(abiPath, abi);
-        // this.writeFile(abiPath, abi, baseDir);
     }
 }
