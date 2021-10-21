@@ -52,7 +52,6 @@ var APIOptionImpl = /** @class */ (function () {
                 let importLang = `import * as ${CONFIG.module} from "ask-lang";\n`;
                 text_1 = importLang + text_1;
                 sourceModifier.fileExtension.set(filename, text_1);
-                console.log(`The file ${filename} extension: ${text_1}`);
             }
             return text_1;
         }
