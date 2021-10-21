@@ -4,4 +4,4 @@ export * from "as-bignum";
 export * from "./env";
 export * from "./utils";
 export * from "./primitives";
-export * from "as-scale-codec";
+export * from "pl-as-scale-codec";

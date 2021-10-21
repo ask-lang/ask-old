@@ -7,7 +7,7 @@ import { u128 } from "as-bignum";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_caller, seal_value_transferred } from "as-contract-runtime";
 import { MessageInputReader } from "../primitives/inputdata";
-import { UInt128 } from "as-scale-codec";
+import { UInt128 } from "pl-as-scale-codec";
 import { AccountId } from ".";
 /**
  * This class is used by retrieving informations for current call.

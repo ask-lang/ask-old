@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt64 } from "as-scale-codec";
+import { UInt64 } from "pl-as-scale-codec";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_gas_left } from "as-contract-runtime";
 /**

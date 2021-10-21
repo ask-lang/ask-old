@@ -31,7 +31,7 @@ import {
     UInt32,
     UInt64,
     UInt8,
-} from "as-scale-codec";
+} from "pl-as-scale-codec";
 
 export function demonstrate(): void {
     trace(`Encoding examples:`);

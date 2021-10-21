@@ -1,5 +1,5 @@
 {
-  "name": "as-scale-codec",
+  "name": "pl-as-scale-codec",
   "version": "0.2.1",
   "description": "AssemblyScript implementation of the SCALE codec used in the Parity Substrate framework",
   "main": "./assembly/index.ts",

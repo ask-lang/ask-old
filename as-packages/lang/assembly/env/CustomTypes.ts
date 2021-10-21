@@ -2,7 +2,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Codec, UInt128, UInt32 } from "as-scale-codec";
+import { Codec, UInt128, UInt32 } from "pl-as-scale-codec";
 /**
  * To customize type of `Balance` according to your FRAME.
  */

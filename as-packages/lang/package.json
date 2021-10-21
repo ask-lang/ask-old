@@ -6,9 +6,9 @@
   "license": "MIT",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "dependencies": {
-    "contract-runtime": "file:../as-contract-runtime",
+    "pl-contract-runtime": "file:../as-contract-runtime",
     "as-bignum": "^0.2.17",
-    "as-scale-codec": "file:../as-scale-codec"
+    "pl-as-scale-codec": "file:../as-scale-codec"
   },
   "devDependencies": {
     "assemblyscript": "0.18",

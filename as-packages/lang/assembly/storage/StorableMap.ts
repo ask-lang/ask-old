@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 import { ReturnCode } from "as-contract-runtime";
-import { Codec, Hash, ScaleString} from "as-scale-codec";
+import { Codec, Hash, ScaleString} from "pl-as-scale-codec";
 import { Storage } from ".";
 import { Crypto } from "../primitives/crypto";
 import { MapEntry } from "./MapEntry";

@@ -6,7 +6,7 @@
 import { ReturnCode, seal_call } from "as-contract-runtime";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
-import { UInt128, UInt64 } from "as-scale-codec";
+import { UInt128, UInt64 } from "pl-as-scale-codec";
 import { u128 } from "as-bignum";
 /**
  * This class is used for calling an external message.

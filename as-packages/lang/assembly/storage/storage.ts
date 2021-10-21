@@ -10,7 +10,7 @@ import {
     ReturnCode,
 } from "as-contract-runtime";
 
-import { Codec, Hash, PackableCodec, ScaleString } from "as-scale-codec";
+import { Codec, Hash, PackableCodec, ScaleString } from "pl-as-scale-codec";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
 

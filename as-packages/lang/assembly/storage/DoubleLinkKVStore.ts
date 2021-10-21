@@ -2,7 +2,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Codec, Hash } from "as-scale-codec";
+import { Codec, Hash } from "pl-as-scale-codec";
 
 /**
  * @class DoubleLinkKVStore

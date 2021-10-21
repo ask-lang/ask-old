@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec } from "as-scale-codec";
+import { Codec } from "pl-as-scale-codec";
 import { seal_return } from "as-contract-runtime";
 
 export class ReturnData {

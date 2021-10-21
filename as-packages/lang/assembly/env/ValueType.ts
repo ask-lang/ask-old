@@ -3,6 +3,6 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt128 } from "as-scale-codec";
+import { UInt128 } from "pl-as-scale-codec";
 
 export type ValueType = UInt128;

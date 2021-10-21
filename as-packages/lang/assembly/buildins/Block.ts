@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { UInt32, UInt64 } from "as-scale-codec";
+import { UInt32, UInt64 } from "pl-as-scale-codec";
 import { BlockNumber } from "../env";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { seal_block_number, seal_now } from "as-contract-runtime";

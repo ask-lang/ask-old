@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec, CompactInt } from "as-scale-codec";
+import { Codec, CompactInt } from "pl-as-scale-codec";
 import { Crypto } from "../primitives/crypto";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { seal_deposit_event } from "as-contract-runtime";

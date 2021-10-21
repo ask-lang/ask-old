@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { Codec, Hash } from "as-scale-codec";
+import { Codec, Hash } from "pl-as-scale-codec";
 import {
     seal_hash_blake2_128,
     seal_hash_blake2_256,
