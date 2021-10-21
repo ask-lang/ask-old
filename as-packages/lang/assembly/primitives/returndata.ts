@@ -4,7 +4,7 @@
  */
 
 import { Codec } from "pl-as-scale-codec";
-import { seal_return } from "as-contract-runtime";
+import { seal_return } from "pl-as-contract-runtime";
 
 export class ReturnData {
     static set<T extends Codec>(v: T): void {

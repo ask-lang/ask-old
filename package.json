@@ -27,7 +27,6 @@
     "test:as": "asp --verbose",
     "test:as:summary": "asp --summary"
   },
-  "private": true,
   "devDependencies": {
     "@as-pect/assembly": "^6.0.0",
     "@as-pect/cli": "^6.0.0",

@@ -2,7 +2,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { ReturnCode } from "as-contract-runtime";
+import { ReturnCode } from "pl-as-contract-runtime";
 import { Codec, Hash } from "pl-as-scale-codec";
 import { Storage } from ".";
 import { Crypto } from "../primitives/crypto";

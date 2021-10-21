@@ -4,7 +4,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { ReturnCode } from "as-contract-runtime";
+import { ReturnCode } from "pl-as-contract-runtime";
 import { ArrayEntry, Codec, Hash } from "..";
 import { Crypto } from "../primitives/crypto";
 import { NullHash, Storage } from "./storage";

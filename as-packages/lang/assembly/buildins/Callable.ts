@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { ReturnCode, seal_call } from "as-contract-runtime";
+import { ReturnCode, seal_call } from "pl-as-contract-runtime";
 import { ReadBuffer } from "../primitives/readbuffer";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { UInt128, UInt64 } from "pl-as-scale-codec";

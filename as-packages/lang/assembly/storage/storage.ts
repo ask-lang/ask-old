@@ -8,7 +8,7 @@ import {
     seal_get_storage,
     seal_set_storage,
     ReturnCode,
-} from "as-contract-runtime";
+} from "pl-as-contract-runtime";
 
 import { Codec, Hash, PackableCodec, ScaleString } from "pl-as-scale-codec";
 import { ReadBuffer } from "../primitives/readbuffer";

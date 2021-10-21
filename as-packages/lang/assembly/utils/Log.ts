@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { seal_println } from "as-contract-runtime";
+import { seal_println } from "pl-as-contract-runtime";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { toU8Array } from "./ArrayUtils";
 const HexChar = [

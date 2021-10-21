@@ -5,7 +5,7 @@ import {
 
 import {
     ContractMetadata,
-} from "contract-metadata/src/index";
+} from "pl-contract-metadata/src/index";
 
 import { ElementUtil } from "../utils/utils";
 
@@ -49,7 +49,7 @@ export class ContractProgram {
     private genMetadata(): ContractMetadata {
         return new MetadataGenerator(this).createMetadata();
     }
-    
+
     private getEntryContract(): ContractInterpreter {
         let contractNum = 0;
         let contract: ContractInterpreter | null = null;
@@ -80,7 +80,7 @@ export class ContractProgram {
     }
 
     /**
-     * 
+     *
      */
     private genTypeSequence(): void {
         this.contract.genSeqOfMetadataType(this.typeDefByName);

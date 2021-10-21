@@ -13,7 +13,7 @@ import {
     EventSpec,
     TypeSpec,
     ToMetadata
-} from "contract-metadata/src/index";
+} from "pl-contract-metadata/src/index";
 
 import { ElementUtil } from "../utils/utils";
 
@@ -144,7 +144,12 @@ export class ContractInterpreter extends ClassInterpreter {
                     }
                 });
             this.resolveBaseClass(basePrototype);
+<<<<<<< HEAD
             // recursive get store layout
+=======
+
+
+>>>>>>> 70138f3 (prepare to publish to npm)
             parentContract.fields.forEach(item => {
                 if (!item.decorators.ignore) {
                     this.storeFields.push(item);

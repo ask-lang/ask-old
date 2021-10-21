@@ -10,7 +10,7 @@ import {
     seal_hash_keccak_256,
     seal_hash_sha2_256,
     seal_random,
-} from "as-contract-runtime";
+} from "pl-as-contract-runtime";
 import { toU8Array, typedToArray } from "../utils/ArrayUtils";
 import { ReadBuffer } from "./readbuffer";
 import { WriteBuffer } from "./writebuffer";

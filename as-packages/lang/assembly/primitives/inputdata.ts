@@ -3,7 +3,7 @@
  * @author liangqin.fan@gmail.com
  */
 
-import { seal_input } from "as-contract-runtime";
+import { seal_input } from "pl-as-contract-runtime";
 import { ReadBuffer } from "./readbuffer";
 
 export class MessageInputReader {

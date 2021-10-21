@@ -5,7 +5,7 @@
 
 import { Callable } from "./Callable";
 import { u128 } from "as-bignum";
-import { ReturnCode, seal_address, seal_transfer } from "as-contract-runtime";
+import { ReturnCode, seal_address, seal_transfer } from "pl-as-contract-runtime";
 import { Account, Balance } from "../env";
 import { WriteBuffer } from "../primitives/writebuffer";
 import { Codec } from "pl-as-scale-codec";

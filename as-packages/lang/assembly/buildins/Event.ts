@@ -6,7 +6,7 @@
 import { Codec, CompactInt } from "pl-as-scale-codec";
 import { Crypto } from "../primitives/crypto";
 import { WriteBuffer } from "../primitives/writebuffer";
-import { seal_deposit_event } from "as-contract-runtime";
+import { seal_deposit_event } from "pl-as-contract-runtime";
 
 const MAX_EVENT_TOPICS = 4; // Refer to `frame/contracts/src/schedule.rs` L464
 /**
