@@ -1,5 +1,4 @@
 import { TypeKindEnum } from "../enums/customtype";
-import { IndexSelector } from "../preprocess/selector";
 import { TypeHelper } from "../utils/typeutil";
 
 describe("Test generator", () => {

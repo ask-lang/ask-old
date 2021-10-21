@@ -13,7 +13,7 @@ import {
     EventSpec,
     TypeSpec,
     ToMetadata
-} from "pl-contract-metadata/src/index";
+} from "pl-contract-metadata/dist/index";
 
 import { ElementUtil } from "../utils/utils";
 

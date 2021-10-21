@@ -1,7 +1,7 @@
 import { ClassPrototype } from "assemblyscript";
-import { Contract, ContractMetadata, ContractSpec, Source } from "pl-contract-metadata/src";
-import { FieldLayout, Layout, StructLayout } from "pl-contract-metadata/src/layouts";
-import { ArrayDef, CompositeDef, Field, PrimitiveDef, SequenceDef, Type } from "pl-contract-metadata/src/types";
+import { Contract, ContractMetadata, ContractSpec, Source } from "pl-contract-metadata/dist/index";
+import { FieldLayout, Layout, StructLayout } from "pl-contract-metadata/dist/layouts";
+import { ArrayDef, CompositeDef, Field, PrimitiveDef, SequenceDef, Type } from "pl-contract-metadata/dist/types";
 import { CONFIG } from "../config/compile";
 import { ContractProgram } from "../contract/contract";
 import { ClassInterpreter } from "../contract/classdef";

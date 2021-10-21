@@ -50,7 +50,7 @@ const ARGS = [
     "abort= ",
     releaseMode ? "-O3z" : "-O2",
     "--transform",
-    "ask-transform/index.ts"
+    "ask-transform/dist/index.js"
 ]
 
 if (/\bask$/.test(process.argv[1])) {
@@ -68,7 +68,7 @@ if (/\bask$/.test(process.argv[1])) {
                     let wastPath = path.join(outputDir, `${outputName}.wast`);
                     ARGS.push("-t", wastPath);
                 }
-                const ascOption = require("ask-transform/src/ascoption.js");
+                const ascOption = require("ask-transform/src/asc/ascoption.js");
                 let apiOption = new ascOption.APIOptionImpl();
                 asc.main(ARGS, apiOption);
                 if (releaseMode == 'false') {

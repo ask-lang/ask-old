@@ -1,9 +1,9 @@
 {
   "name": "ask-transform",
-  "version": "0.0.11",
+  "version": "0.0.16",
   "description": "Build tool for building AssemblyScript projects",
   "license": "MIT",
-  "main": "index.ts",
+  "main": "index.js",
   "author": "yjhmelody <yjh465402634@gmail.com>",
   "scripts": {
     "checks": "tsc -p tsconfig.json --noEmit",
@@ -16,6 +16,13 @@
     "assemblyscript": "0.18",
     "@polkadot/util-crypto": "^6.6",
     "handlebars": "4.7.6",
-    "pl-contract-metadata": "0.1.0"
+    "pl-contract-metadata": "0.1.2"
+  },
+  "exports": {
+    "./dist/index.js": "./dist/index.js",
+    "./src/asc/asc.js": "./src/asc/asc.js",
+    "./preprocess/preprocess": "./dist/preprocess/preprocess.js",
+    "./config/compile": "./dist/config/compile.js",
+    "./src/asc/ascoption.js": "./src/asc/ascoption.js"
   }
 }

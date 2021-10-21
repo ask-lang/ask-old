@@ -1,11 +1,11 @@
 "use strict";
 exports.__esModule = true;
 exports.APIOptionImpl = void 0;
-const preprocess_1 = require("./preprocess/preprocess");
+const preprocess_1 = require("ask-transform/preprocess/preprocess");
 const mkdirp = require("assemblyscript/cli/util/mkdirp");
 const path = require("path");
 const fs = require("fs");
-const { CONFIG } = require("./config/compile");
+const { CONFIG } = require("ask-transform/config/compile");
 
 function modifySourceText(sourceText, point) {
     if (point.mode == preprocess_1.ModifyType.REPLACE) {

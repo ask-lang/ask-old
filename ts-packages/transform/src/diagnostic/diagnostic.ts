@@ -39,9 +39,9 @@ export class ProgramDiagnostic {
         let finalMsgFunc: FunctionDef[] = [];
         this.contract.contract.msgFuncDefs.forEach(item => {
             if (messageMap.has(item.name)) {
-                let currentSignature = `name:${item.name}signature:${item.declaration.signature.range.toString()}`.replaceAll(" ", "");
+                let currentSignature = `name:${item.name}signature:${item.declaration.signature.range.toString()}`;
                 let existFun = messageMap.get(item.name)!;
-                let existSignature = `name:${existFun.name}signature:${existFun.declaration.signature.range.toString()}`.replaceAll(" ", "");
+                let existSignature = `name:${existFun.name}signature:${existFun.declaration.signature.range.toString()}`;
                 if (currentSignature != existSignature) {
                     throw new Error(`The contract has message: ${item.name} that has two difference signatures.`);
                 }

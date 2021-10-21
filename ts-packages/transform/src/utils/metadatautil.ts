@@ -1,4 +1,4 @@
-import { ConstructorSpec, TypeSpec } from "pl-contract-metadata/src";
+import { ConstructorSpec, TypeSpec } from "pl-contract-metadata/dist/index";
 import { NamedTypeNodeDef } from "../contract/typedef";
 import { KeySelector } from "../preprocess/selector";
 

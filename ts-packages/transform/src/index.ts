@@ -4,8 +4,6 @@ import { getContractInfo } from "./contract/contract";
 import { Program } from "assemblyscript";
 import * as path from "path";
 import * as fs from "fs";
-import mkdirp from "assemblyscript/cli/util/mkdirp";
-
 
 // TODO: refactor to ts code
 export class AskTransform extends Transform {
@@ -28,7 +26,9 @@ export class AskTransform extends Transform {
         const out = preprocess.getExtCodeInfo(info);
         const baseDir = path.dirname(source.normalizedPath);
         out.entryDir = baseDir;
+        // @ts-ignore
         process.sourceModifier = out;
+        // @ts-ignore
         const dirPath = process.outputDir;
         const abiPath = path.resolve(dirPath, "metadata.json");
         if (!fs.existsSync(path.dirname(abiPath))) {

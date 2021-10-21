@@ -5,7 +5,7 @@ import {
 
 import {
     ContractMetadata,
-} from "pl-contract-metadata/src/index";
+} from "pl-contract-metadata/dist/index";
 
 import { ElementUtil } from "../utils/utils";
 
@@ -38,7 +38,7 @@ export class ContractProgram {
     }
 
     private getToGenCodecClass(): void {
-        this.typeDefByName.forEach((item, key) => {
+        this.typeDefByName.forEach((item, _) => {
             if (item.typeKind == TypeKindEnum.USER_CLASS && !item.isCodec) {
                 let classInterpreter = new ClassInterpreter(<ClassPrototype>item.current);
                 this.codecs.push(classInterpreter);

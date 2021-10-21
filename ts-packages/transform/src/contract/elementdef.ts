@@ -12,7 +12,7 @@ import {
 } from "assemblyscript";
 
 import { AstUtil, ElementUtil, RangeUtil } from "../utils/utils";
-import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "pl-contract-metadata/src";
+import { ArgumentSpec, ConstructorSpec, MessageSpec, TypeSpec } from "pl-contract-metadata/dist/index";
 import { KeySelector } from "../preprocess/selector";
 import { MetadataUtil } from "../utils/metadatautil";
 import { ContractDecoratorKind } from "../enums/decorator";
@@ -21,7 +21,7 @@ import { TypeKindEnum } from "../enums/customtype";
 import { NamedTypeNodeDef } from "./typedef";
 import { Interpreter } from "./interpreter";
 import { toDecoratorDef, MessageDecoratorNodeDef, StateDecoratorNodeDef } from "./decorator";
-import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "pl-contract-metadata/src/layouts";
+import { ArrayLayout, CellLayout, CryptoHasher, FieldLayout, HashingStrategy, HashLayout, StructLayout } from "pl-contract-metadata/dist/layouts";
 
 
 export class DecoratorInfo {
