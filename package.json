@@ -2,6 +2,7 @@
   "name": "@patract/ask",
   "version": "0.1.0",
   "description": "compile assemblyscript to substrate wasm contract",
+  "private": true,
   "keywords": [
     "assemblyscript",
     "ask",
