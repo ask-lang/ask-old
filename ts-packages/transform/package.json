@@ -1,6 +1,6 @@
 {
   "name": "ask-transform",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Build tool for building AssemblyScript projects",
   "license": "MIT",
   "main": "index.js",
@@ -20,6 +20,8 @@
   },
   "exports": {
     "./dist/index.js": "./dist/index.js",
+    "./index.ts": "./index.ts",
+    "./src/index": "./src/index.ts",
     "./src/asc/asc.js": "./src/asc/asc.js",
     "./preprocess/preprocess": "./dist/preprocess/preprocess.js",
     "./config/compile": "./dist/config/compile.js",

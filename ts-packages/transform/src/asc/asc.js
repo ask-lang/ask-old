@@ -558,6 +558,7 @@ exports.main = function main(argv, options, callback) {
     function applyTransform(name, ...args) {
         for (let i = 0, k = transforms.length; i < k; ++i) {
             let transform = transforms[i];
+            transform = new transform.AskTransform();
             if (typeof transform[name] === "function") {
                 try {
                     stats.transformCount++;
