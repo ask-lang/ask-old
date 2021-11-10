@@ -37,6 +37,10 @@ if (!sourceFile || !releaseMode || !outputDir || !outputName) {
 }
 
 const path = require("path");
+/**
+ * Using "ask-transform/index.ts" in soruce code mode
+ * Using "ask-transform/dist/index.js" in publish mode
+ */
 const ARGS = [
     sourceFile,
     "--importMemory",

@@ -1,5 +1,5 @@
 import { DeclarationStatement, DecoratorNode } from "assemblyscript";
-import { DocDecoratorNodeDef, getCustomDecoratorKind } from "../contract/decorator";
+import { DocDecoratorNodeDef, toDecoratorDef } from "../contract/decorator";
 import { ContractDecoratorKind } from "../enums/decorator";
 import { Strings } from "./primitiveutil";
 import { AstUtil, RangeUtil } from "./utils";
@@ -7,12 +7,12 @@ import { AstUtil, RangeUtil } from "./utils";
 export class DecoratorUtil {
 
     static matchKind(decorator: DecoratorNode, kind: ContractDecoratorKind): boolean {
-        return kind == getCustomDecoratorKind(decorator);
+        return kind == toDecoratorDef(decorator).kind;
     }
 
     static containDecorator(decorators: DecoratorNode[], kind: ContractDecoratorKind): boolean {
         for (let decorator of decorators) {
-            if (getCustomDecoratorKind(decorator) == kind) {
+            if (toDecoratorDef(decorator).kind == kind) {
                 return true;
             }
         }

@@ -44,7 +44,7 @@ function fromNode(nameNode: Expression): ContractDecoratorKind {
     return ContractDecoratorKind.OTHER;
 }
 
-export function getCustomDecoratorKind(decorator: DecoratorNode): ContractDecoratorKind {
+function getCustomDecoratorKind(decorator: DecoratorNode): ContractDecoratorKind {
     if (decorator.decoratorKind != DecoratorKind.CUSTOM) {
         return ContractDecoratorKind.INTERNAL;
     }
@@ -70,14 +70,11 @@ export function getSimilarDecorator(name: string): string {
     return possibleDecorator;
 }
 export class DecoratorNodeDef {
-    jsonObj: any;
+    private jsonObj: any;
     kind: ContractDecoratorKind;
     constructor(public decorator: DecoratorNode) {
         this.kind = getCustomDecoratorKind(decorator);
-        if (this.kind == ContractDecoratorKind.INTERNAL) {
-            return ;
-        }
-        this.jsonObj = this.parseToJson(decorator);
+        this.jsonObj = this.kind == ContractDecoratorKind.INTERNAL ? {} : this.parseToJson(decorator);
     }
 
     private parseToJson(decorator: DecoratorNode): any {
@@ -101,6 +98,25 @@ export class DecoratorNodeDef {
 
     hasProperty(key: string): boolean {
         return this.jsonObj.hasOwnProperty(key);
+    }
+
+    checkParamNames(names: string[]): void {
+        Object.keys(this.jsonObj).forEach(key => {
+            let possibleName = "";
+            let percentOfSimilar = 0;
+            for (let name of names) {
+                let similarity = Strings.similarity(key, name);
+                if (similarity > percentOfSimilar) {
+                    percentOfSimilar = similarity;
+                    possibleName = name;
+                }
+            }
+            if (percentOfSimilar == 0) {
+                throw new Error(`The parameter: ${key} isn't pre-defined in decorator ${this.decorator.name.range.toString()}. Check ${RangeUtil.location(this.decorator.range)}.`);
+            } else if (percentOfSimilar < 1){
+                throw new Error(`The parameter: ${key} isn't pre-defined in decorator ${this.decorator.name.range.toString()}, do you mean ${possibleName}? Check ${RangeUtil.location(this.decorator.range)}.`);
+            }
+        });
     }
 
     getProperty(key: string, type = ""): any {
@@ -133,6 +149,7 @@ export class DecoratorNodeDef {
 export class DocDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public doc = "") {
         super(decorator);
+        this.checkParamNames(["desc"]);
         this.doc = this.getProperty("desc", "string");
     }
 }
@@ -140,6 +157,7 @@ export class DocDecoratorNodeDef extends DecoratorNodeDef {
 export class SpreadDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public capacity = 0) {
         super(decorator);
+        this.checkParamNames(["capacity"]);
         this.capacity = this.getIfAbsent("capacity", 0, "number");
     }
 }
@@ -147,6 +165,7 @@ export class SpreadDecoratorNodeDef extends DecoratorNodeDef {
 export class PackDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public capacity = 0) {
         super(decorator);
+        this.checkParamNames(["capacity"]);
         this.capacity = this.getIfAbsent("capacity", 0, "number");
     }
 }
@@ -154,6 +173,7 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public payable = false,
         public mutates = true, public selector = "") {
         super(decorator);
+        this.checkParamNames(["payable", "mutates", "selector"]);
         this.payable = this.getIfAbsent("payable", false, "boolean");
         this.mutates = this.getIfAbsent('mutates', true, "boolean");
         if (this.hasProperty('selector')) {
@@ -168,6 +188,7 @@ export class MessageDecoratorNodeDef extends DecoratorNodeDef {
 export class StateDecoratorNodeDef extends DecoratorNodeDef {
     constructor(decorator: DecoratorNode, public lazy = true, public ignore = false) {
         super(decorator);
+        this.checkParamNames(["lazy"]);
         this.lazy = this.getIfAbsent("lazy", true, "boolean");
     }
 }
@@ -190,5 +211,7 @@ export function toDecoratorDef(decorator: DecoratorNode): DecoratorNodeDef {
             return new PackDecoratorNodeDef(decorator);
         }
     }
-    return new DecoratorNodeDef(decorator);
+    let decoratorDef = new DecoratorNodeDef(decorator);
+    decoratorDef.checkParamNames([]);
+    return decoratorDef;
 }
