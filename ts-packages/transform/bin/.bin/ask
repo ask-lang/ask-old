@@ -54,7 +54,7 @@ const ARGS = [
     "abort= ",
     releaseMode ? "-O3z" : "-O2",
     "--transform",
-    "ask-transform/dist/index.js"
+    "ask-transform/index.ts"
 ]
 
 if (/\bask$/.test(process.argv[1])) {

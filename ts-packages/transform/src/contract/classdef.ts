@@ -168,21 +168,49 @@ export class ContractInterpreter extends ClassInterpreter {
     }
 }
 export class EventInterpreter extends ClassInterpreter implements Matadata {
+    
+    /**
+     * event fields
+     */
+private eventFields: FieldDef[] = [];
     index = 0;
     constructor(clzPrototype: ClassPrototype) {
         super(clzPrototype);
         this.resolveFunctionMembers();
     }
 
+    private resolveEventFields(classPrototype: ClassPrototype): void {
+        if (ElementUtil.isEventClassPrototype(classPrototype)) {
+            if (classPrototype.basePrototype) {
+                this.resolveEventFields(classPrototype.basePrototype);
+            }
+            let eventInterpreter = new EventInterpreter(classPrototype);
+            eventInterpreter.fields.forEach(item => {
+                this.eventFields.push(item);
+            });
+        }
+    }
+
     createMetadata(): EventSpec {
-        let eventParams: EventParamSpec[] = [];
-        this.fields.forEach(item => {
+        let eventPrams: EventParamSpec[] = [];
+        this.eventFields.forEach(item => {
             let type = new TypeSpec(item.type.index, item.type.plainType);
             let param = new EventParamSpec(item.decorators.isTopic, type.toMetadata(), item.doc, item.name);
-            eventParams.push(param);
+            eventPrams.push(param);
         });
-        return new EventSpec(this.name, eventParams, []);
+        return new EventSpec(this.name, eventPrams, []);
     }
+
+    genSeqOfMetadataType(typeNodeMap: Map<string, NamedTypeNodeDef>): void {
+        this.resolveEventFields(this.element);
+        this.eventFields.forEach(item => {
+            if (item.type) {
+                item.type.genSeqOfMetadataType(typeNodeMap);
+            }
+        });
+    }
+
+
 }
 export class DynamicIntercepter extends ClassInterpreter {
     constructor(clzPrototype: ClassPrototype) {
