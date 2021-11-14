@@ -152,49 +152,15 @@ export class NamedTypeNodeDef extends BaseNamedTypeDef {
 
     private getCurrentElement(): Element {
         this.plainType = TypeHelper.renameIfArray(this.plainType);
-        let element = this.parent.lookup(this.plainType)!;
-        if (element) {
-            return this.findBuildinElement(element);
+        let current = this.parent.lookup(this.plainType)!;
+        if (current) {
+            current = this.findBuildinElement(current);
         }
-        return element;
+        if (!current) {
+            throw new Error(`The the ${this.plainType} wasn't imported or built in. Please check the source code.`);
+        }
+        return current;
     }
-
-    // private getNodeTypeInfo(buildinElement: Element): NodeTypeInfo {
-    //     if (buildinElement.kind == ElementKind.FUNCTION_PROTOTYPE) {
-    //         return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
-    //     } else if (buildinElement.kind == ElementKind.TYPEDEFINITION) {
-    //         if (buildinElement.name == Strings.VOID) {
-    //             return new NodeTypeInfo(false, TypeKindEnum.VOID);
-    //         } else if (TypeHelper.nativeType.includes(buildinElement.name)) {
-    //             return new NodeTypeInfo(false, TypeKindEnum.NUMBER);
-    //         }
-    //         // TODO
-    //         // console.log(`type info: ${buildinElement.name}`);
-    //         let declaration = <TypeDeclaration>(<TypeDefinition>buildinElement).declaration;
-    //         let definitionNode = <NamedTypeNode>declaration.type;
-    //         // console.log(`TYPEDEFINITION ${definitionNode.range.toString()},  ${buildinElement.name}`);
-    //         let name = definitionNode.name.range.toString();
-    //         let type = TypeHelper.getTypeKindByName(name);
-
-    //         return new NodeTypeInfo(false, type);
-
-    //     } else if (buildinElement.kind == ElementKind.CLASS_PROTOTYPE) {
-    //         let type = TypeHelper.getTypeKindFromUncodec(buildinElement.name);
-    //         if (type) {
-    //             return new NodeTypeInfo(false, type);
-
-    //         }
-    //         let classTypeKind = TypeHelper.getTypeKindByName(buildinElement.name);
-    //         if (classTypeKind == TypeKindEnum.USER_CLASS) {
-    //             this.isCodec = ElementUtil.isExtendCodec(buildinElement);
-    //             return new NodeTypeInfo(true, classTypeKind);
-
-    //         }
-    //         return new NodeTypeInfo(false, classTypeKind);
-    //     }
-    //     return new NodeTypeInfo(false, TypeKindEnum.USER_CLASS);
-    // }
-
 
     /**
      *

@@ -3,7 +3,7 @@
  * All Rights Reserved by Patract Labs.
  * @author liangqin.fan@gmail.com
  */
-import { Event } from "../../assembly";
+import { Event } from "ask-lang";
 
  @event
 class EventA extends Event {
@@ -28,14 +28,13 @@ class EventB extends EventA {
       this.gender = g;
   }
 }
-
  @contract
 export class EventEmitter {
 
+    @state
     count: i8;
 
-    constructor() {
-    }
+    constructor() { }
 
      @message
     triggeEventA(): void {
