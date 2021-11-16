@@ -39,8 +39,8 @@ export abstract class Event {
   appendData<T extends Codec>(d: T): void {
       this._data.push(d);
   }
-
-  abstract emit(): void;
+  
+  emit(): void {}
 
   protected __prepare__(): void {
       // let it an empty block
