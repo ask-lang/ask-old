@@ -1,6 +1,6 @@
 {
   "name": "ask-transform",
-  "version": "0.0.18",
+  "version": "0.0.22",
   "description": "Build tool for building AssemblyScript projects",
   "license": "MIT",
   "main": "index.js",

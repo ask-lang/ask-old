@@ -1,8 +1,10 @@
 import Handlebars from "./handlebarsbiz";
 import { Range } from "assemblyscript";
 import { ContractProgram} from "../contract/contract";
+import { blake2AsHex } from "@polkadot/util-crypto";
 
 import { mainTpl, storeTpl, eventTpl, dynamicTpl, codecTpl, storeFieldTpl, storeCommitTpl} from "../tpl/tpl";
+import { IContractMetadata } from "pl-contract-metadata/dist/specs";
 
 export class ModifyPoint {
     range: Range;
@@ -91,7 +93,10 @@ export function getExtCodeInfo(contractInfo: ContractProgram): SourceModifier {
     return sourceModifier;
 }
 
-export function getAbiInfo(abiInfo: ContractProgram): string {
-    let metadata = JSON.stringify(abiInfo.metatdata.toMetadata(), null, 2);
-    return metadata;
+export function getAbiInfo(abiInfo: ContractProgram): IContractMetadata {
+    return abiInfo.metatdata.toMetadata();
+}
+
+export function genHashcode(content: string): string {
+    return blake2AsHex(content, 256);
 }

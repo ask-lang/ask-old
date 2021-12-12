@@ -6,7 +6,6 @@ const mkdirp = require("assemblyscript/cli/util/mkdirp");
 const path = require("path");
 const fs = require("fs");
 const { CONFIG } = require("ask-transform/config/compile");
-
 function modifySourceText(sourceText, point) {
     if (point.mode == preprocess_1.ModifyType.REPLACE) {
         var prefix = sourceText.substring(0, point.range.start);
@@ -26,6 +25,30 @@ function modifySourceText(sourceText, point) {
     }
     return sourceText;
 };
+
+function deleteExistFile(outputDir, fileName) {
+    let filePath = path.join(outputDir, fileName);
+    if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+    }
+}
+
+function genMetadata(outputDir, abi) {
+    const abiPath = path.resolve(outputDir, "metadata.json");
+    if (!fs.existsSync(path.dirname(abiPath))) {
+        fs.mkdirSync(path.dirname(abiPath));
+    } 
+    fs.writeFileSync(abiPath, JSON.stringify(abi, null, 2));
+}
+
+function genHashcode(outputDir, wasm) {
+    const wasmPath = path.resolve(outputDir, wasm);
+    if (fs.existsSync(wasmPath)) {
+        let wasm = fs.readFileSync(wasmPath);
+        return preprocess_1.genHashcode(wasm);
+    }
+    return "";
+}
 
 var APIOptionImpl = /** @class */ (function () {
     function APIOptionImpl() {
@@ -70,6 +93,10 @@ var APIOptionImpl = /** @class */ (function () {
             fs.writeFileSync(filePath, value);
         }
     };
+
+    APIOptionImpl.prototype.deleteExistFile = deleteExistFile;
+    APIOptionImpl.prototype.genMetadata = genMetadata;
+    APIOptionImpl.prototype.genHashcode = genHashcode;
 
     return APIOptionImpl;
 }());

@@ -16,6 +16,8 @@ try { require("source-map-support").install(); } catch (e) { }
 
 const asc = module.exports = require("ask-transform/src/asc/asc.js");
 // const asc = module.exports = require("assemblyscript/cli/asc.js");
+const ascOption = require("ask-transform/src/asc/ascoption.js");
+let apiExtension = new ascOption.APIOptionImpl();
 const sourceFile = process.argv[2];
 const releaseMode = process.argv[3];
 const outputDir = process.argv[4];
@@ -58,27 +60,38 @@ const ARGS = [
 ]
 
 if (/\bask$/.test(process.argv[1])) {
-    console.log("Build Starting ······")
+    console.log("Build Starting ······");
     asc.ready.then(() => {
         process.outputDir = outputDir;
         process.exitCode = asc.main(ARGS);
+        let abi = process.abi;
+        if (process.exitCode != 0) {
+            console.log("Build failed. Compile the source file failed.");
+            return process.exitCode;
+        }
         asc.ready.then(()=> {
-                ARGS.pop(); ARGS.pop(); // shift ARGS 参数里面的 --transform配置
-                console.log("Build progressing. Generating target files ······")
-                let wasmPath = path.join(outputDir, `${outputName}.wasm`);
-                ARGS.push("-b", wasmPath)
-                if (releaseMode == 'false') {
-                    ARGS.push("--debug"); // to generate debug info in binary code
-                    let wastPath = path.join(outputDir, `${outputName}.wast`);
-                    ARGS.push("-t", wastPath);
-                }
-                const ascOption = require("ask-transform/src/asc/ascoption.js");
-                let apiOption = new ascOption.APIOptionImpl();
-                asc.main(ARGS, apiOption);
-                if (releaseMode == 'false') {
-                    apiOption.writeExtensionFile();
-                }
-                console.log(`Build Done. Targets generated. Target directory: ${outputDir}.`);
+            // shift ARGS 参数里面的 --transform配置
+            ARGS.pop(); ARGS.pop();
+            console.log("Build progressing. Generating target files ······")
+            let wasmPath = path.join(outputDir, `${outputName}.wasm`);
+            ARGS.push("-b", wasmPath)
+            if (releaseMode == 'false') {
+                ARGS.push("--debug"); // to generate debug info in binary code
+                let wastPath = path.join(outputDir, `${outputName}.wast`);
+                ARGS.push("-t", wastPath);
+            }
+            // Add asc option to config the 
+            process.exitCode = asc.main(ARGS, apiExtension);
+            if (process.exitCode != 0) {
+                console.log("Build failed. Compile the source file failed.");
+                return process.exitCode;
+            }
+            abi.source.hash = apiExtension.genHashcode(outputDir, `${outputName}.wasm`);
+            apiExtension.genMetadata(outputDir, abi)
+            if (releaseMode == 'false') {
+                apiExtension.writeExtensionFile();
+            }
+            console.log(`Build Done. Targets generated. Target directory: ${outputDir}.`);
         });
         return process.exitCode
     });
