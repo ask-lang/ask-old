@@ -8,7 +8,7 @@ Ask! is a smart contract language designed based on AssemblyScript and running o
 >
 > In Ask!, it will describe the interface through `@constructor`, `@message` or other similar annotation.
 
-Riot Group for disscusion: [https://app.element.io/#/room/#PatractLabsDev:matrix.org](https://app.element.io/#/room/#PatractLabsDev:matrix.org)
+Riot Group for discussion: [https://app.element.io/#/room/#PatractLabsDev:matrix.org](https://app.element.io/#/room/#PatractLabsDev:matrix.org)
 
 ## Overview
 
